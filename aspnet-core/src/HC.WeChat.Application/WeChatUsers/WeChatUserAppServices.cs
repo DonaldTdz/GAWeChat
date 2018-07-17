@@ -1131,21 +1131,22 @@ namespace HC.WeChat.WeChatUsers
         /// <returns></returns>
         public async Task<WeChatUserStatisticLiDto> GetWeChatUserStatistic()
         {
-            var weChat = _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注);
-            var retail = _retailerRepository.GetAll();
-            var query = from w in weChat
-                        join r in retail on w.UserId equals r.Id into g
+            //var weChat = _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注);
+            //var retail = _retailerRepository.GetAll();
+            var query = (from w in _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注)
+                        join r in _retailerRepository.GetAll() on w.UserId equals r.Id into g
                         from wr in g.DefaultIfEmpty()
-                        group new { wr.BranchCompany } by wr.BranchCompany into m
-                        select new WeChatUserStatisticDto
-                        {
-                            Company = m.Key, // == null ? "其它" : m.Key,
-                            Count = m.Count(),
-                            //GroupId = m.Key == null ? 2 : 1,
-                        };
+                        select new { wr.BranchCompany });
+            //group new { wr.BranchCompany } by wr.BranchCompany into m
+            //select new WeChatUserStatisticDto
+            //{
+            //    Company = m.Key, // == null ? "其它" : m.Key,
+            //    Count = m.Count(),
+            //GroupId = m.Key == null ? 2 : 1,
+            //};
 
             //var total = await query.SumAsync(w => w.Count);
-            var list = await query.ToListAsync();
+            var list = await query.GroupBy(q => q.BranchCompany).Select(g => new WeChatUserStatisticDto() { Company = g.Key, Count = g.Count() }).ToListAsync();
             var total = list.Sum(w => w.Count);
             foreach (var item in list)
             {
