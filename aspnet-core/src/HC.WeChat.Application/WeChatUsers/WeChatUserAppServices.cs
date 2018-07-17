@@ -1197,6 +1197,13 @@ namespace HC.WeChat.WeChatUsers
             var ta = _wechatuserManager.SubscribeAsync(openId, nickName, headImgUrl, null, scene, ticket);
             return ta;
         }
+
+        [AbpAllowAnonymous]
+        public Task UnsubscribeAsync(string openId)
+        {
+            var ta = _wechatuserManager.UnsubscribeAsync(openId, null);
+            return ta;
+        }
     }
 }
 

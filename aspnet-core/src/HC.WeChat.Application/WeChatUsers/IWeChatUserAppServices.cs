@@ -138,5 +138,7 @@ namespace HC.WeChat.WeChatUsers
         Task<bool> GetIsAttentionByOpenIdAsync(string openId);
 
         Task SubscribeAsync(string openId, string nickName, string headImgUrl, string scene, string ticket);
+
+        Task UnsubscribeAsync(string openId);
     }
 }

@@ -87,9 +87,9 @@ namespace HC.WeChat.WeChatUsers.DomainServices
                     scenes = scene.Split("_");
                 }
                 var user = await GetWeChatUserAsync(openId, tenantId);
-                //Logger.InfoFormat("保存关注场景值id：{0}", scene);
+                Logger.InfoFormat("保存关注场景值id：{0}", scene);
                 //Logger.InfoFormat("保存关注场景值数组：{0}", scenes);
-                //Logger.InfoFormat("保存关注ticket：{0}", ticket);
+                Logger.InfoFormat("保存关注ticket：{0}", ticket);
 
                 //关注之后新增推广日志
                 var qrCodeLog = new QrCodeLog();
@@ -147,9 +147,10 @@ namespace HC.WeChat.WeChatUsers.DomainServices
                 //关注后店铺粉丝统计(方法执行的先后顺序)
                 if (scenes.Length > 0 && (SceneType)int.Parse(scenes[0]) == SceneType.店铺)
                 {
-                    var openIdList = _qrcodelogRepository.GetAll().Where(q => q.SourceId == scenes[1]).Select(q => q.OpenId).Distinct().ToList();
-                    var fansNum = _wechatuserRepository.GetAll().Where(w => openIdList.Contains(w.OpenId)).Count();
-
+                    //var openIdList = _qrcodelogRepository.GetAll().Where(q => q.SourceId == scenes[1]).Select(q => q.OpenId).Distinct().ToList();
+                    //var fansNum = _wechatuserRepository.GetAll().Where(w => openIdList.Contains(w.OpenId)).Count();
+                    var qrcodelog = _qrcodelogRepository.GetAll().Where(q => q.SourceId == scenes[1]);
+                    var fansNum = _wechatuserRepository.GetAll().Where(w => qrcodelog.Any(q => q.OpenId == w.OpenId)).Count();
                     Logger.InfoFormat("关注日志是否存在：{0}", fansNum);
                     //if (!isExsit)
                     //{
@@ -158,6 +159,8 @@ namespace HC.WeChat.WeChatUsers.DomainServices
                     //await _shopRepository.UpdateAsync(shop);
                     //}
                 }
+
+                await CurrentUnitOfWork.SaveChangesAsync();
             }
         }
 
