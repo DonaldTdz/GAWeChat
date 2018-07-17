@@ -19,9 +19,9 @@ namespace HC.WeChat.Web.Host.Controllers
         IShopAppService _shopAppService;
         //private readonly IConfigurationRoot _appConfiguration;
         //private WeChatTenantSetting _settings;
-        //private string host = "http://ga.intcov.com";
+        private string host = "http://ga.intcov.com";
         //private string host = "http://localhost:21021";
-        private string host = "http://wx.photostory.top";
+        //private string host = "http://wx.photostory.top";
         private int? tenantId;
 
         private string UserOpenId
