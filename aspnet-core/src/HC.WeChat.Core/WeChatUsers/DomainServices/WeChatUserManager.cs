@@ -80,16 +80,16 @@ namespace HC.WeChat.WeChatUsers.DomainServices
         {
             using (_unitOfWorkManager.Current.SetTenantId(tenantId))
             {
-                string[] scenes = { };
+                string[] scenes = new string[0];
                 if (!string.IsNullOrEmpty(scene))
                 {
                     scene = scene.Substring(8);
                     scenes = scene.Split("_");
                 }
                 var user = await GetWeChatUserAsync(openId, tenantId);
-                Logger.InfoFormat("保存关注场景值id：{0}", scene);
-                Logger.InfoFormat("保存关注场景值数组：{0}", scenes);
-                Logger.InfoFormat("保存关注ticket：{0}", ticket);
+                //Logger.InfoFormat("保存关注场景值id：{0}", scene);
+                //Logger.InfoFormat("保存关注场景值数组：{0}", scenes);
+                //Logger.InfoFormat("保存关注ticket：{0}", ticket);
 
                 //关注之后新增推广日志
                 var qrCodeLog = new QrCodeLog();
