@@ -1282,21 +1282,23 @@ namespace HC.WeChat.Shops
         /// <returns></returns>
         public async Task<ShopStatisticLiDto> GetShopStatisticsByCompany()
         {
-            var shop = _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.已审核);
-            var retail = _retailerRepository.GetAll();
-            var query = (from s in shop
-                         join r in retail on s.RetailerId equals r.Id //into g
-                         //from sr in g.DefaultIfEmpty()
-                         //where sr.BranchCompany != null
-                         group new { r.BranchCompany } by r.BranchCompany into m
-                         select new ShopStatisticDto
-                         {
-                             Company = m.Key,//== null ? "其它" : m.Key,
-                             Count = m.Count(),
-                             //GroupId = m.Key != null ? 1 : 2
-                         });
+            //var shop = _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.已审核);
+            //var retail = _retailerRepository.GetAll();
+            var query = (from s in _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.已审核)
+                         join r in _retailerRepository.GetAll() on s.RetailerId equals r.Id
+                         select new { r.BranchCompany });
+            //into g
+            //from sr in g.DefaultIfEmpty()
+            //where sr.BranchCompany != null
+            //group new { r.BranchCompany } by r.BranchCompany into m
+            //select new ShopStatisticDto
+            //{
+            //    Company = m.Key,//== null ? "其它" : m.Key,
+            //    Count = m.Count(),
+            //GroupId = m.Key != null ? 1 : 2
+            //});
             //var total = await query.SumAsync(s => s.Count);
-            var list = await query.OrderByDescending(l => l.Count).ToListAsync();
+            var list = await query.GroupBy(q => q.BranchCompany).Select(q => new ShopStatisticDto() { Company = q.Key, Count = q.Count() }).ToListAsync();
             var total = list.Sum(s => s.Count);
             //foreach (var item in list)
             //{
@@ -1308,7 +1310,7 @@ namespace HC.WeChat.Shops
             //    }
             //}
             var result = new ShopStatisticLiDto();
-            result.ShopStaDto = list;
+            result.ShopStaDto = list.OrderByDescending(l => l.Count).ToList();
             result.Total = total;
             return result;
         }
