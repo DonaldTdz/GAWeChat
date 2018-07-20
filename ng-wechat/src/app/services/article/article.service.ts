@@ -142,7 +142,7 @@ export class ArticleService {
     }
 
     GetIsAttentionByOpenIdAsync(openId: string): Observable<any> {
-        return this.http.get('/api/services/app/WeChatUser/GetIsAttentionByOpenIdAsync?openId=' + openId).map(data => {
+        return this.http.get('/api/services/app/WeChatUser/GetIsAttentionByOpenIdAsync?openId=' + openId, null, true).map(data => {
             if (data.result) {
                 return data.result;
             } else {

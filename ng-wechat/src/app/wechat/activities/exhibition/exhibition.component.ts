@@ -139,32 +139,24 @@ export class ExhibitionComponent extends AppComponentBase implements OnInit {
     }
 
     voteAdd(id: string, type: 'success' | 'loading', forceHide: boolean = false) {
-        this.articleService.GetIsAttentionByOpenIdAsync(this.settingsService.openId).subscribe(result => {
-            this.isAttention = result;
-            if (this.isAttention == true) {
-                if (this.currentDayVote < this.exhibition.frequency) {
-                    this.voteBLL(id);
+        var currentTime = new Date();
+        var benginDate = new Date(this.exhibition.beginTime);//开始时间戳
+        if (benginDate.valueOf() < currentTime.getTime()) {
+            this.articleService.GetIsAttentionByOpenIdAsync(this.settingsService.openId).subscribe(result => {
+                this.isAttention = result;
+                if (this.isAttention == true) {
+                    if (this.currentDayVote < this.exhibition.frequency) {
+                        this.voteBLL(id);
+                    } else {
+                        this.onShowBySrv('ios', false);
+                    }
                 } else {
-                    // this.srvt['success']('您已经超过每日投票限制了哦', 2000);
-                    this.onShowBySrv('ios', false);
+                    location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.qjyyPic);
                 }
-            } else {
-                // this.DEFCONFIG = <DialogConfig>{
-                //     skin: 'auto',
-                //     backdrop: true,
-                //     cancel: null,
-                //     confirm: null,
-                // };
-                // this.content = '<div class="mdiv"><p>渠江烟雨</p><div><img class="qrcode" src="' + this.qjyyPic + '"></div><p>长按识别二维码</br>关注公众号后方可投票</p></div>';
-                // this.shareConfig = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
-                //     content: this.content,
-                // });
-                // this.dia.show(this.shareConfig).subscribe((res: any) => {
-                // });
-                location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.qjyyPic);
-            }
-        });
-
+            });
+        } else {
+            this.srvt['loading']('活动尚未开始哦', 0);
+        }
     }
 
     voteBLL(item: any) {
