@@ -1057,7 +1057,6 @@ namespace HC.WeChat.WeChatUsers
                 var intergral = await query
                 .OrderByDescending(v => v.IntegralTotal)
                 .ThenBy(input.Sorting)
-                .PageBy(input)
                 .ToListAsync();
                 var intergralListDtos = intergral.MapTo<List<WeChatUserListDto>>();
                 return intergralListDtos;
@@ -1067,7 +1066,6 @@ namespace HC.WeChat.WeChatUsers
                 var intergral = await query
                  .OrderBy(v => v.IntegralTotal)
                  .ThenBy(input.Sorting)
-                 .PageBy(input)
                  .ToListAsync();
                 var intergralListDtos = intergral.MapTo<List<WeChatUserListDto>>();
                 return intergralListDtos;
@@ -1077,7 +1075,6 @@ namespace HC.WeChat.WeChatUsers
                 var intergral = await query
                 .OrderByDescending(v => v.IntegralTotal)
                 .ThenBy(input.Sorting)
-                .PageBy(input)
                 .ToListAsync();
                 var intergralListDtos = intergral.MapTo<List<WeChatUserListDto>>();
                 return intergralListDtos;

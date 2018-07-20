@@ -45,7 +45,7 @@ export class ExhibitionComponent extends AppComponentBase implements OnInit {
         this.getVoteTotal();
         this.getCurrentDayVoteByIdAsync();
         this.getExhibitionConfig();
-        this.getExhibitionShop('vote');
+        this.getExhibitionShop('NoId');
     }
 
     onShowBySrv(type: SkinType, backdrop: boolean = true) {

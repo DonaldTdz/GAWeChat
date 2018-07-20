@@ -14,7 +14,7 @@ namespace HC.WeChat.ExhibitionShops.Dtos
         /// </summary>
         [Required(ErrorMessage = "CreateTime不能为空")]
         public DateTime CreateTime { get; set; }
-
+        public int NoId { get; set; }
 
         /// <summary>
         /// RetailerId
@@ -92,6 +92,8 @@ namespace HC.WeChat.ExhibitionShops.Dtos
         public string PicPath { get; set; }
 
         public Guid? ShopId { get; set; }
+
+        public int NoId { get; set; }
     }
 
     public class ExhibitionViewDto

@@ -123,7 +123,8 @@ namespace HC.WeChat.ExhibitionShops
                               Phone = s.Tel,
                               Votes = e.Votes != null ? e.Votes : 0,
                               FansNum = s.FansNum,
-                              PicPath = e.PicPath
+                              PicPath = e.PicPath,
+                              NoId =e.NoId
                           });
             return await result.FirstOrDefaultAsync();
         }
@@ -257,7 +258,7 @@ namespace HC.WeChat.ExhibitionShops
         public async Task<PagedResultDto<ExhibitionShopListDto>> GetPagedExhibitionShopsAsync(GetExhibitionShopsInput input)
         {
             var exhibitons = _exhibitionshopRepository.GetAll()
-                 .WhereIf(!string.IsNullOrEmpty(input.ShopName), v => v.ShopName.Contains(input.ShopName));
+                 .WhereIf(!string.IsNullOrEmpty(input.ShopName), v => v.ShopName.Contains(input.ShopName) || v.NoId.ToString().Contains(input.ShopName));
             var retailer = _retailerRepository.GetAll();
             var shop = _shopRepository.GetAll();
             var result = (from e in exhibitons
@@ -273,7 +274,8 @@ namespace HC.WeChat.ExhibitionShops
                               ShopAddress = e.ShopAddress,
                               Phone = s.Tel,
                               Votes = e.Votes != null ? e.Votes : 0,
-                              FansNum = s.FansNum
+                              FansNum = s.FansNum,
+                              NoId =e.NoId
                           }).WhereIf(!string.IsNullOrEmpty(input.Phone), v => v.Phone.Contains(input.Phone))
                  .WhereIf(!string.IsNullOrEmpty(input.CustCode), v => v.CustCode.Contains(input.CustCode))
                  .WhereIf(!string.IsNullOrEmpty(input.CustName), v => v.CustName.Contains(input.CustName));
@@ -332,7 +334,7 @@ namespace HC.WeChat.ExhibitionShops
             else
             {
                 var exhibitionshops = await result
-                    .OrderByDescending(v => v.Votes).AsNoTracking()
+                    .OrderBy(v => v.NoId).AsNoTracking()
                     .PageBy(input)
                     .ToListAsync();
                 var exhibitionshopListDtos = exhibitionshops.MapTo<List<ExhibitionShopListDto>>();
@@ -362,7 +364,7 @@ namespace HC.WeChat.ExhibitionShops
                               ShopName = e.ShopName,
                               CustCode = r.Code,
                               CustName = r.Name,
-                              Area = "未知",
+                              Area = r.Area,
                               ShopAddress = e.ShopAddress,
                               Phone = s.Tel,
                               Votes = e.Votes != null ? e.Votes : 0,
@@ -405,7 +407,7 @@ namespace HC.WeChat.ExhibitionShops
         private async Task<List<ExhibitionShopListDto>> GetExhibitionShopsAsync(GetExhibitionShopsInput input)
         {
             var exhibitons = _exhibitionshopRepository.GetAll()
-                 .WhereIf(!string.IsNullOrEmpty(input.ShopName), v => v.ShopName.Contains(input.ShopName));
+                 .WhereIf(!string.IsNullOrEmpty(input.ShopName), v => v.ShopName.Contains(input.ShopName)||v.NoId.ToString().Contains(input.ShopName));           
             var retailer = _retailerRepository.GetAll();
             var shop = _shopRepository.GetAll();
             var result = (from e in exhibitons
@@ -421,7 +423,8 @@ namespace HC.WeChat.ExhibitionShops
                               ShopAddress = e.ShopAddress,
                               Phone = s.Tel,
                               Votes = e.Votes != null ? e.Votes : 0,
-                              FansNum = s.FansNum
+                              FansNum = s.FansNum,
+                              NoId = e.NoId
                           }).WhereIf(!string.IsNullOrEmpty(input.Phone), v => v.Phone.Contains(input.Phone))
                  .WhereIf(!string.IsNullOrEmpty(input.CustCode), v => v.CustCode.Contains(input.CustCode))
                  .WhereIf(!string.IsNullOrEmpty(input.CustName), v => v.CustName.Contains(input.CustName));
@@ -429,7 +432,6 @@ namespace HC.WeChat.ExhibitionShops
             {
                 var exhibitionshops = await result
                     .OrderByDescending(v => v.FansNum).AsNoTracking()
-                    .PageBy(input)
                     .ToListAsync();
                 var exhibitionshopListDtos = exhibitionshops.MapTo<List<ExhibitionShopListDto>>();
                 return exhibitionshopListDtos;
@@ -438,7 +440,6 @@ namespace HC.WeChat.ExhibitionShops
             {
                 var exhibitionshops = await result
                       .OrderBy(v => v.FansNum).AsNoTracking()
-                      .PageBy(input)
                       .ToListAsync();
                 var exhibitionshopListDtos = exhibitionshops.MapTo<List<ExhibitionShopListDto>>();
                 return exhibitionshopListDtos;
@@ -447,7 +448,6 @@ namespace HC.WeChat.ExhibitionShops
             {
                 var exhibitionshops = await result
                          .OrderByDescending(v => v.Votes).AsNoTracking()
-                         .PageBy(input)
                          .ToListAsync();
                 var exhibitionshopListDtos = exhibitionshops.MapTo<List<ExhibitionShopListDto>>();
                 return exhibitionshopListDtos;
@@ -456,7 +456,6 @@ namespace HC.WeChat.ExhibitionShops
             {
                 var exhibitionshops = await result
                           .OrderBy(v => v.Votes).AsNoTracking()
-                          .PageBy(input)
                           .ToListAsync();
                 var exhibitionshopListDtos = exhibitionshops.MapTo<List<ExhibitionShopListDto>>();
                 return exhibitionshopListDtos;
@@ -464,8 +463,7 @@ namespace HC.WeChat.ExhibitionShops
             else
             {
                 var exhibitionshops = await result
-                        .OrderByDescending(v => v.Votes).AsNoTracking()
-                        .PageBy(input)
+                        .OrderBy(v => v.NoId).AsNoTracking()
                         .ToListAsync();
                 var exhibitionshopListDtos = exhibitionshops.MapTo<List<ExhibitionShopListDto>>();
                 return exhibitionshopListDtos;
@@ -481,7 +479,7 @@ namespace HC.WeChat.ExhibitionShops
                 ISheet sheet = workbook.CreateSheet("WeChatUser");
                 var rowIndex = 0;
                 IRow titleRow = sheet.CreateRow(rowIndex);
-                string[] titles = { "零售客户编码", "客户名称", "店铺名称", "所属区县", "店铺地址", "店铺电话", "实时票数", "店铺会员数" };
+                string[] titles = { "参赛编号","零售客户编码", "客户名称", "店铺名称", "所属区县", "店铺地址", "店铺电话", "实时票数", "店铺会员数" };
                 var fontTitle = workbook.CreateFont();
                 fontTitle.IsBold = true;
                 for (int i = 0; i < titles.Length; i++)
@@ -496,14 +494,15 @@ namespace HC.WeChat.ExhibitionShops
                 {
                     rowIndex++;
                     IRow row = sheet.CreateRow(rowIndex);
-                    ExcelHelper.SetCell(row.CreateCell(0), font, item.CustCode);
-                    ExcelHelper.SetCell(row.CreateCell(1), font, item.CustName);
-                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ShopName);
-                    ExcelHelper.SetCell(row.CreateCell(3), font, item.Area);
-                    ExcelHelper.SetCell(row.CreateCell(4), font, item.ShopAddress);
-                    ExcelHelper.SetCell(row.CreateCell(5), font, item.Phone);
-                    ExcelHelper.SetCell(row.CreateCell(6), font, item.Votes.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(7), font, item.FansNum.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(0), font, item.NoId);
+                    ExcelHelper.SetCell(row.CreateCell(1), font, item.CustCode);
+                    ExcelHelper.SetCell(row.CreateCell(2), font, item.CustName);
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.ShopName);
+                    ExcelHelper.SetCell(row.CreateCell(4), font, item.Area);
+                    ExcelHelper.SetCell(row.CreateCell(5), font, item.ShopAddress);
+                    ExcelHelper.SetCell(row.CreateCell(6), font, item.Phone);
+                    ExcelHelper.SetCell(row.CreateCell(7), font, item.Votes.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(8), font, item.FansNum.ToString());
                 }
                 workbook.Write(fs);
             }
@@ -528,7 +527,8 @@ namespace HC.WeChat.ExhibitionShops
                              Votes = e.Votes ?? 0,
                              PicPath = e.PicPath,
                              ShopId = e.ShopId,
-                             CreateTime = e.CreateTime
+                             CreateTime = e.CreateTime,
+                             NoId =e.NoId
                          };
             var resultList = new List<ExhibitionWechatDto>();
             if (type == "time")
@@ -541,7 +541,7 @@ namespace HC.WeChat.ExhibitionShops
             }
             else
             {
-                resultList = await result.Take(config.TopTotal).OrderByDescending(v => v.Votes).ToListAsync();
+                resultList = await result.Take(config.TopTotal).OrderBy(v => v.NoId).ToListAsync();
             }
 
             var resultViewList = new List<ExhibitionViewDto>();
@@ -582,7 +582,7 @@ namespace HC.WeChat.ExhibitionShops
         [AbpAllowAnonymous]
         public async Task<List<ExhibitionShopListDto>> GetExhibitionShopByKeyAsync(string key)
         {
-            var exhibitons = _exhibitionshopRepository.GetAll().Where(p => p.ShopName.Contains(key));
+            var exhibitons = _exhibitionshopRepository.GetAll().Where(p => p.ShopName.Contains(key)||p.NoId.ToString().Equals(key));
             var result = from e in exhibitons
                          select new ExhibitionShopListDto()
                          {
@@ -590,7 +590,8 @@ namespace HC.WeChat.ExhibitionShops
                              ShopName = e.ShopName,
                              Votes = e.Votes ?? 0,
                              PicPath = e.PicPath,
-                             ShopId = e.ShopId
+                             ShopId = e.ShopId,
+                             NoId =e.NoId
                          };
             return await result.Take(5).ToListAsync();
         }
@@ -615,13 +616,14 @@ namespace HC.WeChat.ExhibitionShops
                               ShopName = e.ShopName,
                               CustCode = r.Code,
                               CustName = r.Name,
-                              Area = "未知",
+                              Area = r.Area,
                               ShopAddress = e.ShopAddress,
                               Phone = s.Tel,
                               Votes = e.Votes != null ? e.Votes : 0,
                               FansNum = s.FansNum.Value,
                               PicPath = e.PicPath,
-                              ShopId = s.Id
+                              ShopId = s.Id,
+                              NoId =e.NoId
                           }).FirstOrDefaultAsync();
             return await result;
         }

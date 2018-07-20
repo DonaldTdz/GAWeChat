@@ -13,6 +13,7 @@
                         <desc-list-item term="店铺电话">{{exhibitionShop.phone}}</desc-list-item>
                         <desc-list-item term="实时票数">{{exhibitionShop.votes}}</desc-list-item>
                         <desc-list-item term="店铺会员数">{{exhibitionShop.fansNum}}</desc-list-item>
+                        <desc-list-item *ngIf="exhibitionShop.noId" term="参赛编号">{{exhibitionShop.noId}}号</desc-list-item>
                     </desc-list>
                 </div>
             </div>

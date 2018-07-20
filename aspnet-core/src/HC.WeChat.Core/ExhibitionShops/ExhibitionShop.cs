@@ -67,5 +67,10 @@ namespace HC.WeChat.ExhibitionShops
         /// 修改时间
         /// </summary>
         public virtual DateTime? AuditTime { get; set; }
+
+        /// <summary>
+        /// 参赛编号
+        /// </summary>
+        public virtual int NoId { get; set; }
     }
 }

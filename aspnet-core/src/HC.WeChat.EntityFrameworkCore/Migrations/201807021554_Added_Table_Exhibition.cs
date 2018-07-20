@@ -61,8 +61,12 @@ namespace HC.WeChat.Migrations
             migrationBuilder.AddColumn<string>(
                     name: "Area",
                     table: "Retailers",
-                    maxLength: 100,
                     nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                     name: "NoId",
+                     table: "ExhibitionShops",
+                     nullable: true);
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
@@ -75,6 +79,10 @@ namespace HC.WeChat.Migrations
             migrationBuilder.DropColumn(
                  name: "Area",
                  table: "Retailers");
+
+            migrationBuilder.DropColumn(
+                name: "NoId",
+                table: "ExhibitionShops");
         }
     }
 }

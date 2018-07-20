@@ -10,10 +10,10 @@
                     <div nz-col [nzSpan]="6" class="mb-md">
                         <div nz-form-item class="d-flex">
                             <div nz-form-label>
-                                <label for="shopName">店铺名称</label>
+                                <label for="shopName">店铺名称/编号</label>
                             </div>
                             <div nz-form-control class="flex-1">
-                                <nz-input [(ngModel)]="search.shopName" name="shopName" [nzSize]="'large'" [nzPlaceHolder]="'请输入店铺名称'" nzId="shopName"></nz-input>
+                                <nz-input [(ngModel)]="search.shopName" name="shopName" [nzSize]="'large'" [nzPlaceHolder]="'请输入店铺名称或编号'" nzId="shopName"></nz-input>
                             </div>
                         </div>
                     </div>
@@ -65,6 +65,9 @@
                 <thead nz-thead>
                     <tr>
                         <th nz-th>
+                            <span>编号</span>
+                        </th>
+                        <th nz-th>
                             <span>零售客户编码</span>
                         </th>
                         <th nz-th>
@@ -97,6 +100,7 @@
                 </thead>
                 <tbody nz-tbody>
                     <tr nz-tbody-tr *ngFor="let item of nzTable.data">
+                        <td nz-td>{{item.noId}}</td>
                         <td nz-td>{{item.custCode}}</td>
                         <td nz-td>{{item.custName}}</td>
                         <td nz-td>{{item.shopName }}</td>

@@ -14,6 +14,7 @@ export class ExhibitionShop implements IExhibitionShop {
     area: string;
     fansNum: number;
     phone: string;
+    noId: number;
     constructor(data?: IExhibitionShop) {
         if (data) {
             for (var property in data) {
@@ -40,6 +41,7 @@ export class ExhibitionShop implements IExhibitionShop {
             this.area = data["area"];
             this.fansNum = data["fansNum"];
             this.phone = data["phone"];
+            this.noId = data["noId"];
         }
     }
 
@@ -66,6 +68,7 @@ export class ExhibitionShop implements IExhibitionShop {
         data["area"] = this.area;
         data["fansNum"] = this.fansNum;
         data["phone"] = this.phone;
+        data["noId"] = this.noId;
         return data;
     }
 
@@ -92,4 +95,5 @@ export interface IExhibitionShop {
     area: string;
     fansNum: number;
     phone: string;
+    noId: number;
 }

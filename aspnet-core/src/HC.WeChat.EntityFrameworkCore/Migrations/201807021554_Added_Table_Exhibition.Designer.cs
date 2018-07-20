@@ -1981,7 +1981,9 @@ namespace HC.WeChat.Migrations
                 b.Property<string>("PicPath").IsRequired();
                 b.Property<int?>("Votes");
                 b.Property<int>("Status").IsRequired();
-                b.Property<Guid>("ShopId").IsRequired(); b.Property<DateTime?>("AuditTime");
+                b.Property<Guid>("ShopId").IsRequired();
+                b.Property<DateTime?>("AuditTime");
+                b.Property<int>("NoId");
                 b.HasKey("Id");
 
                 //b.HasIndex("TargetTenantId", "TargetUserId", "ReadState");
