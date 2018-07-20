@@ -40,7 +40,7 @@ export class IndexComponent implements OnInit {
     shopData: any[] = [];
     wechatData: any[] = [];
     stotal: number;
-    wtotal:number;
+    wtotal: number;
     ngOnInit() {
         //近12个月申请单数 (模拟数据)
         const sd = [];
@@ -128,10 +128,12 @@ export class IndexComponent implements OnInit {
             this.shopStatistics = data.items.map(i => {
                 // var count = i.company.indexOf('烟草分公司');
                 // i.showCompany =i.company=='其它' ?i.company:i.company.substring(0, count);
-                i.showCompany = i.company.replace('烟草分公司', '');
+                if (i.company != null) {
+                    i.showCompany = i.company.replace('烟草分公司', '');
+                }
                 return i
             });
-            this.stotal=data.total;
+            this.stotal = data.total;
             console.table(this.shopStatistics);
             const sd = [];
             for (let i = 0; i < this.shopStatistics.length; i += 1) {
@@ -152,10 +154,12 @@ export class IndexComponent implements OnInit {
             console.table(data);
             this.wechatUserStatistic = data.items.map(i => {
                 //var count = i.company.indexOf('烟草分公司');
-                i.showCompany = i.company.replace('烟草分公司', '');
+                if (i.company != null) {
+                    i.showCompany = i.company.replace('烟草分公司', '');
+                }
                 return i
             });
-            this.wtotal=data.total;
+            this.wtotal = data.total;
             const sd = [];
             for (let i = 0; i < this.wechatUserStatistic.length; i += 1) {
                 sd.push({
