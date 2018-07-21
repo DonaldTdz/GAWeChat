@@ -34,16 +34,14 @@ using Senparc.Weixin.MP;
 using System.Net;
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Checksum;
-using System.DrawingCore.Text;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Transforms;
-using SixLabors.ImageSharp.Processing.Filters;
-using SixLabors.ImageSharp.Processing.Text;
 using SixLabors.ImageSharp.Processing.Drawing;
 using SixLabors.Primitives;
 using HC.WeChat.Authorization;
+using HC.WeChat.Authorization.WeChatOAuth;
 
 namespace HC.WeChat.Shops
 {
@@ -70,7 +68,7 @@ namespace HC.WeChat.Shops
         private WechatAppConfigInfo AppConfig { get; set; }
         private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
         private readonly IHostingEnvironment _hostingEnvironment;
-
+        IWeChatOAuthAppService _weChatOAuthAppService;
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -83,7 +81,7 @@ namespace HC.WeChat.Shops
          , IRepository<MemberConfig, Guid> memberconfigRepository
             , IRepository<WeChatUser, Guid> wechatuserRepository
             , IRepository<WechatAppConfig, int> wechatappconfigRepository
-            , IHostingEnvironment hostingEnvironment)
+            , IHostingEnvironment hostingEnvironment, IWeChatOAuthAppService weChatOAuthAppService)
         {
             _shopRepository = shopRepository;
             _shopManager = shopManager;
@@ -98,6 +96,8 @@ namespace HC.WeChat.Shops
             _wechatuserRepository = wechatuserRepository;
             _wechatappconfigRepository = wechatappconfigRepository;
             _hostingEnvironment = hostingEnvironment;
+            _weChatOAuthAppService = weChatOAuthAppService;
+            _weChatOAuthAppService.WechatAppConfig = AppConfig;
         }
 
         /// <summary>
@@ -579,7 +579,8 @@ namespace HC.WeChat.Shops
                                     TenantId = s.TenantId,
                                     Tel = s.Tel,
                                     RetailerName = sr != null ? sr.Name : "",
-                                    QRUrl = s.QRUrl
+                                    QRUrl = s.QRUrl,
+                                    FansNum = s.FansNum
                                 }).SingleOrDefaultAsync();
             //当店铺二维码不存在时，去新生成二维码
             if (string.IsNullOrEmpty(entity.QRUrl) && entity.Status == ShopAuditStatus.已审核)
@@ -769,10 +770,16 @@ namespace HC.WeChat.Shops
             return homeInfo;
         }
 
-        public async Task<List<ShopListDto>> GetPendingShopList()
+        public async Task<APIResultDto> GetPendingShopList()
         {
-            var shopList = await _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.待审核).OrderByDescending(s => s.CreationTime).Take(5).ToListAsync();
-            return shopList.MapTo<List<ShopListDto>>();
+            var query = _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.待审核);
+            var count = await query.CountAsync();
+            var shopList = await query.OrderByDescending(s => s.CreationTime).Take(5).ToListAsync();
+            return new APIResultDto()
+            {
+                Code = 0,
+                Data = new { ShopList = shopList.MapTo<List<ShopListDto>>(), Count = count }
+            };
         }
 
         #region 店铺导出
@@ -816,7 +823,10 @@ namespace HC.WeChat.Shops
                             //RetailerName = r != null ? r.Name : "",
                             RetailerName = r.Name,
                             RetailerCode = r.Code,
-                            FansNum = s.FansNum
+                            FansNum = s.FansNum,
+                            BranchCompany = r.BranchCompany,
+                            Manager = r.Manager,
+                            Area = r.Area
                         };
 
             //TODO:根据传入的参数添加过滤条件
@@ -918,7 +928,7 @@ namespace HC.WeChat.Shops
                 ISheet sheet = workbook.CreateSheet("Employees");
                 var rowIndex = 0;
                 IRow titleRow = sheet.CreateRow(rowIndex);
-                string[] titles = { "店铺名称", "店铺地址", "店铺描述", "零售客户", "客户编码", "店铺销量", "店铺浏览量", "店铺用户量", "粉丝数", "店铺电话", "审核状态", "审核时间", "店铺评价", "经度", "纬度" };
+                string[] titles = { "店铺名称", "店铺地址", "店铺描述", "零售客户", "客户编码", "客户经理", "单位", "店铺销量", "店铺浏览量", "店铺用户量", "粉丝数", "店铺电话", "审核状态", "审核时间", "店铺评价", "经度", "纬度", "片区" };
                 var fontTitle = workbook.CreateFont();
                 fontTitle.IsBold = true;
                 for (int i = 0; i < titles.Length; i++)
@@ -945,16 +955,19 @@ namespace HC.WeChat.Shops
                     ExcelHelper.SetCell(row.CreateCell(2), font, item.Desc);
                     ExcelHelper.SetCell(row.CreateCell(3), font, item.RetailerName);
                     ExcelHelper.SetCell(row.CreateCell(4), font, item.RetailerCode);
-                    ExcelHelper.SetCell(row.CreateCell(5), font, item.SaleTotal.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(6), font, item.ReadTotal.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(7), font, item.SingleTotal.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(8), font, item.FansNum.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(9), font, item.Tel);
-                    ExcelHelper.SetCell(row.CreateCell(10), font, item.StatusName);
-                    ExcelHelper.SetCell(row.CreateCell(11), font, item.AuditTime.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(12), font, evaluationStr);
-                    ExcelHelper.SetCell(row.CreateCell(13), font, item.Longitude.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(14), font, item.Latitude.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(5), font, item.Manager);
+                    ExcelHelper.SetCell(row.CreateCell(6), font, item.BranchCompany);
+                    ExcelHelper.SetCell(row.CreateCell(7), font, item.SaleTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(8), font, item.ReadTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(9), font, item.SingleTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(10), font, item.FansNum.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(11), font, item.Tel);
+                    ExcelHelper.SetCell(row.CreateCell(12), font, item.StatusName);
+                    ExcelHelper.SetCell(row.CreateCell(13), font, item.AuditTime.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(14), font, evaluationStr);
+                    ExcelHelper.SetCell(row.CreateCell(15), font, item.Longitude.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(16), font, item.Latitude.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(17), font, item.Area);
 
                 }
                 workbook.Write(fs);
@@ -1249,6 +1262,138 @@ namespace HC.WeChat.Shops
                 return imgPath;
             }
         }
+
+        /// <summary>
+        /// 微信获取店铺推广码url
+        /// </summary>
+        /// <param name="shopId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<string> GetQRUrlByShopId(Guid shopId)
+        {
+            string url = await _shopRepository.GetAll().Where(v => v.Id == shopId).Select(v => v.QRUrl).FirstOrDefaultAsync();
+            return url;
+        }
+        #region 店铺数据统计
+
+        /// <summary>
+        /// 店铺入驻数统计（按分公司统计）
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ShopStatisticLiDto> GetShopStatisticsByCompany()
+        {
+            //var shop = _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.已审核);
+            //var retail = _retailerRepository.GetAll();
+            var query = (from s in _shopRepository.GetAll().Where(s => s.Status == ShopAuditStatus.已审核)
+                         join r in _retailerRepository.GetAll() on s.RetailerId equals r.Id
+                         select new { r.BranchCompany });
+            //into g
+            //from sr in g.DefaultIfEmpty()
+            //where sr.BranchCompany != null
+            //group new { r.BranchCompany } by r.BranchCompany into m
+            //select new ShopStatisticDto
+            //{
+            //    Company = m.Key,//== null ? "其它" : m.Key,
+            //    Count = m.Count(),
+            //GroupId = m.Key != null ? 1 : 2
+            //});
+            //var total = await query.SumAsync(s => s.Count);
+            var list = await query.GroupBy(q => q.BranchCompany).Select(q => new ShopStatisticDto() { Company = q.Key, Count = q.Count() }).ToListAsync();
+            var total = list.Sum(s => s.Count);
+            //foreach (var item in list)
+            //{
+            //    if (string.IsNullOrEmpty(item.Company))
+            //    {
+            //        item.Company = "其它";
+            //        item.GroupId = 1;
+            //        break;
+            //    }
+            //}
+            var result = new ShopStatisticLiDto();
+            result.ShopStaDto = list.OrderByDescending(l => l.Count).ToList();
+            result.Total = total;
+            return result;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 批量压缩图片
+        /// </summary>
+        public Task<APIResultDto> BatchCompressionPictures(string fromPath, string toPaht, int type, int val)
+        {
+            if (!Directory.Exists(fromPath))
+            {
+                return Task.FromResult(new APIResultDto() { Code = 701, Msg = string.Format("fromPath:{0}不存在", fromPath) });
+            }
+
+            if (!Directory.Exists(toPaht))
+            {
+                return Task.FromResult(new APIResultDto() { Code = 702, Msg = string.Format("toPaht:{0}不存在", toPaht) });
+            }
+
+            DirectoryInfo dinfo = new DirectoryInfo(fromPath);
+            foreach (var item in dinfo.GetFiles())
+            {
+                using (Image<Rgba32> image = Image.Load(item.OpenRead()))
+                {
+                    var fileName = item.Name.Split('.')[0] + ".jpg";
+                    if (type == 1)//按宽度值压缩
+                    {
+                        if (image.Width > val)
+                        {
+                            var height = (int)((val / image.Width) * image.Height);
+                            image.Mutate(x => x.Resize(val, height));
+                            image.Save(toPaht + "/" + fileName);
+                        }
+                        else
+                        {
+                            image.Save(toPaht + "/" + fileName);
+                        }
+                    }
+                    else //按高度值压缩
+                    {
+                        if (image.Height > val)
+                        {
+                            var width = (int)((val / image.Height) * image.Width);
+                            image.Mutate(x => x.Resize(width, val));
+                            image.Save(toPaht + "/" + fileName);
+                        }
+                        else
+                        {
+                            image.Save(toPaht + "/" + fileName);
+                        }
+                    }
+                    
+                }
+            }
+
+            return Task.FromResult(new APIResultDto() { Code = 1, Msg = "压缩图片成功" });
+        }
+
+        /// <summary>
+        /// 获取进入店铺二维码url
+        /// </summary>
+        /// <param name="shopId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public string GetQrCodeUrl(Guid shopId,string host)
+        {
+            var url = host+ "/GAWX/ShopAuth";
+            var qrUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, shopId.ToString(),OAuthScope.snsapi_base);
+            return qrUrl;
+        }
+        /// <summary>
+        /// 获取店铺推广码（关注公众号二维码）
+        /// </summary>
+        /// <param name="shopId">店铺id</param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<string> GetShopQrCodeURL(Guid shopId)
+        {
+            return await _shopRepository.GetAll().Where(s => s.Id == shopId).Select(s => s.QRUrl).FirstOrDefaultAsync();
+        }
+
     }
 }
 

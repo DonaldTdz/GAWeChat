@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Http
                 .Append(request.Host)
                 .Append(request.PathBase)
                 .Append(request.Path)
-                .Append(request.QueryString)
+                //.Append(request.QueryString)
                 .ToString();
         }
     }

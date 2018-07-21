@@ -139,5 +139,9 @@ namespace HC.WeChat.Retailers.Dtos
         public string SlsmanId { get; set; }
         
         public string SlsmanName { get; set; }
+        /// <summary>
+        /// 片区
+        /// </summary>
+        public string Area { get; set; }
     }
 }

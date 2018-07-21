@@ -9,7 +9,7 @@ import 'rxjs/add/operator/catch';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '../httpclient';
 import { Observable } from 'rxjs/Observable';
-import { Article } from '../model/index';
+import { Article, ExhibitionShop, Exhibition, } from '../model/index';
 
 
 @Injectable()
@@ -91,4 +91,114 @@ export class ArticleService {
         });
     }
 
+    GetWXPagedExhibitionShopsAsync(params: any): Observable<any[]> {
+        return this.http.get('/api/services/app/ExhibitionShop/GetWXPagedExhibitionShopsAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return null;
+            }
+        });
+    }
+
+    GetWXExhibitionShopsCountAsync(params: any): Observable<any> {
+        return this.http.get('/api/services/app/ExhibitionShop/GetWXExhibitionShopsCountAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return 0;
+            }
+        });
+    }
+
+    GetWXVotesCountAsync(params: any): Observable<any> {
+        return this.http.get('/api/services/app/VoteLog/GetWXVotesCountAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return 0;
+            }
+        });
+    }
+
+    GetExhibitionConfigAsync(params: any): Observable<Exhibition> {
+        return this.http.get('/api/services/app/Exhibition/GetExhibitionConfigAsync', params).map(data => {
+            if (data.result) {
+                return Exhibition.fromJS(data.result);
+            } else {
+                return null;
+            }
+        });
+    }
+
+    AddVoteLogAsync(params: any): Observable<any> {
+        return this.http.post('/api/services/app/VoteLog/AddVoteLogAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return null;
+            }
+        });
+    }
+
+    GetIsAttentionByOpenIdAsync(openId: string): Observable<any> {
+        return this.http.get('/api/services/app/WeChatUser/GetIsAttentionByOpenIdAsync?openId=' + openId, null, true).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return false;
+            }
+        });
+    }
+
+    GetCurrentDayVoteByIdAsync(params: any): Observable<any> {
+        return this.http.get('/api/services/app/VoteLog/GetCurrentDayVoteByIdAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return 0;
+            }
+        });
+    }
+
+    GetExhibitionShopByKeyAsync(params: any): Observable<ExhibitionShop[]> {
+        return this.http.get('/api/services/app/ExhibitionShop/GetExhibitionShopByKeyAsync', params).map(data => {
+            if (data.result) {
+                let rel = ExhibitionShop.fromJSArray(data.result);
+                return rel;
+            } else {
+                return null;
+            }
+        });
+    }
+
+    GetWXExhibitionShopsByIdAsync(shopId: string): Observable<ExhibitionShop> {
+        return this.http.get('/api/services/app/ExhibitionShop/GetWXExhibitionShopsByIdAsync?shopId=' + shopId).map(data => {
+            if (data.result) {
+                return ExhibitionShop.fromJS(data.result);
+            } else {
+                return null;
+            }
+        });
+    }
+
+    GetAuthorizationUrl(params: any): Observable<string> {
+        return this.http.get('/api/services/app/ExhibitionShop/GetAuthorizationUrl', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return null;
+            }
+        });
+    }
+
+    GetQRUrlByShopId(shopId: string): Observable<any> {
+        return this.http.get('/api/services/app/Shop/GetQRUrlByShopId?shopId=' + shopId).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return null;
+            }
+        });
+    }
 }

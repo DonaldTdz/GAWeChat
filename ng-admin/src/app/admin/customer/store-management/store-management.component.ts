@@ -31,8 +31,8 @@ export class StoreManagementComponent extends AppComponentBase implements OnInit
         // { text: '已关闭店铺', value: 3 },
     ];
     isSelectedAll: boolean = false; // 是否全选
-    checkboxCount: number; // 所有Checkbox数量
-    checkedLength: number; // 已选中的数量
+    checkboxCount: number = 0; // 所有Checkbox数量
+    checkedLength: number = 0; // 已选中的数量
 
     sortMap = {
         sale: null,
@@ -161,15 +161,22 @@ export class StoreManagementComponent extends AppComponentBase implements OnInit
     }
 
     downPromotionCodeZip() {
-
         this.zipNameIds = '';
         this.zipUrlIds = '';
         this.willDownShopInfo = this.shops.filter(v => v.selected && v.status == 2);
         var name = this.willDownShopInfo.forEach(v => {
-            this.zipNameIds += v.retailerCode + v.retailerName + ',';
+            if (v.qrUrl) {
+                this.zipNameIds += v.retailerCode + v.retailerName + ',';
+            } else {
+                v.qrUrl = null;
+            }
         });
         var url = this.willDownShopInfo.forEach(v => {
-            this.zipUrlIds += v.qrUrl + ',';
+            if (v.qrUrl) {
+                this.zipUrlIds += v.qrUrl + ',';
+            } else {
+                v.qrUrl = null;
+            }
         });
         if (this.zipNameIds != '' && this.zipUrlIds != '') {
             this.exportLoading = true;
@@ -184,20 +191,28 @@ export class StoreManagementComponent extends AppComponentBase implements OnInit
                 this.exportLoading = false;
             });
         }
-        else {
+        else if (this.checkedLength == 0) {
             this.notify.warn(this.l('请选择需要下载推广码的店铺！'));
+        } else {
+            this.notify.warn(this.l('当前店铺没有推广码！'));
         }
-
     }
 
     checkAll(e) {
         var v = this.isSelectedAll;
-        this.shops.forEach(u => {
+        this.shops.filter(v => v.status == 2).forEach(u => {
             u.selected = v;
         });
+        if (this.isSelectedAll == false) {
+            this.checkedLength == 0;
+        } else {
+            this.checkedLength == this.shops.filter(v => v.selected && v.status == 2).length;
+        }
     }
+
     isCancelCheck(x: any) {
         this.checkedLength = this.shops.filter(v => v.selected && v.status == 2).length;
+        console.log(this.checkedLength);
         this.checkboxCount = this.shops.filter(v => v.status == 2).length;
         if (this.checkboxCount - this.checkedLength > 0) {
             this.isSelectedAll = false;

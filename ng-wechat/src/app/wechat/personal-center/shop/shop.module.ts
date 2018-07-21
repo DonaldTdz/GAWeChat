@@ -7,11 +7,15 @@ import { ShopComponent } from './shop.component';
 import { WaitAuditComponent } from './wait-audit/wait-audit.component';
 
 import { ShopService } from '../../../services';
+import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
+
+
 
 // region: components
 
 const COMPONENTS = [ShopComponent,
-    WaitAuditComponent];
+    WaitAuditComponent,
+    ShopQrcodeComponent];
 
 const routes: Routes = [
     { path: 'shop', component: ShopComponent },

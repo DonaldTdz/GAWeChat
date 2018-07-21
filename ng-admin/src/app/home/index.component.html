@@ -8,50 +8,102 @@
 <div nz-row nzGutter="16">
     <div nz-col nzXs="24" nzSm="12" nzMd="6" class="mb-md">
         <div nz-row nzType="flex" nzAlign="middle" class="bg-primary rounded-md">
-            <div nz-col nzSpan="12" class="p-md text-white">
+            <div nz-col nzSpan="24" class="p-md text-white">
                 <div class="h2 mt0">{{homeInfo.shopCount}} 个</div>
                 <p class="text-nowrap">店铺入住</p>
-            </div>
-            <div nz-col nzSpan="12">
-                <mini-bar height="35" color="#fff" borderWidth="3" [padding]="[36, 30, 30, 30]" [data]="webSite"></mini-bar>
             </div>
         </div>
     </div>
     <div nz-col nzXs="24" nzSm="12" nzMd="6" class="mb-md">
         <div nz-row nzType="flex" nzAlign="middle" class="bg-success rounded-md">
-            <div nz-col nzSpan="12" class="p-md text-white">
+            <div nz-col nzSpan="24" class="p-md text-white">
                 <div class="h2 mt0">{{homeInfo.goodsSearchCount}} 次</div>
                 <p class="text-nowrap">商品搜索</p>
-            </div>
-            <div nz-col nzSpan="12">
-                <mini-bar height="35" color="#fff" borderWidth="3" [padding]="[36, 30, 30, 30]" [data]="webSite"></mini-bar>
             </div>
         </div>
     </div>
     <div nz-col nzXs="24" nzSm="12" nzMd="6" class="mb-md">
         <div nz-row nzType="flex" nzAlign="middle" class="bg-orange rounded-md">
-            <div nz-col nzSpan="12" class="p-md text-white">
+            <div nz-col nzSpan="24" class="p-md text-white">
                 <div class="h2 mt0">{{homeInfo.integralTotal}} 积分</div>
                 <p class="text-nowrap">用户积分</p>
-            </div>
-            <div nz-col nzSpan="12">
-                <mini-bar height="35" color="#fff" borderWidth="3" [padding]="[36, 30, 30, 30]" [data]="webSite"></mini-bar>
             </div>
         </div>
     </div>
     <div nz-col nzXs="24" nzSm="12" nzMd="6" class="mb-md">
         <div nz-row nzType="flex" nzAlign="middle" class="bg-pink rounded-md">
-            <div nz-col nzSpan="12" class="p-md text-white">
+            <div nz-col nzSpan="24" class="p-md text-white">
                 <div class="h2 mt0">{{homeInfo.wechatUserCount}} 人</div>
                 <p class="text-nowrap">微信关注</p>
-            </div>
-            <div nz-col nzSpan="12">
-                <mini-bar height="35" color="#fff" borderWidth="3" [padding]="[36, 30, 30, 30]" [data]="webSite"></mini-bar>
             </div>
         </div>
     </div>
 </div>
 <div nz-row nzGutter="16">
+    <div nz-col nzXs="24" nzMd="12">
+        <nz-card [nzBordered]="false">
+            <ng-template #title>
+                入驻店铺统计
+            </ng-template>
+            <bar height="275" [data]="shopData"></bar>
+            <nz-table #nzTable [nzAjaxData]="shopStatistics" [nzIsPagination]="false"  [nzShowSizeChanger]="true">
+                <thead nz-thead>
+                    <tr>
+                        <th nz-th>
+                            <span>单位</span>
+                        </th>
+                        <th nz-th *ngFor="let shops of nzTable.data">
+                            <span>{{shops.showCompany}}</span>
+                        </th>
+                        <th nz-th>
+                            <span class="bgcorlor">总数</span>
+                        </th>
+                    </tr>
+
+                </thead>
+                <tbody nz-tbody>
+                    <tr nz-tbody-tr>
+                        <td nz-td class="countsty">数量</td>
+                        <td nz-td *ngFor="let shop of nzTable.data">{{shop.count}}</td>
+                        <td nz-td class="bgcorlor">{{stotal}}</td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzMd="12">
+        <nz-card [nzTitle]="nzTitle1" [nzBordered]="false">
+            <ng-template #nzTitle1>
+                关注微信用户统计
+            </ng-template>
+            <bar height="275" color="#00a854" [data]="wechatData"></bar>
+            <nz-table #nzTablew [nzAjaxData]="wechatUserStatistic" [nzIsPagination]="false"  [nzShowSizeChanger]="true">
+                <thead nz-thead>
+                    <tr>
+                        <th nz-th>
+                            <span>单位</span>
+                        </th>
+                        <th nz-th *ngFor="let wechats of nzTablew.data">
+                            <span>{{wechats.showCompany}}</span>
+                        </th>
+                        <th nz-th>
+                            <span class="bgcorlor">总数</span>
+                        </th>
+                    </tr>
+
+                </thead>
+                <tbody nz-tbody>
+                    <tr nz-tbody-tr>
+                        <td nz-td class="countsty">数量</td>
+                        <td nz-td *ngFor="let wechat of nzTablew.data">{{wechat.count}}</td>
+                        <td nz-td class="bgcorlor">{{wtotal}}</td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </nz-card>
+    </div>
+</div>
+<!-- <div nz-row nzGutter="16">
     <div nz-col nzXs="24" nzMd="12">
         <nz-card [nzBordered]="false">
             <ng-template #title>
@@ -68,7 +120,7 @@
             <timeline [data]="offlineChartData" [height]="239" [padding]="[0, 0, 0, 0]" [titleMap]="{ y1: '网站访问量', y2: '积分兑换' }"></timeline>
         </nz-card>
     </div>
-</div>
+</div> -->
 <div nz-row nzGutter="16">
     <div nz-col nzXs="24" nzMd="6">
         <nz-card [nzBordered]="false" [nzTitle]="nzTitle2" class="ant-card__img">
@@ -83,7 +135,8 @@
             <ng-template #nzTitle3>
                 最新用户建议反馈
             </ng-template>
-            <div nz-row [nzType]="'flex'" [nzJustify]="'center'" [nzAlign]="'middle'" class="py-sm bg-grey-lighter-h point" *ngFor="let item of adviseList" (click)="adviseDetail(item)">
+            <div nz-row [nzType]="'flex'" [nzJustify]="'center'" [nzAlign]="'middle'" class="py-sm bg-grey-lighter-h point" *ngFor="let item of adviseList"
+                (click)="adviseDetail(item)">
                 <div nz-col [nzSpan]="20" style="padding-left: 24px;">
                     <strong>{{item.userTypeName}}</strong>
                     <p>{{item.content | lengthLimit:50}}</p>

@@ -344,12 +344,19 @@ export class ShopAddComponent extends AppComponentBase implements OnInit {
 
     //根据图片大小设置压缩率
     setCompressRatio(size: number){
-        //如果小于200kb 不压缩
-        let msize = 204800;
+        //如果小于500kb 不压缩
+        let msize = 1024*500;
+        //alert(size)
         if(size <= msize){
             this.shopCropper.settings.compressRatio = 1;
         } else {
-            this.shopCropper.settings.compressRatio = msize/size;
+            let ratio = msize/size; 
+            if(ratio > 0.02){
+                this.shopCropper.settings.compressRatio = ratio;
+            } else {
+                this.shopCropper.settings.compressRatio = 0.02;
+            }
+            //alert(this.shopCropper.settings.compressRatio)
         }
     }
 }

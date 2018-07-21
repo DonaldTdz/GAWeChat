@@ -1,0 +1,222 @@
+<!--component html goes here -->
+<nz-tabset>
+    <nz-tab>
+        <ng-template #nzTabHeading>
+            活动列表
+        </ng-template>
+        <nz-card>
+            <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
+                <div nz-row [nzGutter]="24">
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label for="shopName">店铺名称/编号</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-input [(ngModel)]="search.shopName" name="shopName" [nzSize]="'large'" [nzPlaceHolder]="'请输入店铺名称或编号'" nzId="shopName"></nz-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label for="custCode">客户编码</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-input [(ngModel)]="search.custCode" name="custCode" [nzSize]="'large'" [nzPlaceHolder]="'请输入客户编码'" nzId="custCode"></nz-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label for="custName">客户名称</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-input [(ngModel)]="search.custName" name="custName" [nzSize]="'large'" [nzPlaceHolder]="'请输入客户名称'" nzId="custName"></nz-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label for="phone">电话号码</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-input [(ngModel)]="search.phone" name="phone" [nzSize]="'large'" [nzPlaceHolder]="'请输入电话号码'" nzId="phone"></nz-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="16" class="mb-md" style="text-align: right;float: right;">
+                        <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading" [nzSize]="'large'">查询</button>
+                        <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button>
+                        <a style="display: none;" id="aExhibitionShopExcelUrl" href="#">
+                            <button type="button" id="btnExhibitionShopHref">隐藏下载</button>
+                        </a>
+                        <button nz-button type="button" (click)="exportExcel()" [nzSize]="'large'" [nzLoading]="exportLoading">
+                                <i class="anticon anticon-download"></i>
+                                <span>导出</span>
+                            </button>
+                    </div>
+                </div>
+            </form>
+            <nz-table #nzTable [nzAjaxData]="exhibitionShopList" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()"
+                (nzPageSizeChange)="refreshData()">
+                <thead nz-thead>
+                    <tr>
+                        <th nz-th>
+                            <span>编号</span>
+                        </th>
+                        <th nz-th>
+                            <span>零售客户编码</span>
+                        </th>
+                        <th nz-th>
+                            <span>客户名称</span>
+                        </th>
+                        <th nz-th>
+                            <span>店铺名称</span>
+                        </th>
+                        <th nz-th>
+                            <span>所属区县</span>
+                        </th>
+                        <th nz-th>
+                            <span>店铺地址</span>
+                        </th>
+                        <th nz-th>
+                            <span>店铺电话</span>
+                        </th>
+                        <th nz-th>
+                            <span>实时票数</span>
+                            <nz-table-sort [(nzValue)]="sortMap.votes" (nzValueChange)="sort($event,'votes')"></nz-table-sort>
+                        </th>
+                        <th nz-th>
+                            <span>店铺会员数</span>
+                            <nz-table-sort [(nzValue)]="sortMap.fans" (nzValueChange)="sort($event,'fans')"></nz-table-sort>
+                        </th>
+                        <th nz-th>
+                            <span>操作</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody nz-tbody>
+                    <tr nz-tbody-tr *ngFor="let item of nzTable.data">
+                        <td nz-td>{{item.noId}}</td>
+                        <td nz-td>{{item.custCode}}</td>
+                        <td nz-td>{{item.custName}}</td>
+                        <td nz-td>{{item.shopName }}</td>
+                        <td nz-td>{{item.area}}</td>
+                        <td nz-td>{{item.shopAddress}}</td>
+                        <td nz-td>{{item.phone}}</td>
+                        <td nz-td>{{item.votes}}</td>
+                        <td nz-td>{{item.fansNum}}</td>
+                        <td nz-td>
+                            <a (click)="exhibitionDetails(item.id)">查看详情</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </nz-card>
+    </nz-tab>
+    <nz-tab>
+        <ng-template #nzTabHeading>
+            活动配置
+        </ng-template>
+        <nz-card>
+            <form nz-form [formGroup]="form" id="frm_create_role" (ngSubmit)="save()">
+                <div nz-row>
+                    <div nz-col [nzSpan]="16">
+                        <!-- <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="beginTime">开始时间</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('beginTime')">
+                                <nz-input formControlName="beginTime" [(ngModel)]="exhibition.beginTime" [nzId]="'rcId'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('beginTime').dirty&&getFormControl('beginTime').hasError('pattern')">请按照时间格式填写</div>
+                                <div nz-form-control nz-col [nzSm]="19">
+                                    填写示例 2018-01-01 00:00:00
+                                </div>
+                            </div>
+                        </div> -->
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="beginTime">开始时间</label>
+                            </div>
+                            <div nz-form-control nz-col nzHasFeedback [nzValidateStatus]="getFormControl('beginTime')">
+                                <nz-datepicker formControlName="beginTime" [(ngModel)]="exhibition.beginTime" [nzPlaceHolder]="'请选择日期'"></nz-datepicker>
+                                <div nz-form-explain *ngIf="getFormControl('beginTime').dirty&&getFormControl('beginTime').hasError('required')">请输入活动开始时间</div>
+                            </div>
+                            <!-- <nz-rangepicker formControlName="endTime" [(ngModel)]="_dateRange" [nzDisabledDate]="_disabledDate"></nz-rangepicker> -->
+                            <!-- <nz-rangepicker formControlName="endTime" [(ngModel)]="_dateRange" [nzFormat]="'YYYY/MM/DD'"></nz-rangepicker> -->
+                            <!-- <div nz-form-explain *ngIf="getFormControl('endTime').dirty&&getFormControl('endTime').hasError('required')">请选择活动时间</div> -->
+                            <!-- <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('endTime')">
+                                <nz-input formControlName="endTime" [(ngModel)]="exhibition.endTime" [nzId]="'endTime'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('endTime').dirty&&getFormControl('endTime').hasError('pattern')">请按照时间格式填写</div>
+                                <div nz-form-control nz-col [nzSm]="19">
+                                    填写示例 2018-01-01 00:00:00
+                                </div>
+                            </div> -->
+                        </div>
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="endTime">结束时间</label>
+                            </div>
+                            <div nz-form-control nz-col nzHasFeedback [nzValidateStatus]="getFormControl('endTime')">
+                                <nz-datepicker formControlName="endTime" [(ngModel)]="exhibition.endTime" [nzPlaceHolder]="'请选择日期'"></nz-datepicker>
+                                <div nz-form-explain *ngIf="getFormControl('endTime').dirty&&getFormControl('endTime').hasError('required')">请输入活动结束时间</div>
+                            </div>
+                        </div>
+                        <!-- <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="content">参赛规则</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('content')">
+                                <nz-input formControlName="content" [(ngModel)]="exhibition.content" [nzId]="'content'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('content').dirty&&getFormControl('content').hasError('required')">模拟数据</div>
+                            </div>
+                        </div> -->
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="topTotal">展示数量</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('topTotal')">
+                                <nz-input formControlName="topTotal" [(ngModel)]="exhibition.topTotal" [nzId]="'topTotal'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('topTotal').dirty&&getFormControl('topTotal').hasError('pattern')">展示数量必须为正数</div>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19">
+                                填写后将在页面上显示前{{exhibition.topTotal}}条数据
+                            </div>
+                        </div>
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="frequency">每日投票上限</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('frequency')">
+                                <nz-input formControlName="frequency" [(ngModel)]="exhibition.frequency" [nzId]="'frequency'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('frequency').dirty&&getFormControl('frequency').hasError('pattern')">投票上线必须为正数</div>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19">
+                                微信用户每日最大投票数
+                            </div>
+                        </div>
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="desc">投票规则</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('desc')">
+                                <nz-input nzType="textarea" nzRows="4" formControlName="desc" [(ngModel)]="exhibition.desc" [nzId]="'desc'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('desc').dirty&&getFormControl('desc').hasError('required')">模拟数据</div>
+                            </div>
+                        </div>
+                        <div nz-form-item nz-row class="mb0">
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit" [nzLoading]="loading">
+                                    {{l("保存")}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </nz-card>
+    </nz-tab>
+</nz-tabset>

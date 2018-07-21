@@ -16,6 +16,7 @@ export class IntegralDetails implements IIntegralDetails {
     phone: string;
     nickName: string;
     integralTotal: number;
+    code: string;
     constructor(data?: IIntegralDetails) {
         if (data) {
             for (var property in data) {
@@ -44,6 +45,7 @@ export class IntegralDetails implements IIntegralDetails {
             this.phone = data["phone"];
             this.nickName = data["nickName"];
             this.integralTotal = data["integralTotal"];
+            this.code = data["code"];
         }
     }
 
@@ -68,6 +70,7 @@ export class IntegralDetails implements IIntegralDetails {
         data["wxName"] = this.wxName;
         data["phone"] = this.phone;
         data["integralTotal"] = this.integralTotal;
+        data["code"] = this.code;
         return data;
     }
 
@@ -90,4 +93,5 @@ export interface IIntegralDetails {
     creationTime: Date;
     tenantId: number;
     integralTotal: number;
+    code: string;
 }

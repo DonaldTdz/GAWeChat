@@ -14,17 +14,26 @@ using HC.WeChat.VoteLogs.DomainServices;
 using HC.WeChat.VoteLogs.Dtos;
 using HC.WeChat.VoteLogs;
 using System;
+using HC.WeChat.Authorization;
+using HC.WeChat.Exhibitions;
+using HC.WeChat.Dto;
+using HC.WeChat.WeChatUsers;
+using HC.WeChat.ExhibitionShops;
 
 namespace HC.WeChat.VoteLogs
 {
     /// <summary>
     /// VoteLog应用层服务的接口实现方法
     /// </summary>
-    [AbpAuthorize(VoteLogAppPermissions.VoteLog)]
+    //[AbpAuthorize(VoteLogAppPermissions.VoteLog)]
+    [AbpAuthorize(AppPermissions.Pages)]
     public class VoteLogAppService : WeChatAppServiceBase, IVoteLogAppService
     {
         private readonly IRepository<VoteLog, Guid> _votelogRepository;
         private readonly IVoteLogManager _votelogManager;
+        private readonly IRepository<Exhibition, Guid> _exhibitionRepository;
+        private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
+        private readonly IRepository<ExhibitionShop, Guid> _exhibitionshopRepository;
 
         /// <summary>
         /// 构造函数
@@ -32,10 +41,17 @@ namespace HC.WeChat.VoteLogs
         public VoteLogAppService(
             IRepository<VoteLog, Guid> votelogRepository
       , IVoteLogManager votelogManager
+            , IRepository<Exhibition, Guid> exhibitionRepository
+            , IRepository<WeChatUser, Guid> wechatuserRepository
+            , IRepository<ExhibitionShop, Guid> exhibitionshopRepository
+
         )
         {
             _votelogRepository = votelogRepository;
             _votelogManager = votelogManager;
+            _exhibitionRepository = exhibitionRepository;
+            _wechatuserRepository = wechatuserRepository;
+            _exhibitionshopRepository = exhibitionshopRepository;
         }
 
 
@@ -64,12 +80,6 @@ namespace HC.WeChat.VoteLogs
                 votelogCount,
                 votelogListDtos
                 );
-
-
-
-
-
-
         }
 
         /// <summary>
@@ -153,7 +163,7 @@ namespace HC.WeChat.VoteLogs
         /// <summary>
         /// 新增VoteLog
         /// </summary>
-        [AbpAuthorize(VoteLogAppPermissions.VoteLog_CreateVoteLog)]
+        //[AbpAuthorize(VoteLogAppPermissions.VoteLog_CreateVoteLog)]
         protected virtual async Task<VoteLogEditDto> CreateVoteLogAsync(VoteLogEditDto input)
         {
             //TODO:新增前的逻辑判断，是否允许新增
@@ -178,9 +188,6 @@ namespace HC.WeChat.VoteLogs
             // ObjectMapper.Map(input, entity);
             await _votelogRepository.UpdateAsync(entity);
         }
-
-
-
 
         /// <summary>
         /// 删除VoteLog信息的方法
@@ -207,6 +214,79 @@ namespace HC.WeChat.VoteLogs
             await _votelogRepository.DeleteAsync(s => input.Contains(s.Id));
         }
 
+        /// <summary>
+        /// 获取投票数
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<int> GetWXVotesCountAsync()
+        {
+                int total = await _votelogRepository.GetAll().CountAsync();
+                return total;
+        }
+
+        /// <summary>
+        /// 写入投票详情
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<APIResultDto> AddVoteLogAsync(VoteLogEditDto input)
+        {
+            Exhibition config = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();
+            if (DateTime.Now.Date>=config.BeginTime.Value.Date && DateTime.Now.Date<=config.EndTime.Value.Date)
+            {
+                var nickName = await _wechatuserRepository.GetAll().Where(v => v.OpenId == input.OpenId).Select(v => v.NickName).FirstOrDefaultAsync();
+                input.CreateTime = DateTime.Now;
+                input.UserName = nickName;
+                var result = input.MapTo<VoteLog>();
+                //var votecount = await _votelogRepository.GetAll().Where(v=>v.OpenId==input.OpenId&&config.BeginTime)
+                int? votecount = await _votelogRepository.GetAll().Where(v => v.OpenId == input.OpenId && v.CreateTime.Date == DateTime.Now.Date).CountAsync();
+                if (votecount < config.Frequency)
+                {
+                    await _votelogRepository.InsertAsync(result);
+                    var entity = await _exhibitionshopRepository.GetAll().Where(v => v.Id == input.ExhibitionId).FirstOrDefaultAsync();
+                    if (entity.Votes == null)
+                    {
+                        entity.Votes = 0;
+                    }
+                    entity.Votes++;
+                    var exhibitionShopUpdate = await _exhibitionshopRepository.UpdateAsync(entity);
+                }
+                return new APIResultDto() { Code = 0, Msg = "成功" };
+            }
+            else if(DateTime.Now.Date< config.BeginTime.Value.Date)
+            {
+                return new APIResultDto() { Code = 888, Msg = "活动尚未开始" };
+            }
+            else
+            {
+                return new APIResultDto() { Code = 999, Msg = "活动已过期" };
+            }
+            
+        }
+
+        /// <summary>
+        /// 获取此人当天投票次数
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<int?> GetCurrentDayVoteByIdAsync(string openId)
+        {
+            Exhibition config = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();
+            if (DateTime.Now.Date >= config.BeginTime.Value.Date && DateTime.Now.Date <= config.EndTime.Value.Date)
+            {
+                int? votecount = await _votelogRepository.GetAll().Where(v => v.OpenId == openId
+            && v.CreateTime.Date == DateTime.Now.Date).CountAsync();
+            return votecount;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
 

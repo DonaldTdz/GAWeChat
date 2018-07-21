@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Senparc.Weixin.MP.Containers;
 using HC.WeChat.Models.WeChat;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -57,7 +58,8 @@ namespace HC.WeChat.Web.Host.Startup
             services.AddSession();
 
             //设置文件上传大小限制
-            services.Configure<FormOptions>(x => {
+            services.Configure<FormOptions>(x =>
+            {
                 x.MemoryBufferThreshold = int.MaxValue;
                 x.ValueLengthLimit = int.MaxValue;
                 x.MultipartBodyLengthLimit = int.MaxValue;
@@ -140,7 +142,7 @@ namespace HC.WeChat.Web.Host.Startup
 #endif
             //404错跳转配置
             //app.UseStatusCodePagesWithRedirects("/GAWX/Error/{0}");
-            app.UseStatusCodePagesWithRedirects("/GAWX/Error");
+            //app.UseStatusCodePagesWithRedirects("/GAWX/Error");
 
             app.UseMvc(routes =>
             {
@@ -196,6 +198,19 @@ namespace HC.WeChat.Web.Host.Startup
                 options.InjectOnCompleteJavaScript("/swagger/ui/on-complete.js");
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "WeChat API V1");
             }); // URL: /swagger
+
+            app.Run(async (context) =>
+            {
+                await System.Threading.Tasks.Task.Run(() =>
+                {
+                    var url = context.Request.GetAbsoluteUri();
+                    if (url.Contains("/gawechat/") && !url.Contains("/index.html"))
+                    {
+                        context.Response.Redirect(url.Replace("/gawechat/", "/gawechat/index.html"));
+                    }
+                });
+
+            });
         }
 
 #if FEATURE_SIGNALR

@@ -14,13 +14,14 @@ using HC.WeChat.Exhibitions.DomainServices;
 using HC.WeChat.Exhibitions.Dtos;
 using HC.WeChat.Exhibitions;
 using System;
+using HC.WeChat.Authorization;
 
 namespace HC.WeChat.Exhibitions
 {
     /// <summary>
     /// Exhibition应用层服务的接口实现方法
     /// </summary>
-    [AbpAuthorize(ExhibitionAppPermissions.Exhibition)]
+    [AbpAuthorize(AppPermissions.Pages)]
     public class ExhibitionAppService : WeChatAppServiceBase, IExhibitionAppService
     {
         private readonly IRepository<Exhibition, Guid> _exhibitionRepository;
@@ -38,7 +39,6 @@ namespace HC.WeChat.Exhibitions
             _exhibitionManager = exhibitionManager;
         }
 
-
         /// <summary>
         /// 获取Exhibition的分页列表信息
         /// </summary>
@@ -46,7 +46,6 @@ namespace HC.WeChat.Exhibitions
         /// <returns></returns>
         public async Task<PagedResultDto<ExhibitionListDto>> GetPagedExhibitions(GetExhibitionsInput input)
         {
-
             var query = _exhibitionRepository.GetAll();
             //TODO:根据传入的参数添加过滤条件
 
@@ -64,28 +63,16 @@ namespace HC.WeChat.Exhibitions
                 exhibitionCount,
                 exhibitionListDtos
                 );
-
-
-
-
-
-
         }
 
         /// <summary>
         /// 通过指定id获取ExhibitionListDto信息
         /// </summary>
-        public async Task<ExhibitionListDto> GetExhibitionByIdAsync(EntityDto<Guid> input)
+        public async Task<ExhibitionListDto> GetExhibitionByIdAsync()
         {
-            var entity = await _exhibitionRepository.GetAsync(input.Id);
-
+            var entity = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();
             return entity.MapTo<ExhibitionListDto>();
         }
-
-
-
-
-
 
         /// <summary>
         /// 导出Exhibition为excel表
@@ -131,35 +118,31 @@ namespace HC.WeChat.Exhibitions
 
         }
 
-
         /// <summary>
         /// 添加或者修改Exhibition的公共方法
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public async Task CreateOrUpdateExhibition(CreateOrUpdateExhibitionInput input)
+        public async Task CreateOrUpdateExhibition(ExhibitionEditDto input)
         {
-
-            if (input.Exhibition.Id.HasValue)
+            if (input.Id.HasValue)
             {
-                await UpdateExhibitionAsync(input.Exhibition);
+                await UpdateExhibitionAsync(input);
             }
             else
             {
-                await CreateExhibitionAsync(input.Exhibition);
+                await CreateExhibitionAsync(input);
             }
         }
 
         /// <summary>
         /// 新增Exhibition
         /// </summary>
-        [AbpAuthorize(ExhibitionAppPermissions.Exhibition_CreateExhibition)]
+        //[AbpAuthorize(ExhibitionAppPermissions.Exhibition_CreateExhibition)]
         protected virtual async Task<ExhibitionEditDto> CreateExhibitionAsync(ExhibitionEditDto input)
         {
             //TODO:新增前的逻辑判断，是否允许新增
-
             var entity = ObjectMapper.Map<Exhibition>(input);
-
             entity = await _exhibitionRepository.InsertAsync(entity);
             return entity.MapTo<ExhibitionEditDto>();
         }
@@ -167,7 +150,7 @@ namespace HC.WeChat.Exhibitions
         /// <summary>
         /// 编辑Exhibition
         /// </summary>
-        [AbpAuthorize(ExhibitionAppPermissions.Exhibition_EditExhibition)]
+        //[AbpAuthorize(ExhibitionAppPermissions.Exhibition_EditExhibition)]
         protected virtual async Task UpdateExhibitionAsync(ExhibitionEditDto input)
         {
             //TODO:更新前的逻辑判断，是否允许更新
@@ -178,9 +161,6 @@ namespace HC.WeChat.Exhibitions
             // ObjectMapper.Map(input, entity);
             await _exhibitionRepository.UpdateAsync(entity);
         }
-
-
-
 
         /// <summary>
         /// 删除Exhibition信息的方法
@@ -195,8 +175,6 @@ namespace HC.WeChat.Exhibitions
             await _exhibitionRepository.DeleteAsync(input.Id);
         }
 
-
-
         /// <summary>
         /// 批量删除Exhibition的方法
         /// </summary>
@@ -207,6 +185,17 @@ namespace HC.WeChat.Exhibitions
             await _exhibitionRepository.DeleteAsync(s => input.Contains(s.Id));
         }
 
+        /// <summary>
+        /// 微信获取活动配置
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<ExhibitionEditDto> GetExhibitionConfigAsync()
+        {
+            var config = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();
+            return config.MapTo<ExhibitionEditDto>();
+        }
     }
 }
 

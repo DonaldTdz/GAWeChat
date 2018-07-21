@@ -915,7 +915,7 @@ namespace HC.WeChat.WeChatUsers
                 ISheet sheet = workbook.CreateSheet("WeChatUser");
                 var rowIndex = 0;
                 IRow titleRow = sheet.CreateRow(rowIndex);
-                string[] titles = { "微信OpenId", "微信昵称", "用户类型", "用户名", "绑定状态", "绑定时间", "解绑时间", "绑定电话", "会员卡条形码", "用户总积分", "是否是店主", "审核状态", "关注时间", "取消关注时间","零售户/员工编码" };
+                string[] titles = { "微信OpenId", "微信昵称", "用户类型", "用户名", "绑定状态", "绑定时间", "解绑时间", "绑定电话", "会员卡条形码", "用户总积分", "是否是店主", "审核状态", "关注时间", "取消关注时间", "零售户/员工编码" };
                 var fontTitle = workbook.CreateFont();
                 fontTitle.IsBold = true;
                 for (int i = 0; i < titles.Length; i++)
@@ -1003,6 +1003,203 @@ namespace HC.WeChat.WeChatUsers
                 wechatuserListDtos
                 );
 
+        }
+
+        /// <summary>
+        /// 会员积分Excel导出
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [UnitOfWork(isTransactional: false)]
+        public async Task<APIResultDto> ExportWeChatUsersIntegralExcelAsync(GetWeChatUsersInput input)
+        {
+            try
+            {
+                var exportData = await GetWeChatUsersIntegralAsync(input);
+                var result = new APIResultDto();
+                result.Code = 0;
+                result.Data = SaveWeChatUsersIntegralExcel("会员积分.xlsx", exportData);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("ExportPostInfoExcel errormsg:{0} Exception:{1}", ex.Message, ex);
+                return new APIResultDto() { Code = 901, Msg = "网络忙... 请待会重试！" };
+            }
+        }
+
+        private async Task<List<WeChatUserListDto>> GetWeChatUsersIntegralAsync(GetWeChatUsersInput input)
+        {
+            var queryIntegral = _wechatuserRepository.GetAll().Where(v => v.IntegralTotal > 0)
+                .WhereIf(!string.IsNullOrEmpty(input.Name), v => v.NickName.Contains(input.Name))
+                .WhereIf(input.UserType.HasValue, u => u.UserType == input.UserType)
+                .WhereIf(!string.IsNullOrEmpty(input.Phone), u => u.Phone.Contains(input.Phone));
+            var retailer = _retailerRepository.GetAll();
+            var employee = _employeeRepository.GetAll();
+            var query = (from w in queryIntegral
+                         join r in retailer on w.UserId equals r.Id into wr
+                         from table in wr.DefaultIfEmpty()
+                         join e in employee on w.UserId equals e.Id into wre
+                         from result in wre.DefaultIfEmpty()
+                         select new WeChatUserListDto()
+                         {
+                             Id = w.Id,
+                             OpenId = w.OpenId,
+                             NickName = w.NickName,
+                             UserType = w.UserType,
+                             Code = table != null ? table.Code : (result != null ? result.Code : ""),
+                             Phone = w.Phone,
+                             IntegralTotal = w.IntegralTotal,
+                             UserName = w.UserName
+                         }).WhereIf(!string.IsNullOrEmpty(input.Code), v => v.Code.Contains(input.Code));
+            if (input.SortValue != null && input.SortValue == "ascend")
+            {
+                var intergral = await query
+                .OrderByDescending(v => v.IntegralTotal)
+                .ThenBy(input.Sorting)
+                .ToListAsync();
+                var intergralListDtos = intergral.MapTo<List<WeChatUserListDto>>();
+                return intergralListDtos;
+            }
+            else if (input.SortValue != null && input.SortValue == "descend")
+            {
+                var intergral = await query
+                 .OrderBy(v => v.IntegralTotal)
+                 .ThenBy(input.Sorting)
+                 .ToListAsync();
+                var intergralListDtos = intergral.MapTo<List<WeChatUserListDto>>();
+                return intergralListDtos;
+            }
+            else
+            {
+                var intergral = await query
+                .OrderByDescending(v => v.IntegralTotal)
+                .ThenBy(input.Sorting)
+                .ToListAsync();
+                var intergralListDtos = intergral.MapTo<List<WeChatUserListDto>>();
+                return intergralListDtos;
+            }
+        }
+
+        private string SaveWeChatUsersIntegralExcel(string fileName, List<WeChatUserListDto> data)
+        {
+            var fullPath = ExcelHelper.GetSavePath(_hostingEnvironment.WebRootPath) + fileName;
+            using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("WeChatUser");
+                var rowIndex = 0;
+                IRow titleRow = sheet.CreateRow(rowIndex);
+                string[] titles = { "会员姓名", "用户类型", "用户名(编码)", "电话号码", "积分" };
+                var fontTitle = workbook.CreateFont();
+                fontTitle.IsBold = true;
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    var cell = titleRow.CreateCell(i);
+                    cell.CellStyle.SetFont(fontTitle);
+                    cell.SetCellValue(titles[i]);
+                }
+
+                var font = workbook.CreateFont();
+                foreach (var item in data)
+                {
+                    rowIndex++;
+                    IRow row = sheet.CreateRow(rowIndex);
+                    ExcelHelper.SetCell(row.CreateCell(0), font, item.NickName);
+                    ExcelHelper.SetCell(row.CreateCell(1), font, item.UserTypeName);
+                    if (item.Code != "")
+                    {
+                        ExcelHelper.SetCell(row.CreateCell(2), font, item.UserName + "(" + item.Code + ")");
+                    }
+                    else
+                    {
+                        ExcelHelper.SetCell(row.CreateCell(2), font, item.UserName);
+                    }
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.Phone);
+                    ExcelHelper.SetCell(row.CreateCell(4), font, item.IntegralTotal);
+                }
+                workbook.Write(fs);
+            }
+
+            return "/files/downloadtemp/" + fileName;
+        }
+        /// 微信用户统计（按零售户分公司统计）
+        /// </summary>
+        /// <returns></returns>
+        public async Task<WeChatUserStatisticLiDto> GetWeChatUserStatistic()
+        {
+            //var weChat = _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注);
+            //var retail = _retailerRepository.GetAll();
+            var query = (from w in _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注)
+                        join r in _retailerRepository.GetAll() on w.UserId equals r.Id into g
+                        from wr in g.DefaultIfEmpty()
+                        select new { wr.BranchCompany });
+            //group new { wr.BranchCompany } by wr.BranchCompany into m
+            //select new WeChatUserStatisticDto
+            //{
+            //    Company = m.Key, // == null ? "其它" : m.Key,
+            //    Count = m.Count(),
+            //GroupId = m.Key == null ? 2 : 1,
+            //};
+
+            //var total = await query.SumAsync(w => w.Count);
+            var list = await query.GroupBy(q => q.BranchCompany).Select(g => new WeChatUserStatisticDto() { Company = g.Key, Count = g.Count() }).ToListAsync();
+            var total = list.Sum(w => w.Count);
+            foreach (var item in list)
+            {
+                if (string.IsNullOrEmpty(item.Company))
+                {
+                    item.Company = "其它";
+                    item.GroupId = 1;
+                    break;
+                }
+            }
+            var result = new WeChatUserStatisticLiDto();
+            result.WechatUserStaDto = list.OrderBy(l => l.GroupId).ThenByDescending(l => l.Count).ToList(); ;
+            result.Total = total;
+            return result;
+        }
+
+        /// <summary>
+        /// 是否存在该微信用户
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<bool> GetWeChatUserIsExsit(string openId)
+        {
+            return await _wechatuserRepository.GetAll().AnyAsync(w => w.OpenId == openId && w.UserType!=UserTypeEnum.取消关注);
+        }
+
+
+        /// <summary>
+        /// 判断用户是否关注
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<bool> GetIsAttentionByOpenIdAsync(string openId)
+        {
+            int weChat = await _wechatuserRepository.GetAll().Where(v=>v.OpenId == openId && v.UserType!= UserTypeEnum.取消关注).CountAsync();
+            if (weChat == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        [AbpAllowAnonymous]
+        public Task SubscribeAsync(string openId, string nickName, string headImgUrl, string scene, string ticket)
+        {
+            var ta = _wechatuserManager.SubscribeAsync(openId, nickName, headImgUrl, null, scene, ticket);
+            return ta;
+        }
+
+        [AbpAllowAnonymous]
+        public Task UnsubscribeAsync(string openId)
+        {
+            var ta = _wechatuserManager.UnsubscribeAsync(openId, null);
+            return ta;
         }
     }
 }

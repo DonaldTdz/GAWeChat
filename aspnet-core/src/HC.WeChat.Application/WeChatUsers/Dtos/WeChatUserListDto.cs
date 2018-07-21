@@ -4,6 +4,7 @@ using HC.WeChat.WeChatUsers.Dtos.LTMAutoMapper;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.WechatEnums;
 using Abp.AutoMapper;
+using System.Collections.Generic;
 
 namespace HC.WeChat.WeChatUsers.Dtos
 {
@@ -100,5 +101,30 @@ namespace HC.WeChat.WeChatUsers.Dtos
         /// 关注来源Id
         /// </summary>
         public string SourceId { get; set; }
+    }
+
+    /// <summary>
+    /// 微信用户信息统计
+    /// </summary>
+    public class WeChatUserStatisticDto
+    {
+        public string Company { get; set; }
+
+        public int? Count { get; set; }
+
+        public int GroupId { get; set; }
+    }
+
+    public  class WeChatUserStatisticLiDto
+    {
+        /// <summary>
+        /// 微信用户信息统计
+        /// </summary>
+        public List<WeChatUserStatisticDto> WechatUserStaDto { get; set; }
+
+        /// <summary>
+        /// 微信用户总数(按零售户分区)
+        /// </summary>
+        public int? Total { get; set; }
     }
 }

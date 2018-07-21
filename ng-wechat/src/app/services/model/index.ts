@@ -18,3 +18,6 @@ export * from './level';
 export * from './account-level';
 export * from './statisticaldetail';
 export * from './good-source';
+export * from './exhibition-shop';
+export * from './exhibition-config';
+export * from './voteLog';

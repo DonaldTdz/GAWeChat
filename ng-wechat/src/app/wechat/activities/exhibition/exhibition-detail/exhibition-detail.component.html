@@ -1,0 +1,99 @@
+<!--component html goes here -->
+<Page [ngClass]="'ExhibitionDetail'" [title]="'活动详情'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells" *ngIf="exhibitionShop" style="margin-top: 0px;">
+        <div class="weui-cell" style=" padding-bottom: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px;">
+            <div style="text-align: center; width: 100%;">
+                <img src="assets/images/exhibition/exhibitionBanner.jpg" style="width:100%;">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>店铺名称</p>
+            </div>
+            <div class="weui-cell__ft">{{exhibitionShop.shopName}}</div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>店铺地址</p>
+            </div>
+            <div class="weui-cell__ft">{{exhibitionShop.shopAddress}}</div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>参赛编号</p>
+            </div>
+            <div class="weui-cell__ft">{{exhibitionShop.noId}}号</div>
+        </div>
+    </div>
+    <weui-loadmore type="line" *ngIf="!exhibitionShop"></weui-loadmore>
+    <!-- <div *ngIf="exhibitionShop" class="weui-form-preview__bd" style="padding-bottom: 0px;padding-left: 0px;padding-right: 0px;">
+        <div class="weui-form-preview__hd" style="padding-bottom: 0px;">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label">店铺名称</label>
+                <span class="weui-form-preview__value">{{exhibitionShop.shopName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label">店铺地址</label>
+                <span class="weui-form-preview__value">{{exhibitionShop.shopAddress}}</span>
+            </div>
+        </div>
+    </div> -->
+    <div class="weui-cells__title" *ngIf="exhibitionShop" style="padding-top: 0px;padding-bottom: 2px;border-bottom-width: 2px;">
+
+        <!-- <div class="weui-cell weui-shop-cell_img" *ngIf="exhibitionShop" style="padding-top: 0px;padding-bottom: 2px;border-bottom-width: 2px;"> -->
+        <div class="weui-cell__bd vote">
+            <p>参赛作品</p>
+        </div>
+        <div class="weui-cell__ft">
+            <p>
+                <img class="weui-icon-h18" style="width: 24px;height: 24px;" src="./assets/images/exhibition/vote.png" alt="实时票数">
+                <span style="color:#E92730;">票数：{{exhibitionShop.votes}}</span>
+            </p>
+        </div>
+    </div>
+    <div class="weui-panel weui-panel_access">
+        <!-- <div class="weui-cells__title" style="text-align: center;margin-top: 0px;">参赛作品</div> -->
+        <weui-loadmore type="line" *ngIf="!picIds"></weui-loadmore>
+        <!-- <div class="weui-media-box__hd weui-cell_img" *ngFor="let item of picIds" [ngStyle]="{'background-image':'url('+ hostUrl + item +')'}">
+    </div> -->
+        <div class="weui-media-box__hd weui-cell_img" *ngFor="let item of picIds">
+            <img style="width: 100%;" class="weui-media-box__thumb" src="{{hostUrl+item}}" alt="">
+        </div>
+        <div class="button-sp-area" *ngIf="exhibitionShop">
+            <button weui-button [weui-mini]="'mini'" (click)="voteAdd(exhibitionShop.id,'success')" [weui-plain]="true">为Ta投一票吧</button>
+        </div>
+        <div class="button-sp-area" *ngIf="exhibitionShop">
+            <button weui-button [weui-mini]="'mini'" (click)="goBack()" [weui-plain]="true">点击查看更多</button>
+        </div>
+        <div class="button-sp-area" *ngIf="exhibitionShop">
+            <button weui-button [weui-mini]="'mini'" (click)="alertShare()" [weui-plain]="true">我要分享拉票</button>
+        </div>
+    </div>
+    <div class="weui-panel weui-panel_access">
+        <section class="rules" style="padding-top: 10px;">
+            <div class="text">
+                <!-- <div class="prize">活动公告</div>
+                <div class="neirong">
+                    <span style="font-size:16px;">&nbsp; &nbsp; &nbsp;{{exhibition.content}}</span>
+                </div> -->
+                <div class="prize">投票须知</div>
+                <div>
+                    <div style="text-align:left;">
+                        <span style="font-size:13px; padding: 10px;">
+                            <div>
+                                <p *ngFor="let item of voteDesc" style="padding-left: 10px;">
+                                    {{item}}
+                                </p>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- <div class="qrUrl" style="text-align: center" *ngIf="shopQrUrl">
+            <img class="mdiv" style="width:233.625px;height: 233.625px;" src="{{hostUrl+shopQrUrl}}" alt="">
+            <p>长按识别二维码关注公众号</p>
+        </div> -->
+
+</Page>

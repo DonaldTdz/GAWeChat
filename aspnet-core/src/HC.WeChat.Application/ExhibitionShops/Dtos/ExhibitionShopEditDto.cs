@@ -12,12 +12,11 @@ namespace HC.WeChat.ExhibitionShops.Dtos
         [Required(ErrorMessage = "CreateTime不能为空")]
         public DateTime CreateTime { get; set; }
 
-
+        public int NoId { get; set; }
         /// <summary>
         /// RetailerId
         /// </summary>
         public Guid? RetailerId { get; set; }
-
 
         /// <summary>
         /// ShopName

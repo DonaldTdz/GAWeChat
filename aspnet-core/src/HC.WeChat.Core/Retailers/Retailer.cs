@@ -166,5 +166,10 @@ namespace HC.WeChat.Retailers
 
         [StringLength(100)]
         public string SlsmanName { get; set; }
+
+        /// <summary>
+        /// 片区
+        /// </summary>
+        public string Area { get; set; }
     }
 }

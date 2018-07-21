@@ -11,7 +11,7 @@ import { Http, Headers, Response, Request, RequestMethod, RequestOptions } from 
 import { Observable } from 'rxjs/Observable';
 import * as moment from 'moment';
 import { AppConsts } from './AppConsts';
-import { ToastComponent, ToastService } from "ngx-weui/toast";
+import { ToastService } from "ngx-weui/toast";
 
 export class SwaggerException extends Error {
     message: string;

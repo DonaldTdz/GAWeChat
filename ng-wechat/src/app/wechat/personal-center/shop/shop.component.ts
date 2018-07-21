@@ -11,6 +11,9 @@ import { ToptipsService } from "ngx-weui/toptips";
 import { JWeiXinService } from 'ngx-weui/jweixin';
 
 import { DialogService, DialogConfig, DialogComponent } from 'ngx-weui/dialog';
+import 'jsbarcode';
+import { LoaderService } from 'ngx-weui/utils/loader.service';
+import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
 
 @Component({
     selector: 'wechat-shop',
@@ -21,6 +24,7 @@ import { DialogService, DialogConfig, DialogComponent } from 'ngx-weui/dialog';
 export class ShopComponent extends AppComponentBase implements OnInit {
 
     @ViewChild('auto') autoAS: DialogComponent;
+    @ViewChild('qrcode') qrcodeAS: ShopQrcodeComponent;
 
     user: WechatUser;
     shop: Shop;
@@ -33,22 +37,24 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     isView: boolean = false;
     hostUrl: string = AppConsts.remoteServiceBaseUrl;
     isAudit: boolean = false;
-    private DEFCONFIG: DialogConfig = <DialogConfig>{
+    qrCodeUrl = '';
+    public DEFCONFIG: DialogConfig = <DialogConfig>{
         // title: '弹窗标题',
         // content: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
-        skin: 'auto',
+        skin: 'ios',
         backdrop: true,
         cancel: null,
         confirm: null,
     };
     config2: DialogConfig = {};
-    content='';
+    //content = '';
     constructor(injector: Injector,
         private router: Router,
         private shopService: ShopService,
         private wxService: JWeiXinService,
         private srv: ToptipsService,
-        private ds: DialogService) {
+        private ds: DialogService,
+        private load: LoaderService) {
         super(injector);
         this.activatedRoute.params.subscribe((params: Params) => {
             this.shopId = params['shopId'];
@@ -57,6 +63,9 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
+        //this.load.loadScript('assets/libs/qrcode.min.js').then((res) => {
+            //this.generateQRcode('wechat_qrcode', '11112');
+        //});
         //微信JS SDK配置
         this.wxService.get().then((res) => {
             if (!res) {
@@ -92,6 +101,13 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             this.shopService.AddSingleTotalAsync({ articleId: this.shopId, openId: this.settingsService.openId, type: 3, tenantId: this.settingsService.tenantId }).subscribe(res => {
                 this.shop = res;
             });
+            // this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
+            //     this.qrCodeUrl = data;
+            //     console.log("data")
+            //     console.log(data)
+            //     //生成微信二维码
+            //     //this.generateQRcode('wechat_qrcode', data);
+            // });
         }
         else {
             this.settingsService.getUser().subscribe(result => {
@@ -110,12 +126,20 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                                     if (!this.shop) {//如果没有店铺 需要新增 
                                         this.router.navigate(['/shopadds/shop-add']);
                                     }
+                                    //  else {
+                                    //     this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
+                                    //         this.qrCodeUrl = data;
+                                    //         //生成微信二维码
+                                    //         //this.generateQRcode('wechat_qrcode', data);
+                                    //     });
+                                    // }
                                 });
                         }
                     }
                 }
             });
         }
+
     }
 
     goEditShop() {
@@ -231,13 +255,27 @@ export class ShopComponent extends AppComponentBase implements OnInit {
         });
     }
 
-    showQrCode(){
-        this.content='<div class="mdiv"><p>'+this.shop.name+'</p><div><img class="qrcode" src="'+AppConsts.remoteServiceBaseUrl+this.shop.qrUrl+'"></div><p>扫一扫，关注公众号</p></div>';
-        this.config2 = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
-            content: this.content,
-        });
-        this.ds.show(this.config2).subscribe((res: any) => {
-            console.log(res);
+    showQrCode() {
+        
+      
+            // this.generateQRcode('wechat_qrcode', this.qrCodeUrl);
+           // this.content = '<div class="mdiv"><p>' + this.shop.name + '</p><div><img class="qrcode" src="' + AppConsts.remoteServiceBaseUrl + this.shop.qrUrl + '"></div><p>扫一扫，进入店铺</p></div>';
+            // this.config2 = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            //     content: '<div class="mdiv"><p>' + this.shop.name + '</p><div id="wechat_qrcode" class="payment_wechat_img" ><img class="payment_wechat_icon" src="assets/images/logo.jpg"></div><p>扫一扫，进入店铺</p></div>',
+            // });
+            // this.ds.show(this.config2).subscribe((res: any) => {
+            //     console.log(res);
+            //     this.generateQRcode('wechat_qrcode', this.qrCodeUrl);
+            // });
+            this.qrcodeAS.show(this.shop);
+    }
+
+    generateQRcode(id: string, url: any) {
+        let qrShopCode = new QRCode(id, {
+            text: url,
+            width: 230,
+            height: 230,
+            correctLevel: QRCode.CorrectLevel.H
         });
     }
 }

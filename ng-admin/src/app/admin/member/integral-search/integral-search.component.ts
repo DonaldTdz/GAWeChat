@@ -5,6 +5,7 @@ import { IntegralDetails } from '@shared/entity/member';
 import { Router } from '@angular/router';
 import { WechatUserServiceProxy, PagedResultDtoOfWeChatUser } from '@shared/service-proxies/wechat-service';
 import { WechatUser } from '@shared/entity/wechat';
+import { AppConsts } from '@shared/AppConsts';
 
 @Component({
     moduleId: module.id,
@@ -13,8 +14,9 @@ import { WechatUser } from '@shared/entity/wechat';
 })
 export class IntegralSearchComponent extends AppComponentBase implements OnInit {
     loading = false;
+    exportLoading = false;
     sortValue = null;
-    search: any = { name: '', UserType: null, phone: '' };
+    search: any = { name: '', UserType: null, phone: '', code: '' };
     positions = [
         { text: '零售客户', value: 1 },
         { text: '内部员工', value: 2 },
@@ -55,11 +57,32 @@ export class IntegralSearchComponent extends AppComponentBase implements OnInit 
         arry.push(Parameter.fromJS({ key: 'UserType', value: this.search.UserType }));
         arry.push(Parameter.fromJS({ key: 'Phone', value: this.search.phone }));
         arry.push(Parameter.fromJS({ key: 'SortValue', value: this.sortValue }));
+        arry.push(Parameter.fromJS({ key: 'Code', value: this.search.code }));
         return arry;
 
     }
 
     editIntegral(openId: string) {
         this.router.navigate(['admin/member/integral-search-detail', openId])
+    }
+
+    exportExcel() {
+        this.exportLoading = true;
+        this.wechatUserService.ExportIntegralExcel({
+            name: this.search.name
+            , userType: this.search.UserType
+            , phone: this.search.phone
+            , code: this.search.code,
+            sortValue: this.sortValue
+        }).subscribe(data => {
+            if (data.code == 0) {
+                var url = AppConsts.remoteServiceBaseUrl + data.data;
+                document.getElementById('aIntegralExcelUrl').setAttribute('href', url);
+                document.getElementById('btnIntegralHref').click();
+            } else {
+                this.notify.error(data.msg);
+            }
+            this.exportLoading = false;
+        });
     }
 }

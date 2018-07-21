@@ -76,14 +76,12 @@
         </div>
 
     </form>
-    <nz-table #nzTable [nzAjaxData]="shops" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize"
-        [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+    <nz-table #nzTable [nzAjaxData]="shops" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
         <thead nz-thead>
             <tr>
                 <th nz-th>
                     <label nz-checkbox [(ngModel)]="isSelectedAll" (ngModelChange)="checkAll($event)">
                     </label>
-                    <span>全选</span>
                 </th>
                 <th nz-th>
                     <span>店铺名称</span>
@@ -150,8 +148,8 @@
                 <td nz-td>{{shop.auditTime | _date}}</td>
                 <td nz-td>
                     <a (click)="editShop(shop)">详情</a>
-                    <span *ngIf="shop.status===2" nz-table-divider></span>
-                    <a *ngIf="shop.status===2" href="{{this.host+shop.qrUrl}}" download="{{shop.retailerCode}}{{shop.retailerName}}">推广码</a>
+                    <span *ngIf="shop.status===2&& shop.qrUrl!=null" nz-table-divider></span>
+                    <a *ngIf="shop.status===2 && shop.qrUrl!=null" href="{{this.host+shop.qrUrl}}" download="{{shop.retailerCode}}{{shop.retailerName}}">推广码</a>
                 </td>
             </tr>
         </tbody>

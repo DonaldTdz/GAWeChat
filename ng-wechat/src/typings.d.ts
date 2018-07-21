@@ -14,5 +14,7 @@ declare var hljs: any;
 declare var wx: any;
 declare var JsBarcode: any;
 declare var qq: any;
+declare var QRCode: any;
+
 
 

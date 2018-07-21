@@ -71,8 +71,8 @@
                         },
                         {
                             "text": "陈列活动",
-                            "link": "/admin/marketting/contribute-management",
-                            "translate": "contribute-management",
+                            "link": "/admin/marketting/exhibition",
+                            "translate": "exhibition",
                             "reuse": false
                         }
                     ]
@@ -114,8 +114,8 @@
                     ]
                 },
                 {
-                    "text": "会员管理",
-                    "translate": "member-management",
+                    "text": "会员中心",
+                    "translate": "member-center",
                     "icon": "anticon anticon-user",
                     "children": [{
                             "text": "会员管理",

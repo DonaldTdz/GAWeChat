@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Observable';
 import { SwaggerException, API_BASE_URL } from '@shared/service-proxies/service-proxies';
 import { Http, Headers, ResponseContentType, Response } from '@angular/http';
 import { Inject, Optional, Injectable, InjectionToken } from '@angular/core';
-import { Parameter, HomeInfo, ApiResult } from '@shared/service-proxies/entity';
+import { Parameter, HomeInfo, ApiResult, ShopStatistic } from '@shared/service-proxies/entity';
 import { Shop } from '@shared/entity/customer/shop';
 
 function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): Observable<any> {
@@ -143,7 +143,7 @@ export class ShopServiceProxy {
         return Observable.of<HomeInfo>(<any>null);
     }
 
-    getPendingShopList(): Observable<Shop[]> {
+    getPendingShopList(): Observable<ApiResult> {
         let url_ = this.baseUrl + "/api/services/app/Shop/GetPendingShopList";
 
         url_ = url_.replace(/[?&]$/, "");
@@ -163,14 +163,14 @@ export class ShopServiceProxy {
                 try {
                     return this.processGetPendingShopList(response_);
                 } catch (e) {
-                    return <Observable<Shop[]>><any>Observable.throw(e);
+                    return <Observable<ApiResult>><any>Observable.throw(e);
                 }
             } else
-                return <Observable<Shop[]>><any>Observable.throw(response_);
+                return <Observable<ApiResult>><any>Observable.throw(response_);
         });
     }
 
-    protected processGetPendingShopList(response: Response): Observable<Shop[]> {
+    protected processGetPendingShopList(response: Response): Observable<ApiResult> {
         const status = response.status;
 
         let _headers: any = response.headers ? response.headers.toJSON() : {};
@@ -178,7 +178,7 @@ export class ShopServiceProxy {
             const _responseText = response.text();
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? Shop.fromJSArray(resultData200) : Observable.of<Shop[]>(<any>null);
+            result200 = resultData200 ? ApiResult.fromJS(resultData200) : Observable.of<ApiResult>(<any>null);
             return Observable.of(result200);
         } else if (status === 401) {
             const _responseText = response.text();
@@ -190,7 +190,7 @@ export class ShopServiceProxy {
             const _responseText = response.text();
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Observable.of<Shop[]>(<any>null);
+        return Observable.of<ApiResult>(<any>null);
     }
 
     /**
@@ -458,6 +458,56 @@ export class ShopServiceProxy {
         }
         return Observable.of<ApiResult>(<any>null);
     }
+
+    getShopStatistic(): Observable<ResultDtoOfShopStatistic> {
+        let url_ = this.baseUrl + "/api/services/app/Shop/GetShopStatisticsByCompany";
+
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processShopStatistic(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processShopStatistic(response_);
+                } catch (e) {
+                    return <Observable<ResultDtoOfShopStatistic>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<ResultDtoOfShopStatistic>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processShopStatistic(response: Response): Observable<ResultDtoOfShopStatistic> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? ResultDtoOfShopStatistic.fromJS(resultData200) : new ResultDtoOfShopStatistic();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<ResultDtoOfShopStatistic>(<any>null);
+    }
 }
 
 export class PagedResultDtoOfShop implements IPagedResultDtoOfShop {
@@ -512,4 +562,62 @@ export class PagedResultDtoOfShop implements IPagedResultDtoOfShop {
 export interface IPagedResultDtoOfShop {
     totalCount: number;
     items: Shop[];
+}
+
+export class ResultDtoOfShopStatistic implements IResultDtoOfShopStatistic {
+    total:number;
+    items: ShopStatistic[];
+
+    constructor(data?: IResultDtoOfShopStatistic) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.total = data["total"];
+            if (data["shopStaDto"] && data["shopStaDto"].constructor === Array) {
+            // if (data && data.constructor === Array) {
+                this.items = [];
+                for (let item of data["shopStaDto"])
+                    this.items.push(ShopStatistic.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ResultDtoOfShopStatistic {
+        let result = new ResultDtoOfShopStatistic();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["total"] = this.total;
+        if (this.items && this.items.constructor === Array) {
+            data["shopStaDto"] = [];
+            // data = [];
+            for (let item of this.items)
+                data["shopStaDto"].push(item.toJSON());
+                // data.push(item.toJSON());
+        }
+        return data;
+    }
+
+
+    clone() {
+        const json = this.toJSON();
+        let result = new ResultDtoOfShopStatistic();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IResultDtoOfShopStatistic {
+    total:number;
+    items: ShopStatistic[];
 }

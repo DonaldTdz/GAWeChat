@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using HC.WeChat.ExhibitionShops.Dtos;
 using HC.WeChat.ExhibitionShops;
 using System;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.ExhibitionShops
 {
@@ -20,10 +21,10 @@ namespace HC.WeChat.ExhibitionShops
         /// <returns></returns>
         Task<PagedResultDto<ExhibitionShopListDto>> GetPagedExhibitionShops(GetExhibitionShopsInput input);
 
-            /// <summary>
-            /// 通过指定id获取ExhibitionShopListDto信息
-            /// </summary>
-            Task<ExhibitionShopListDto> GetExhibitionShopByIdAsync(EntityDto<Guid> input);
+        /// <summary>
+        /// 通过指定id获取ExhibitionShopListDto信息
+        /// </summary>
+        Task<ExhibitionShopListDto> GetExhibitionShopByIdAsync(Guid id);
 
 
         /// <summary>
@@ -55,9 +56,20 @@ namespace HC.WeChat.ExhibitionShops
         /// <returns></returns>
         Task DeleteExhibitionShop(EntityDto<Guid> input);
 
-            /// <summary>
-            /// 批量删除ExhibitionShop
-            /// </summary>
+        /// <summary>
+        /// 批量删除ExhibitionShop
+        /// </summary>
         Task BatchDeleteExhibitionShopsAsync(List<Guid> input);
+        Task<PagedResultDto<ExhibitionShopListDto>> GetPagedExhibitionShopsAsync(GetExhibitionShopsInput input);
+        Task<ExhibitionShopListDto> GetPagedExhibitionShopsByIdAsync(Guid id);
+        Task<List<ExhibitionViewDto>> GetWXPagedExhibitionShopsAsync(string type);
+
+        Task<int> GetWXExhibitionShopsCountAsync();
+        Task<List<ExhibitionShopListDto>> GetExhibitionShopByKeyAsync(string key);
+        Task<ExhibitionShopListDto> GetWXExhibitionShopsByIdAsync(Guid shopId);
+
+        Task<APIResultDto> ExportExhibitionShopsExcel(GetExhibitionShopsInput input);
+
+        Task<string> GetAuthorizationUrl(string shopId, string host);
     }
 }

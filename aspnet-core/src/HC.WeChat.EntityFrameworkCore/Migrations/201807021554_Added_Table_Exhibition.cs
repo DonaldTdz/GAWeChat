@@ -58,6 +58,15 @@ namespace HC.WeChat.Migrations
                 {
                     table.PrimaryKey("PK_VoteLogs", x => x.Id);
                 });
+            migrationBuilder.AddColumn<string>(
+                    name: "Area",
+                    table: "Retailers",
+                    nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                     name: "NoId",
+                     table: "ExhibitionShops",
+                     nullable: true);
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
@@ -67,6 +76,13 @@ namespace HC.WeChat.Migrations
                  name: "ExhibitionShops");
             migrationBuilder.DropTable(
                  name: "VoteLogs");
+            migrationBuilder.DropColumn(
+                 name: "Area",
+                 table: "Retailers");
+
+            migrationBuilder.DropColumn(
+                name: "NoId",
+                table: "ExhibitionShops");
         }
     }
 }

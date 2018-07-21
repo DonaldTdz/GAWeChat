@@ -20,11 +20,10 @@ namespace HC.WeChat.Exhibitions
         /// <returns></returns>
         Task<PagedResultDto<ExhibitionListDto>> GetPagedExhibitions(GetExhibitionsInput input);
 
-            /// <summary>
-            /// 通过指定id获取ExhibitionListDto信息
-            /// </summary>
-            Task<ExhibitionListDto> GetExhibitionByIdAsync(EntityDto<Guid> input);
-
+        /// <summary>
+        /// 获取ExhibitionListDto信息
+        /// </summary>
+        Task<ExhibitionListDto> GetExhibitionByIdAsync();
 
         /// <summary>
         /// 导出Exhibition为excel表
@@ -46,7 +45,7 @@ namespace HC.WeChat.Exhibitions
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CreateOrUpdateExhibition(CreateOrUpdateExhibitionInput input);
+        Task CreateOrUpdateExhibition(ExhibitionEditDto input);
 
         /// <summary>
         /// 删除Exhibition信息的方法
@@ -59,5 +58,6 @@ namespace HC.WeChat.Exhibitions
             /// 批量删除Exhibition
             /// </summary>
         Task BatchDeleteExhibitionsAsync(List<Guid> input);
+        Task<ExhibitionEditDto> GetExhibitionConfigAsync();
     }
 }

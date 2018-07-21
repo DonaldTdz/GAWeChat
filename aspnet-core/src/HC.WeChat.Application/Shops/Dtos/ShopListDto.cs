@@ -4,6 +4,7 @@ using HC.WeChat.Shops.Dtos.LTMAutoMapper;
 using HC.WeChat.Shops;
 using HC.WeChat.WechatEnums;
 using Abp.AutoMapper;
+using System.Collections.Generic;
 
 namespace HC.WeChat.Shops.Dtos
 {
@@ -68,6 +69,21 @@ namespace HC.WeChat.Shops.Dtos
         /// 粉丝数
         /// </summary>
         public int? FansNum { get; set; }
+
+        /// <summary>
+        /// 分公司 快照
+        /// </summary>
+        public string BranchCompany { get; set; }
+
+        /// <summary>
+        /// 客户经理 快照
+        /// </summary>
+        public string Manager { get; set; }
+
+        /// <summary>
+        /// 零售户片区
+        /// </summary>
+        public string Area { get; set; }
     }
     [AutoMapFrom(typeof(Shop))]
     public class CheckShopDto
@@ -111,7 +127,8 @@ namespace HC.WeChat.Shops.Dtos
     /// <summary>
     /// 生成店铺二维码返回结果
     /// </summary>
-    public class CreateQRResult {
+    public class CreateQRResult
+    {
         /// <summary>
         /// 票据
         /// </summary>
@@ -124,6 +141,42 @@ namespace HC.WeChat.Shops.Dtos
         /// 本地二维码图片Url
         /// </summary>
         public string QRUrl { get; set; }
+
+    }
+
+    /// <summary>
+    /// 店铺入驻数统计
+    /// </summary>
+    public class ShopStatisticDto
+    {
+        /// <summary>
+        /// 分公司
+        /// </summary>
+        public string Company { get; set; }
+
+        /// <summary>
+        /// 入驻店铺数
+        /// </summary>
+        public int? Count { get; set; }
+
+        /// <summary>
+        /// 排序id
+        /// </summary>
+        public int GroupId { get; set; }
+
+    }
+
+    public class ShopStatisticLiDto
+    {
+        /// <summary>
+        /// 店铺入驻数统计
+        /// </summary>
+        public List<ShopStatisticDto> ShopStaDto { get; set; }
+
+        /// <summary>
+        /// 店铺入驻总数
+        /// </summary>
+        public int? Total { get; set; }
 
     }
 }

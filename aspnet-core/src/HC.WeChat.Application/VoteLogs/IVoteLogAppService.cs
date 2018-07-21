@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using HC.WeChat.VoteLogs.Dtos;
 using HC.WeChat.VoteLogs;
 using System;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.VoteLogs
 {
@@ -59,5 +60,8 @@ namespace HC.WeChat.VoteLogs
             /// 批量删除VoteLog
             /// </summary>
         Task BatchDeleteVoteLogsAsync(List<Guid> input);
+        Task<int> GetWXVotesCountAsync();
+        Task<APIResultDto> AddVoteLogAsync(VoteLogEditDto input);
+        Task<int?> GetCurrentDayVoteByIdAsync(string openId);
     }
 }

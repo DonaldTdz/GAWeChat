@@ -1,0 +1,148 @@
+<!--component html goes here -->
+<Page [ngClass]="'Exhibition'" [title]="'陈列活动'" [showTitle]="false" [spacing]="false">
+    <!-- <section style="display: inline-block;width: 140px;height: 140px;max-width: 100% !important;box-sizing: border-box !important;word-wrap: break-word !important;">
+    <img style="position:absolute;width: 160px;height: 160px;opacity: 0" src="assets/images/exhibition/qrurl.jpg">
+    <div *ngIf="qjyyPic">
+        <img class="" data-fail="0" data-ratio="1" data-src="http://wx.photostory.top/assets/img/weixin.jpg" data-type="jpeg" data-w="344" src="assets/images/exhibition/qrurl.jpg" style="box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 140px !important;height: auto !important;"
+        />
+        <p>长按识别二维码关注公众号1</p>
+    </div>
+</section> -->
+    <div class="weui-panel weui-panel_access">
+        <div class="weui-cell" style=" padding-bottom: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px;">
+            <div style="text-align: center; width: 100%;">
+                <img src="assets/images/exhibition/exhibitionBanner.jpg" style="width:100%;">
+            </div>
+        </div>
+        <div class="weui-panel__bd">
+            <weui-searchbar (search)="onSearch($event)" [(value)]="value" placeholder="请输入店铺名称或编号" (cancel)="onCancel()" [debounceTime]="500" (clear)="onClear()"></weui-searchbar>
+            <div class="weui-panel" style="margin-top: 0px;" *ngIf="value">
+                <div class="weui-panel__hd">包含【{{value}}】的店铺</div>
+                <div class="weui-panel__bd" *ngIf="shops | async; let shops; else loading">
+                    <a class="weui-cell weui-cell_access" *ngFor="let item of shops" (click)="goDetail(item.shopId)">
+                        <div class="weui-cell__bd weui-cell_primary">
+                            <p>{{item.shopName}}</p>
+                        </div>
+                        <div class="weui-cell__ft">
+                            参赛编号:{{item.noId}}
+                        </div>
+                    </a>
+                    <div class="weui-media-box weui-media-box_text" *ngIf="shops?.length === 0">没有该店铺信息</div>
+                </div>
+                <ng-template #loading>
+                    <div class="weui-panel__bd">
+                        <div class="weui-media-box weui-media-box_text">加载中...</div>
+                    </div>
+                </ng-template>
+            </div>
+            <section class="rules">
+                <div class="text">
+                    <div class="prize">投票须知</div>
+                    <div class="neirong">
+                        <div style="text-align:left;">
+                            <span style="font-size:13px; padding: 10px;">
+                                <div>
+                                    <p *ngFor="let item of voteDesc" style="padding-left: 10px;">
+                                        {{item}}
+                                    </p>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="weui-flex" style="padding-top: 5px;">
+                <div class="weui-flex__item">
+                    <div class="placeholder" style="text-align: center;font-size: 13px;color: #999999; line-height: 25px; height: 50px;">参赛店铺<br/>{{shopTotal}}</div>
+                </div>
+                <div class="weui-flex__item" style="text-align: center;font-size: 26px;color: #999999; line-height: 50px; height: 50px; width: 50px;">
+                    |
+                </div>
+                <div class="weui-flex__item">
+                    <div class="placeholder" style="text-align: center;font-size: 13px;color: #999999; line-height: 25px; height: 50px;">投票人次<br/>{{voteTotal}}</div>
+                </div>
+            </div>
+            <!-- <div class="button-sp-area">
+                <button weui-button [weui-mini]="'mini'" [weui-plain]="selectedType == 'time'" (click)="getExhibitionShop('vote')">投票排行</button>
+                <button weui-button [weui-mini]="'mini'" [weui-plain]="selectedType == 'vote'" (click)="getExhibitionShop('time')">最新参赛</button>
+            </div> -->
+            <weui-loadmore type="line" *ngIf="!exhibitionShopList || exhibitionShopList.length == 0"></weui-loadmore>
+            <!-- <div class="weui-flex" style="flex-flow: row wrap;padding-left: 13px;" >
+                <div class="weui-flex__item" style="text-align: center;" *ngFor="let item of exhibitionShopList">
+                    <div class="weui-media-box__hd" style="float: left;">
+                        <img style="height: 128px;width: 160px;" class="weui-media-box__thumb diy_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.picPath +')'}"
+                            alt="" (click)="goDetail(item.shopId)">
+                        <div class="weui-media-box weui-media-box_text" style="padding-top: 0px;padding-bottom: 5px;">
+                            <p class="weui-media-box__desc" style="color: #434142;float: center;text-align: center; font-size: 13px">{{item.shopName}}</p>
+                            <ul class="weui-media-box__info" style="margin-top: 5px;">
+                                <li class="weui-media-box__info__meta" style="color: #999999">票数：{{item.votes}}</li>
+                                <li class="weui-media-box__info__meta weui-media-box__info__meta_extra" (click)="voteAdd(item.id)" style="color: #0BB20C;font-size: 16px">投票</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <div class="weui-flex" *ngFor="let view of exhibitionShopList">
+            <div class="weui-flex__item" style="padding: 5px;" *ngFor="let item of view.items">
+                <div class="weui-form-preview">
+                    <div class="weui-form-preview__hd weui-form-preview" style="padding-bottom: 0px; padding-top: 0px;">
+                        <label class="weui-form-preview__label" style="min-width: 1em; font-size: 13px;">{{item.noId}}号</label>
+                        <em class="weui-form-preview__value" style="    min-width: 1em;
+                        font-size: 18px;">{{item.votes}}票</em>
+                    </div>
+                    <div class="weui-form-preview__bd diy_img " (click)="goDetail(item.shopId)" [ngStyle]="{'background-image':'url('+ hostUrl + item.picPath +')'}">
+                        <div class="weui-cell" style="height: 100px; padding: 0px;">
+                        </div>
+                        <div class="weui-cell weui-shop-cell_img">
+                            <div class="weui-cell__hd">
+                                <p style="font-weight: bold;">{{item.shopName}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__ft">
+                        <a class="weui-form-preview__btn weui-form-preview__btn_primary" style="font-size: 1.2em;" href="javascript:" (click)="voteAdd(item)">投一票</a>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="view.items.length == 1" class="weui-flex__item"></div>
+        </div>
+
+        <!-- <section style="display: inline-block;width: 140px;height: 140px;max-width: 100% !important;box-sizing: border-box !important;word-wrap: break-word !important;">
+            <img style="position:absolute;width: 160px;height: 160px;opacity: 0" src="assets/images/exhibition/qrurl.jpg">
+            <div *ngIf="qjyyPic">
+                <img class="" data-fail="0" data-ratio="1" data-src="http://wx.photostory.top/assets/img/weixin.jpg" data-type="jpeg" data-w="344" src="assets/images/exhibition/qrurl.jpg" style="box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 140px !important;height: auto !important;"
+                />
+                <p>长按识别二维码关注公众号1</p>
+            </div>
+        </section> -->
+    </div>
+    <!-- <img style="position:absolute;width: 140px;height: 140px;opacity: 0" data-src="http://wx.photostory.top/assets/img/weixin.jpg" data-type="jpeg" data-w="344" src="assets/images/exhibition/qrurl.jpg">
+    <section style="display: inline-block;width: 140px;height: 140px;max-width: 100% !important;box-sizing: border-box !important;word-wrap: break-word !important;">
+        <img style="position:absolute;width: 160px;height: 160px;opacity: 0" src="assets/images/exhibition/qrurl.jpg">
+        <div *ngIf="qjyyPic">
+            <img class="" data-fail="0" data-ratio="1" data-src="http://wx.photostory.top/assets/img/weixin.jpg" data-type="jpeg" data-w="344" src="assets/images/exhibition/qrurl.jpg" style="box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 140px !important;height: auto !important;"
+            />
+            <p>长按识别二维码关注公众号2</p>
+        </div>
+    </section> -->
+    <!-- <article class="weui-article">
+    <section style="display: inline-block;width: 140px;height: 140px;max-width: 100% !important;box-sizing: border-box !important;word-wrap: break-word !important;">
+        <img style="position:absolute;width: 160px;height: 160px;opacity: 0" src="assets/images/exhibition/qrurl.jpg">
+        <div *ngIf="qjyyPic">
+            <img class="" data-fail="0" data-ratio="1" data-src="http://wx.photostory.top/assets/img/weixin.jpg" data-type="jpeg" data-w="344" src="assets/images/exhibition/qrurl.jpg" style="box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 140px !important;height: auto !important;"
+            />
+            <p>长按识别二维码关注公众号3</p>
+        </div>
+    </section>
+</article> -->
+    <!-- <section style="display: inline-block;width: 400px;height: 400px;max-width: 100% !important;box-sizing: border-box !important;word-wrap: break-word !important;">
+    <img style="position:absolute;width: 400px;height: 400px;opacity: 0" src="assets/images/exhibition/qrurl.jpg">
+    <div *ngIf="qjyyPic">
+        <img class="" data-fail="0" data-ratio="1" data-src="http://wx.photostory.top/assets/img/weixin.jpg" data-type="jpeg" data-w="344" src="assets/images/exhibition/qrurl.jpg" style="box-sizing: border-box !important;word-wrap: break-word !important;visibility: visible !important;width: 140px !important;height: auto !important;"
+        />
+        <p>长按识别二维码关注公众号4</p>
+    </div>
+</section> -->
+    <!-- <a style="float: center;" href="http://wx.photostory.top/test.html">我要准备跳转了</a> -->
+</Page>

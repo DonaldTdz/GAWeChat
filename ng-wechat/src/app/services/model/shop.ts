@@ -22,6 +22,7 @@ export class Shop implements IShop {
     ticket:string;
     wechatUrl:string;
     qrUrl:string;
+    fansNum:number;
     constructor(data?: IShop) {
         if (data) {
             for (var property in data) {
@@ -55,6 +56,8 @@ export class Shop implements IShop {
             this.ticket = data["ticket"];
             this.wechatUrl = data["wechatUrl"];
             this.qrUrl = data["qrUrl"];
+            this.fansNum = data["fansNum"];
+            
         }
     }
 
@@ -99,7 +102,7 @@ export class Shop implements IShop {
         data["ticket"] = this.ticket;
         data["wechatUrl"] = this.wechatUrl;
         data["qrUrl"] = this.qrUrl;
-        
+        data["fansNum"] = this.fansNum;
         return data;
     }
 
@@ -133,6 +136,7 @@ export interface IShop {
     ticket:string;
     wechatUrl:string;
     qrUrl:string;
+    fansNum:number;
 }
 
 export class NearbyShop implements INearbyShop {

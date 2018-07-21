@@ -1,0 +1,72 @@
+// component css goes here
+.button-sp-area {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.btn {
+    color: #E92730;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #E92730;
+    // font-size: 14px;
+}
+
+.shopName {
+    float: left;
+    line-height: 30px;
+    color: #434142;
+    width: 60%;
+    padding-left: 5%;
+    height: 30px;
+    font-size: 14px;
+}
+
+.weui-form-preview__ft {
+    font-size: 13px;
+}
+
+.weui-media-box_appmsg .weui-media-box__thumb {
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+}
+
+.rules .text .prize {
+    width: 33.3333%;
+    display: block;
+    margin-left: 33.3333%;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #959595;
+    color: #3e3c3c;
+    margin-top: 10px;
+}
+
+.qrcode {
+    width: 100%;
+}
+
+.mdiv {
+    text-align: center;
+}
+
+.diy_img {
+    height: 130px;
+    width: auto;
+    background: no-repeat center center;
+    background-size: cover;
+    position: relative;
+    margin-top: 0px;
+    padding: 0px;
+}
+
+.weui-shop-cell_img {
+    font-size: 14px;
+    color: black;
+    background: rgba(255, 255, 255, 0.75);
+    padding: 0px;
+}

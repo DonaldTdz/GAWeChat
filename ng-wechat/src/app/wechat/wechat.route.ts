@@ -23,6 +23,7 @@ export const routes = [
     //{ path: 'imgs', loadChildren: './personal-center/img-cropper/img-cropper.module#ImgCropperModule' },
     // Not found
     { path: 'lotteries', loadChildren: './activities/lottery/lottery.module#LotteryModule' },
+    { path: 'exhibitions', loadChildren: './activities/exhibition/exhibition.module#ExhibitionModule' },
     { path: '**', redirectTo: '' }
 ];
 

@@ -22,6 +22,8 @@ using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using HC.WeChat.WechatAppConfigs.Dtos;
 using HC.WeChat.WechatAppConfigs;
+using HC.WeChat.Retailers;
+using HC.WeChat.Employees;
 
 namespace HC.WeChat.IntegralDetails
 {
@@ -37,15 +39,22 @@ namespace HC.WeChat.IntegralDetails
         private readonly IRepository<IntegralDetail, Guid> _integraldetailRepository;
         private readonly IIntegralDetailManager _integraldetailManager;
         private readonly IRepository<WeChatUser, Guid> _wechatusersRepository;
+        private readonly IRepository<Retailer, Guid> _retailerRepository;
+        private readonly IRepository<Employee, Guid> _employeeRepository;
         /// <summary>
         /// 构造函数
         /// </summary>
         public IntegralDetailAppService(IRepository<IntegralDetail, Guid> integraldetailRepository
-      , IIntegralDetailManager integraldetailManager, IRepository<WeChatUser, Guid> wechatusersRepository)
+            , IRepository<Retailer, Guid> retailerRepository
+            , IIntegralDetailManager integraldetailManager
+            , IRepository<Employee, Guid> employeeRepository
+            , IRepository<WeChatUser, Guid> wechatusersRepository)
         {
             _integraldetailRepository = integraldetailRepository;
             _integraldetailManager = integraldetailManager;
             _wechatusersRepository = wechatusersRepository;
+            _retailerRepository = retailerRepository;
+            _employeeRepository = employeeRepository;
         }
 
         /// <summary>
@@ -226,15 +235,34 @@ namespace HC.WeChat.IntegralDetails
             //                UserTypeName = Enum.GetName(typeof(UserTypeEnum), u.UserType),
             //            };
 
-            var queryIntegral = _wechatusersRepository.GetAll().Where(v=>v.IntegralTotal>0)
+            var queryIntegral = _wechatusersRepository.GetAll().Where(v => v.IntegralTotal > 0)
                 .WhereIf(!string.IsNullOrEmpty(input.Name), v => v.NickName.Contains(input.Name))
                 .WhereIf(input.UserType.HasValue, u => u.UserType == input.UserType)
                 .WhereIf(!string.IsNullOrEmpty(input.Phone), u => u.Phone.Contains(input.Phone));
+
             ////TODO:根据传入的参数添加过滤条件
-            var intergralCount = await queryIntegral.CountAsync();
+            var retailer = _retailerRepository.GetAll();
+            var employee = _employeeRepository.GetAll();
+            var query = (from w in queryIntegral
+                         join r in retailer on w.UserId equals r.Id into wr
+                         from table in wr.DefaultIfEmpty()
+                         join e in employee on w.UserId equals e.Id into wre
+                         from result in wre.DefaultIfEmpty()
+                         select new WeChatUserListDto()
+                         {
+                             Id = w.Id,
+                             OpenId = w.OpenId,
+                             NickName = w.NickName,
+                             UserType = w.UserType,
+                             Code = table != null ? table.Code : (result != null ? result.Code : ""),
+                             Phone = w.Phone,
+                             IntegralTotal = w.IntegralTotal,
+                             UserName = w.UserName
+                         }).WhereIf(!string.IsNullOrEmpty(input.Code), v => v.Code.Contains(input.Code));
+            var intergralCount = await query.CountAsync();
             if (input.SortValue == "ascend")
             {
-                var intergral = await queryIntegral
+                var intergral = await query
                 .OrderByDescending(v => v.IntegralTotal)
                 .ThenBy(input.Sorting)
                 .PageBy(input)
@@ -246,9 +274,9 @@ namespace HC.WeChat.IntegralDetails
                                 intergralListDtos
                                 );
             }
-            else if(input.SortValue == "descend")
+            else if (input.SortValue == "descend")
             {
-                var intergral = await queryIntegral
+                var intergral = await query
                 .OrderBy(v => v.IntegralTotal)
                 .ThenBy(input.Sorting)
                 .PageBy(input)
@@ -262,7 +290,7 @@ namespace HC.WeChat.IntegralDetails
             }
             else
             {
-                var intergral = await queryIntegral
+                var intergral = await query
                 .OrderByDescending(v => v.IntegralTotal)
                 .ThenBy(input.Sorting)
                 .PageBy(input)
@@ -282,7 +310,7 @@ namespace HC.WeChat.IntegralDetails
         /// <returns></returns>
         public async Task<PagedResultDto<IntegralDetailListDto>> GetPagedIntegralDetailsByIdAsync(GetIntegralDetailsInput input)
         {
-            var queryIntegralDetail = _integraldetailRepository.GetAll().Where(v=>v.OpenId == input.OpenId);
+            var queryIntegralDetail = _integraldetailRepository.GetAll().Where(v => v.OpenId == input.OpenId);
             var queryWXUser = _wechatusersRepository.GetAll();
             var query = from i in queryIntegralDetail
                         join u in queryWXUser on i.OpenId equals u.OpenId
@@ -333,8 +361,29 @@ namespace HC.WeChat.IntegralDetails
             //                 IntegralTotal =u.IntegralTotal
             //             }).FirstOrDefaultAsync();
             //return  entity;
-            var user = await _wechatusersRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
-            return user.MapTo<WeChatUserListDto>();
+            var user = _wechatusersRepository.GetAll().Where(v => v.OpenId == openId);
+            var retailer = _retailerRepository.GetAll();
+            //var user = await _wechatusersRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
+            var query = await (from u in user
+                               join r in retailer on u.UserId equals r.Id into ur
+                               from table in ur.DefaultIfEmpty()
+                               select new WeChatUserListDto()
+                               {
+                                   NickName = u.NickName,
+                                   UserType = u.UserType,
+                                   Phone = u.Phone,
+                                   IntegralTotal = u.IntegralTotal,
+                                   MemberBarCode = u.MemberBarCode,
+                                   BindStatus = u.BindStatus,
+                                   AttentionTime = u.AttentionTime,
+                                   BindTime = u.BindTime,
+                                   UnBindTime = u.UnBindTime,
+                                   UnfollowTime = u.UnfollowTime,
+                                   Code = table.Code ?? null,
+                                   OpenId = u.OpenId
+                               }).FirstOrDefaultAsync();
+            //return user.MapTo<WeChatUserListDto>();
+            return query;
         }
 
         /// <summary>
@@ -354,13 +403,13 @@ namespace HC.WeChat.IntegralDetails
                 var entity = from i in query
                              select new IntegralDetailListDto()
                              {
-                                 Id=i.Id,
-                                 CreationTime =i.CreationTime,
-                                 Integral=i.Integral,
+                                 Id = i.Id,
+                                 CreationTime = i.CreationTime,
+                                 Integral = i.Integral,
                                  Type = i.Type,
-                                 Desc =i.Desc
+                                 Desc = i.Desc
                              };
-                return await entity.OrderByDescending(v=>v.CreationTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+                return await entity.OrderByDescending(v => v.CreationTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
             }
         }
     }

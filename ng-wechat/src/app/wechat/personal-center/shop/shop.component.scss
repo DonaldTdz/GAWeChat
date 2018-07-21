@@ -48,6 +48,22 @@
 // .weui-dialog__bd:first-child{
 //     // margin-bottom:20px; 
 // }
+.payment_wechat_img{
+    position: relative;
+    width: 25vh;
+    height: 25vh;
+    padding: 10px;
+    background: #ffffff;
+    img{
+        width: 100%
+    }
 
+    .payment_wechat_icon{
+        width: 50px;
+        position: absolute;
+        top: 10vh;
+        left: 10vh;
+    }
+}
 
 

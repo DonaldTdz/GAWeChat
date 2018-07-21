@@ -1,0 +1,16 @@
+<!--component html goes here -->
+<div class="weui-mask" [ngClass]="{'weui-mask': _shown}" (click)="hide(true)"></div>
+<div [ngClass]="{'weui-dialog': _shown }" #container>
+    <div class="weui-dialog__hd" style="text-align: center" *ngIf="shop"  >
+        <strong class="weui-dialog__title" >{{shop.name}}</strong>
+    </div>
+    <div  class="weui-dialog__bd" >
+        <div style="padding-bottom: 10px; padding-left: 5px; padding-right: 5px;">
+            <!-- <p>{{shop.name}}</p> -->
+            <div id="wechat_qrcode" class="divQrImg"  >
+                <!-- <img class="payment_wechat_icon" src="assets/images/logo.jpg"> -->
+            </div>
+        </div>
+        <p style="color: black ;text-align: center" *ngIf="shop" >扫一扫，访问此店铺</p>
+    </div>
+</div>

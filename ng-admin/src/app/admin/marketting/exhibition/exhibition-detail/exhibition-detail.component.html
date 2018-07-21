@@ -1,0 +1,44 @@
+<!--component html goes here -->
+<nz-card [nzBordered]="false" nzTitle="活动详情">
+    <pro-header [title]="shopName">
+        <ng-template #content>
+            <div nz-row nzGutter="16">
+                <div nz-col nzXs="24" nzSm="18">
+                    <desc-list size="small" col="3" class="mb-md">
+                        <desc-list-item term="店铺名称">{{exhibitionShop.shopName}}</desc-list-item>
+                        <desc-list-item term="店铺地址">{{exhibitionShop.shopAddress}}</desc-list-item>
+                        <desc-list-item term="所属区县">{{exhibitionShop.area}}</desc-list-item>
+                        <desc-list-item term="零售客户编码">{{exhibitionShop.custCode}}</desc-list-item>
+                        <desc-list-item term="零售客户">{{exhibitionShop.custName}}</desc-list-item>
+                        <desc-list-item term="店铺电话">{{exhibitionShop.phone}}</desc-list-item>
+                        <desc-list-item term="实时票数">{{exhibitionShop.votes}}</desc-list-item>
+                        <desc-list-item term="店铺会员数">{{exhibitionShop.fansNum}}</desc-list-item>
+                        <desc-list-item *ngIf="exhibitionShop.noId" term="参赛编号">{{exhibitionShop.noId}}号</desc-list-item>
+                    </desc-list>
+                </div>
+            </div>
+            <div nz-form-item nz-row>
+                <div nz-form-control nz-col [nzSm]="20">
+                    <h4 *ngIf="picIds" class="mb-md" style="text-align: center">点击图片可查看原图</h4>
+                    <nz-list *ngIf="picIds.length>=1" class="imgList" [nzDataSource]="picIds" [nzGrid]="{gutter: 24, lg: 6, md: 8, sm: 12, xs: 24 }">
+                        <ng-template #item let-item>
+                            <nz-list-item>
+                                <img alt="" src="{{host+item}}" (click)="handlePreview(host+item)" style="width: 100%;height: 220px;">
+                            </nz-list-item>
+                        </ng-template>
+                    </nz-list>
+                    <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null" (nzOnCancel)="previewVisible=false">
+                        <ng-template #modalContent>
+                            <img [src]="previewImage" [ngStyle]="{ 'width': '100%' }" />
+                        </ng-template>
+                    </nz-modal>
+                </div>
+            </div>
+        </ng-template>
+    </pro-header>
+</nz-card>
+<footer-toolbar>
+    <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
+        {{l("返回")}}
+    </button>
+</footer-toolbar>

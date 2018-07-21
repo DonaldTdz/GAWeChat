@@ -13,7 +13,7 @@ import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { Http, Headers, ResponseContentType, Response } from '@angular/http';
 import { Activity } from '@shared/service-proxies/entity/acitivity';
 import { API_BASE_URL, SwaggerException } from '@shared/service-proxies/service-proxies';
-import { Parameter, ApiResult } from '@shared/service-proxies/entity';
+import { Parameter, ApiResult, WeChatUserStatistic } from '@shared/service-proxies/entity';
 import { WechatUser } from '@shared/entity/wechat';
 // import * as moment from 'moment';
 
@@ -33,6 +33,57 @@ export class WechatUserServiceProxy {
     constructor(@Inject(Http) http: Http, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    ExportIntegralExcel(input: any): Observable<ApiResult> {
+        let url_ = this.baseUrl + "/api/services/app/WeChatUser/ExportWeChatUsersIntegralExcelAsync";
+        url_ = url_.replace(/[?&]$/, "");
+        console.log(input);
+        const content_ = JSON.stringify(input);
+
+        let options_ = {
+            body: content_,
+            method: "post",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processExportIntegralExcel(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processExportExcel(response_);
+                } catch (e) {
+                    return <Observable<ApiResult>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<ApiResult>><any>Observable.throw(response_);
+        });
+    }
+    protected processExportIntegralExcel(response: Response): Observable<ApiResult> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? ApiResult.fromJS(resultData200) : new ApiResult();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<ApiResult>(<any>null);
     }
     getUserInfoAsync(openId: string): Observable<WechatUser> {
         let url_ = this.baseUrl + "/api/services/app/IntegralDetail/GetUserInfoAsync?";
@@ -485,6 +536,56 @@ export class WechatUserServiceProxy {
         }
         return Observable.of<void>(<any>null);
     }
+
+    getWeChatUserStatistic(): Observable<ResultDtoOfWeChatUserStatistic> {
+        let url_ = this.baseUrl + "/api/services/app/WeChatUser/GetWeChatUserStatistic";
+
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processWeChatUserStatistic(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processWeChatUserStatistic(response_);
+                } catch (e) {
+                    return <Observable<ResultDtoOfWeChatUserStatistic>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<ResultDtoOfWeChatUserStatistic>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processWeChatUserStatistic(response: Response): Observable<ResultDtoOfWeChatUserStatistic> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? ResultDtoOfWeChatUserStatistic.fromJS(resultData200) : new ResultDtoOfWeChatUserStatistic();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<ResultDtoOfWeChatUserStatistic>(<any>null);
+    }
 }
 export class PagedResultDtoOfWeChatUser implements IPagedResultDtoOfWeChatUser {
     totalCount: number;
@@ -538,4 +639,60 @@ export class PagedResultDtoOfWeChatUser implements IPagedResultDtoOfWeChatUser {
 export interface IPagedResultDtoOfWeChatUser {
     totalCount: number;
     items: WechatUser[];
+}
+
+export class ResultDtoOfWeChatUserStatistic implements IResultDtoOfWeChatUserStatistic {
+    total:number;
+    items: WeChatUserStatistic[];
+
+    constructor(data?: IResultDtoOfWeChatUserStatistic) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.total = data["total"];
+            if (data["wechatUserStaDto"] && data["wechatUserStaDto"].constructor === Array) {
+            // if (data && data.constructor === Array) {
+                this.items = [];
+                for (let item of data["wechatUserStaDto"])
+                    this.items.push(WeChatUserStatistic.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ResultDtoOfWeChatUserStatistic {
+        let result = new ResultDtoOfWeChatUserStatistic();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["total"] = this.total;
+        if (this.items && this.items.constructor === Array) {
+            data["wechatUserStaDto"] = [];
+            // data = [];
+            for (let item of this.items)
+                data["wechatUserStaDto"].push(item.toJSON());
+                // data.push(item.toJSON());
+        }
+        return data;
+    }
+
+    clone() {
+        const json = this.toJSON();
+        let result = new ResultDtoOfWeChatUserStatistic();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IResultDtoOfWeChatUserStatistic {
+    items: WeChatUserStatistic[];
 }

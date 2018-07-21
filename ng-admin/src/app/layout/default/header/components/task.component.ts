@@ -33,7 +33,7 @@ import { Router } from '@angular/router';
                     <p>没有需要审核的店铺</p>
                 </div>
                 </div>
-                <div nz-row class="pt-lg pb-lg" *ngIf="data.length > 5">
+                <div nz-row class="pt-lg pb-lg" *ngIf="count > 5">
                     <div nz-col [nzSpan]="24" class="text-center text-grey point" (click)="goShopList()" >
                         查看更多
                     </div>
@@ -58,10 +58,10 @@ export class HeaderTaskComponent implements OnInit {
 
     change() {
         this.shopServer.getPendingShopList().subscribe((res) => {
-            this.data = res;
             this.loading = false;
             if (res) {
-                this.count = res.length;
+                this.data = res.data.shopList;
+                this.count = res.data.count;
             } else {
                 this.count = null;
             }

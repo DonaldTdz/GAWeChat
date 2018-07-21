@@ -18,6 +18,7 @@
                     <desc-list-item *ngIf="weChatUser.unBindTime" term="解绑时间">{{weChatUser.unBindTime| _date}}</desc-list-item>
                     <desc-list-item *ngIf="weChatUser.attentionTime" term="关注时间">{{weChatUser.attentionTime| _date}}</desc-list-item>
                     <desc-list-item *ngIf="weChatUser.unfollowTime" term="取关时间">{{weChatUser.unfollowTime| _date}}</desc-list-item>
+                    <desc-list-item *ngIf="weChatUser.code" term="客户编码">{{weChatUser.code}}</desc-list-item>
                     <desc-list-item term="微信编号">{{weChatUser.openId}}</desc-list-item>
                 </desc-list>
             </div>

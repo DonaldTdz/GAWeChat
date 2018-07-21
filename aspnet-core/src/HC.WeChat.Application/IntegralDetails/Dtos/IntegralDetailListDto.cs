@@ -35,5 +35,6 @@ namespace HC.WeChat.IntegralDetails.Dtos
         public string Phone { get; set; }
         public string MemberBarCode { get; set; }
         public string UserTypeName { get; set; }
+        public string Code { get; set; }
     }
 }

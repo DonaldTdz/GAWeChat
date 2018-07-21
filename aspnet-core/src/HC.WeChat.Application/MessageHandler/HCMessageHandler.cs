@@ -20,7 +20,8 @@ namespace HC.WeChat.MessageHandler
     {
         private readonly IRepository<WechatMessage, Guid> _wechatmessageRepository;
         private readonly IRepository<WechatSubscribe, Guid> _wechatsubscribeRepository;
-        private readonly IWeChatUserManager _wechatUserManager;
+        //private readonly IWeChatUserManager _wechatUserManager;
+        private readonly IWeChatUserAppService _wChatUserAppService;
         public ILogger Logger { protected get; set; }
 
         //private int? _tenantId = 0;
@@ -28,15 +29,17 @@ namespace HC.WeChat.MessageHandler
 
 
         public HCMessageHandler(IRepository<WechatMessage, Guid> wechatmessageRepository, 
-            IRepository<WechatSubscribe, Guid> wechatsubscribeRepository, 
-            IWeChatUserManager wechatUserManager,
+            IRepository<WechatSubscribe, Guid> wechatsubscribeRepository,
+            //IWeChatUserManager wechatUserManager,
+            IWeChatUserAppService wChatUserAppService,
             int? tenantId, Stream inputStream, 
             PostModel postModel, 
             int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
         {
             _wechatmessageRepository = wechatmessageRepository;
             _wechatsubscribeRepository = wechatsubscribeRepository;
-            _wechatUserManager = wechatUserManager;
+            //_wechatUserManager = wechatUserManager;
+            _wChatUserAppService = wChatUserAppService;
             Logger = NullLogger.Instance;
             _tenantId = tenantId;
         }
@@ -91,7 +94,7 @@ namespace HC.WeChat.MessageHandler
         {
             Logger.InfoFormat("取消关注:{0}", requestMessage);
             //取消关注
-            _wechatUserManager.UnsubscribeAsync(requestMessage.FromUserName, _tenantId);
+            _wChatUserAppService.UnsubscribeAsync(requestMessage.FromUserName);
         }
 
         public override void Subscribe(RequestMessageEvent_Subscribe requestMessage)
@@ -106,7 +109,8 @@ namespace HC.WeChat.MessageHandler
             Logger.InfoFormat("关注ticket：{0}", requestMessage.Ticket);
 
             //关注公众号
-            _wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId, requestMessage.EventKey, requestMessage.Ticket);
+            //_wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId, requestMessage.EventKey, requestMessage.Ticket);
+            _wChatUserAppService.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, requestMessage.EventKey, requestMessage.Ticket);
             //_wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId);
 
         }
@@ -234,13 +238,28 @@ namespace HC.WeChat.MessageHandler
             }
             foreach (var item in this.MessageInfo.KeyWordsPic)
             {
-                        requestHandler.Keyword(item.Key, () =>
-                        {
-                            var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
-                            responseMessage.ArticleCount = 1;
-                            responseMessage.Articles.Add(item.Value);
-                            return responseMessage;
-                        });
+                if (item.Key == "默认")
+                {
+                    requestHandler.Default(() =>
+                    {
+                        //var responseMessage = this.CreateResponseMessage<ResponseMessageText>();
+                        //responseMessage.Content = this.MessageInfo.KeyWords["默认"];
+                        var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
+                        responseMessage.ArticleCount = 1;
+                        responseMessage.Articles.Add(GetPicSubscribe());
+                        return responseMessage;
+                    });
+                }
+                else
+                {
+                    requestHandler.Keyword(item.Key, () =>
+                    {
+                        var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
+                        responseMessage.ArticleCount = 1;
+                        responseMessage.Articles.Add(item.Value);
+                        return responseMessage;
+                    });
+                }
             }
             return requestHandler.GetResponseMessage() as IResponseMessageBase;
         }
