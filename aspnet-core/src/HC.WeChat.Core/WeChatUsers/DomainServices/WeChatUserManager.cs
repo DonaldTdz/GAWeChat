@@ -76,7 +76,6 @@ namespace HC.WeChat.WeChatUsers.DomainServices
         /// <summary>
         /// 微信关注
         /// </summary>
-        [UnitOfWork]
         [Audited]
         public async Task SubscribeAsync(string openId, string nickName, string headImgUrl, int? tenantId, string scene, string ticket)
         {
