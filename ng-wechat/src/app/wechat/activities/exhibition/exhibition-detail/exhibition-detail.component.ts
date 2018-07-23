@@ -123,8 +123,10 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
 
     voteAdd(id: string, type: 'success' | 'loading', forceHide: boolean = false) {
         var currentTime = new Date();
-        var benginDate = new Date(this.exhibition.beginTime);//开始时间戳
-        if (benginDate.valueOf() < currentTime.getTime()) {
+        //var benginDate = new Date(this.exhibition.beginTime);//开始时间戳
+        var bdate = new Date(this.exhibition.beginTime);
+        var benginDate = new Date(bdate.getFullYear(), bdate.getMonth(), bdate.getDate(), 0, 0, 0);//开始时间戳
+        if (benginDate < currentTime) {
             this.articleService.GetIsAttentionByOpenIdAsync(this.settingsService.openId).subscribe(result => {
                 this.isAttention = result;
                 if (this.isAttention == true) {
