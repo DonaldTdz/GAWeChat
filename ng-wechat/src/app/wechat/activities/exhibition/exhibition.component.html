@@ -87,9 +87,9 @@
             <div class="weui-flex__item" style="padding: 5px;" *ngFor="let item of view.items">
                 <div class="weui-form-preview">
                     <div class="weui-form-preview__hd weui-form-preview" style="padding-bottom: 0px; padding-top: 0px;">
-                        <label class="weui-form-preview__label" style="min-width: 1em; font-size: 13px;">编号:{{item.noId}}</label>
+                        <label class="weui-form-preview__label" style="min-width: 1em; font-size: 13px;">{{item.noId}}号</label>
                         <em class="weui-form-preview__value" style="    min-width: 1em;
-                        font-size: 18px;">票数:{{item.votes}}</em>
+                        font-size: 18px;">{{item.votes}}票</em>
                     </div>
                     <div class="weui-form-preview__bd diy_img " (click)="goDetail(item.shopId)" [ngStyle]="{'background-image':'url('+ hostUrl + item.picPath +')'}">
                         <div class="weui-cell" style="height: 100px; padding: 0px;">

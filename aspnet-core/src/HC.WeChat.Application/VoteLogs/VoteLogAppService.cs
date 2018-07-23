@@ -235,7 +235,8 @@ namespace HC.WeChat.VoteLogs
         public async Task<APIResultDto> AddVoteLogAsync(VoteLogEditDto input)
         {
             Exhibition config = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();
-            if (DateTime.Now.Date>=config.BeginTime.Value.Date && DateTime.Now.Date<=config.EndTime.Value.Date)
+            //if (DateTime.Now.Date>=config.BeginTime.Value.Date && DateTime.Now.Date<=config.EndTime.Value.Date)
+            if (DateTime.Today >= config.BeginTime && DateTime.Today <= config.EndTime)
             {
                 var nickName = await _wechatuserRepository.GetAll().Where(v => v.OpenId == input.OpenId).Select(v => v.NickName).FirstOrDefaultAsync();
                 input.CreateTime = DateTime.Now;
@@ -256,7 +257,8 @@ namespace HC.WeChat.VoteLogs
                 }
                 return new APIResultDto() { Code = 0, Msg = "成功" };
             }
-            else if(DateTime.Now.Date< config.BeginTime.Value.Date)
+            else if (DateTime.Today < config.BeginTime)
+            //else if(DateTime.Now.Date< config.BeginTime.Value.Date)
             {
                 return new APIResultDto() { Code = 888, Msg = "活动尚未开始" };
             }

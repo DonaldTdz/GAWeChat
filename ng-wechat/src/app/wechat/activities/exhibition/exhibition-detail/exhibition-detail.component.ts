@@ -32,6 +32,7 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
     shareConfig: DialogConfig = {};
     content = '';
     share: any;
+    qjyyPic: string = null; // 渠江烟雨二维码
     // private DEFCONFIG: DialogConfig = <DialogConfig>{
     //     confirm: '注册会员',
     // };
@@ -48,6 +49,7 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
         super(injector);
     }
     ngOnInit() {
+        this.qjyyPic = this.hostUrl + '/assets/img/weixin.jpg';
         this.getExhibitionShopDetail(this.shopId);
         if (!this.settingsService.openId) {
             this.articleService.GetAuthorizationUrl({ shopId: this.shopId, host: this.hostUrl }).subscribe((res) => {
@@ -122,34 +124,43 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
     }
 
     voteAdd(id: string, type: 'success' | 'loading', forceHide: boolean = false) {
-        this.articleService.GetIsAttentionByOpenIdAsync(this.settingsService.openId).subscribe(result => {
-            this.isAttention = result;
-            if (this.isAttention == true) {
-                if (this.currentDayVote < this.exhibition.frequency) {
-                    this.voteBLL(id);
-                } else {
-                    // this.srvt[type]('您今天已经超过投票限制了哦', 0);
-                    this.onShowBySrv('ios', false);
+        var currentTime = new Date();
+        //var benginDate = new Date(this.exhibition.beginTime);//开始时间戳
+        var bdate = new Date(this.exhibition.beginTime);
+        var benginDate = new Date(bdate.getFullYear(), bdate.getMonth(), bdate.getDate(), 0, 0, 0);//开始时间戳
+        if (benginDate < currentTime) {
+            this.articleService.GetIsAttentionByOpenIdAsync(this.settingsService.openId).subscribe(result => {
+                this.isAttention = result;
+                if (this.isAttention == true) {
+                    if (this.currentDayVote < this.exhibition.frequency) {
+                        this.voteBLL(id);
+                    } else {
+                        // this.srvt[type]('您今天已经超过投票限制了哦', 0);
+                        this.onShowBySrv('ios', false);
+                    }
                 }
-            }
-            else {
-                // this.DEFCONFIG = <DialogConfig>{
-                //     skin: 'auto',
-                //     backdrop: true,
-                //     cancel: null,
-                //     confirm: null,
-                // };
-                // this.content = '<div class="mdiv"><p>' + this.exhibitionShop.shopName + '</p><div><img class="qrcode" src="' + AppConsts.remoteServiceBaseUrl + this.shopQrUrl + '"></div><p>长按识别二维码</br>关注公众号后方可投票</p></div>';
-                // this.shareConfig = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
-                //     content: this.content,
-                // });
-                // this.dia.show(this.shareConfig).subscribe((res: any) => {
-                // });
-                // location.href = encodeURIComponent(this.hostUrl + '/GAWX/QrCode?param=' + this.hostUrl + this.shopQrUrl);
-                location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.hostUrl + this.shopQrUrl);
-
-            }
-        });
+                else {
+                    // this.DEFCONFIG = <DialogConfig>{
+                    //     skin: 'auto',
+                    //     backdrop: true,
+                    //     cancel: null,
+                    //     confirm: null,
+                    // };
+                    // this.content = '<div class="mdiv"><p>' + this.exhibitionShop.shopName + '</p><div><img class="qrcode" src="' + AppConsts.remoteServiceBaseUrl + this.shopQrUrl + '"></div><p>长按识别二维码</br>关注公众号后方可投票</p></div>';
+                    // this.shareConfig = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+                    //     content: this.content,
+                    // });
+                    // this.dia.show(this.shareConfig).subscribe((res: any) => {
+                    // });
+                    // location.href = encodeURIComponent(this.hostUrl + '/GAWX/QrCode?param=' + this.hostUrl + this.shopQrUrl);
+                    location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.hostUrl + this.shopQrUrl);
+                    // location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.qjyyPic);
+                }
+            });
+        }
+        else {
+            this.srvt['loading']('活动尚未开始哦', 0);
+        }
     }
 
     getShopQrUrl() {
