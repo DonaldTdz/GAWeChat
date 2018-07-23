@@ -60,7 +60,7 @@ namespace HC.WeChat.WeChatUsers.DomainServices
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                return await Task.FromResult(_wechatuserRepository.GetAll().Where(w => w.TenantId == tenantId && w.OpenId == openId).FirstOrDefault());
+                return await Task.FromResult(_wechatuserRepository.GetAll().Where(w => w.OpenId == openId).FirstOrDefault());
             }
         }
 
@@ -97,7 +97,7 @@ namespace HC.WeChat.WeChatUsers.DomainServices
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                var user = await GetWeChatUserAsync(openId, tenantId);
+                var user = _wechatuserRepository.GetAll().Where(w => w.OpenId == openId).FirstOrDefault(); //await GetWeChatUserAsync(openId, tenantId);
                 //解绑后变成消费者
                 if (user != null)
                 {
@@ -119,7 +119,7 @@ namespace HC.WeChat.WeChatUsers.DomainServices
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                var user = await GetWeChatUserAsync(openId, tenantId);
+                var user = _wechatuserRepository.GetAll().Where(w => w.OpenId == openId).FirstOrDefault();//await GetWeChatUserAsync(openId, tenantId);
                 //解绑后变成消费者
                 if (user != null)
                 {
@@ -148,7 +148,7 @@ namespace HC.WeChat.WeChatUsers.DomainServices
                 //Logger.InfoFormat("保存关注场景值数组：{0}", scenes);
                 //Logger.InfoFormat("保存关注ticket：{0}", ticket);
 
-                var user = await GetWeChatUserAsync(openId, tenantId);
+                var user = _wechatuserRepository.GetAll().Where(w => w.OpenId == openId).FirstOrDefault();//GetWeChatUserAsync(openId, tenantId);
 
                 if (user != null)
                 {
@@ -184,9 +184,30 @@ namespace HC.WeChat.WeChatUsers.DomainServices
                     user.Ticket = ticket;//关注二维码票据
                     await _wechatuserRepository.InsertAsync(user);
                 }
-                await CurrentUnitOfWork.SaveChangesAsync();
+                SceneType stype = (SceneType)int.Parse(scenes[0]);
+                //关注之后新增推广日志
+                var qrCodeLog = new QrCodeLog();
+                qrCodeLog.AttentionTime = DateTime.Now;
+                qrCodeLog.OpenId = openId;
+                qrCodeLog.SourceId = scenes[1];
+                qrCodeLog.SourceType = stype;
+                qrCodeLog.Ticket = ticket;
+                await _qrcodelogRepository.InsertAsync(qrCodeLog);
+
+                if (stype == SceneType.店铺)
+                {
+                    Logger.Info("进入店铺粉丝更新");
+                    var exists = _qrcodelogRepository.GetAll().Any(q => q.SourceId == scenes[1] && q.OpenId == openId);
+                    if (!exists)
+                    {
+                        var shop = await _shopRepository.GetAsync(new Guid(scenes[1]));
+                        shop.FansNum++;
+                        Logger.InfoFormat("店铺粉丝数：{0}", shop.FansNum);
+                    }
+                }
+                //await CurrentUnitOfWork.SaveChangesAsync();
             }
-            await SaveLogAndFans(openId, scenes[1], int.Parse(scenes[0]), ticket, tenantId);
+            //await SaveLogAndFans(openId, scenes[1], int.Parse(scenes[0]), ticket, tenantId);
             ////关注后店铺粉丝统计(方法执行的先后顺序)
             //using (CurrentUnitOfWork.SetTenantId(tenantId))
             //{
@@ -227,7 +248,7 @@ namespace HC.WeChat.WeChatUsers.DomainServices
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
 
-                var user = await GetWeChatUserAsync(openId, tenantId);
+                var user = _wechatuserRepository.GetAll().Where(w => w.OpenId == openId).FirstOrDefault(); //await GetWeChatUserAsync(openId, tenantId);
 
                 if (user != null)
                 {

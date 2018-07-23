@@ -1189,7 +1189,7 @@ namespace HC.WeChat.WeChatUsers
         }
 
         [AbpAllowAnonymous]
-        [UnitOfWork(isTransactional: false)]
+        //[UnitOfWork(isTransactional: false)]
         public Task SubscribeAsync(string openId, string nickName, string headImgUrl, string scene, string ticket)
         {
             var ta = _wechatuserManager.SubscribeAsync(openId, nickName, headImgUrl, null, scene, ticket);
