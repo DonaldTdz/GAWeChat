@@ -32,6 +32,7 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
     shareConfig: DialogConfig = {};
     content = '';
     share: any;
+    qjyyPic: string = null; // 渠江烟雨二维码
     // private DEFCONFIG: DialogConfig = <DialogConfig>{
     //     confirm: '注册会员',
     // };
@@ -48,6 +49,7 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
         super(injector);
     }
     ngOnInit() {
+        this.qjyyPic = this.hostUrl + '/assets/img/weixin.jpg';
         this.getExhibitionShopDetail(this.shopId);
         if (!this.settingsService.openId) {
             this.articleService.GetAuthorizationUrl({ shopId: this.shopId, host: this.hostUrl }).subscribe((res) => {
@@ -152,6 +154,7 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
                     // });
                     // location.href = encodeURIComponent(this.hostUrl + '/GAWX/QrCode?param=' + this.hostUrl + this.shopQrUrl);
                     location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.hostUrl + this.shopQrUrl);
+                    // location.href = this.hostUrl + '/GAWX/QrCode?url=' + encodeURIComponent(this.qjyyPic);
                 }
             });
         }
