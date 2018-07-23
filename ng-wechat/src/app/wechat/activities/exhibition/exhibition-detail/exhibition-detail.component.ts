@@ -155,7 +155,6 @@ export class ExhibitionDetailComponent extends AppComponentBase implements OnIni
         }
         else {
             this.srvt['loading']('活动尚未开始哦', 0);
-
         }
     }
 
