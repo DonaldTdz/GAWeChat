@@ -124,7 +124,6 @@ export class IndexComponent implements OnInit {
      */
     getShopStatistic() {
         this.shopServiceProxy.getShopStatistic().subscribe(data => {
-            console.log(data);
             this.shopStatistics = data.items.map(i => {
                 // var count = i.company.indexOf('烟草分公司');
                 // i.showCompany =i.company=='其它' ?i.company:i.company.substring(0, count);
@@ -134,7 +133,6 @@ export class IndexComponent implements OnInit {
                 return i
             });
             this.stotal = data.total;
-            console.table(this.shopStatistics);
             const sd = [];
             for (let i = 0; i < this.shopStatistics.length; i += 1) {
                 sd.push({
@@ -151,7 +149,6 @@ export class IndexComponent implements OnInit {
      */
     getWechatUserStatistic() {
         this.wechatUserService.getWeChatUserStatistic().subscribe(data => {
-            console.table(data);
             this.wechatUserStatistic = data.items.map(i => {
                 //var count = i.company.indexOf('烟草分公司');
                 if (i.company != null) {
