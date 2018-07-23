@@ -138,11 +138,12 @@ namespace HC.WeChat.WeChatUsers.DomainServices
         [Audited]
         private async Task SubscribeWithScene(string openId, string nickName, string headImgUrl, int? tenantId, string scene, string ticket)
         {
+            string[] scenes = new string[0];
+            scene = scene.Substring(8);
+            scenes = scene.Split("_");
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                string[] scenes = new string[0];
-                scene = scene.Substring(8);
-                scenes = scene.Split("_");
+
 
                 //Logger.InfoFormat("保存关注场景值id：{0}", scene);
                 //Logger.InfoFormat("保存关注场景值数组：{0}", scenes);
@@ -184,43 +185,38 @@ namespace HC.WeChat.WeChatUsers.DomainServices
                     user.Ticket = ticket;//关注二维码票据
                     await _wechatuserRepository.InsertAsync(user);
                 }
-
-                //关注后店铺粉丝统计(方法执行的先后顺序)
-                //if (isSceneExt && (SceneType)int.Parse(scenes[0]) == SceneType.店铺)
-
-                Logger.Info("场景值存在");
-                Logger.InfoFormat("场景值类型：{0}", scenes[0]);
-
-                //关注之后新增推广日志
-                var qrCodeLog = new QrCodeLog();
-                qrCodeLog.AttentionTime = DateTime.Now;
-                qrCodeLog.OpenId = openId;
-                qrCodeLog.SourceId = scenes[1];
-                qrCodeLog.SourceType = (SceneType)int.Parse(scenes[0]);
-                qrCodeLog.Ticket = ticket;
-                await _qrcodelogRepository.InsertAsync(qrCodeLog);
-                //await CurrentUnitOfWork.SaveChangesAsync();
-
-                if ((SceneType)int.Parse(scenes[0]) == SceneType.店铺)
-                {
-                    Logger.Info("进入店铺粉丝更新");
-                    //var openIdList = _qrcodelogRepository.GetAll().Where(q => q.SourceId == scenes[1]).Select(q => q.OpenId).Distinct().ToList();
-                    //var fansNum = _wechatuserRepository.GetAll().Where(w => openIdList.Contains(w.OpenId)).Count();
-                    var exists = _qrcodelogRepository.GetAll().Any(q => q.SourceId == scenes[1] && q.OpenId == user.OpenId);
-                    //var fansNum = _wechatuserRepository.GetAll().Where(w => qrcodelog.Any(q => q.OpenId == w.OpenId)).Count();
-                    //Logger.InfoFormat("关注日志是否存在：{0}", fansNum);
-                    if (!exists)
-                    {
-                        var shop = await _shopRepository.GetAsync(new Guid(scenes[1]));
-                        shop.FansNum ++;
-                        Logger.InfoFormat("店铺粉丝数：{0}", shop.FansNum);
-                    }
-                    
-                    //shop.FansNum = fansNum;
-                    //await _shopRepository.UpdateAsync(shop);
-                }
-                //await CurrentUnitOfWork.SaveChangesAsync();
+                await CurrentUnitOfWork.SaveChangesAsync();
             }
+            await SaveLogAndFans(openId, scenes[1], int.Parse(scenes[0]), ticket, tenantId);
+            ////关注后店铺粉丝统计(方法执行的先后顺序)
+            //using (CurrentUnitOfWork.SetTenantId(tenantId))
+            //{
+            //    //Logger.Info("场景值存在");
+            //    //Logger.InfoFormat("场景值类型：{0}", scenes[0]);
+
+            //    ////关注之后新增推广日志
+            //    //var qrCodeLog = new QrCodeLog();
+            //    //qrCodeLog.AttentionTime = DateTime.Now;
+            //    //qrCodeLog.OpenId = openId;
+            //    //qrCodeLog.SourceId = scenes[1];
+            //    //qrCodeLog.SourceType = (SceneType)int.Parse(scenes[0]);
+            //    //qrCodeLog.Ticket = ticket;
+            //    //await _qrcodelogRepository.InsertAsync(qrCodeLog);
+
+            //    //if ((SceneType)int.Parse(scenes[0]) == SceneType.店铺)
+            //    //{
+            //    //    Logger.Info("进入店铺粉丝更新");
+            //    //    var exists = _qrcodelogRepository.GetAll().Any(q => q.SourceId == scenes[1] && q.OpenId == user.OpenId);
+            //    //    if (!exists)
+            //    //    {
+            //    //        var shop = await _shopRepository.GetAsync(new Guid(scenes[1]));
+            //    //        shop.FansNum++;
+            //    //        Logger.InfoFormat("店铺粉丝数：{0}", shop.FansNum);
+            //    //    }
+            //    //}
+            //    //await CurrentUnitOfWork.SaveChangesAsync();
+            //    throw new Exception("异常！！！！");
+            //}
         }
         /// <summary>
         /// 不带店铺场景值关注
@@ -263,5 +259,32 @@ namespace HC.WeChat.WeChatUsers.DomainServices
             }
         }
 
+        private async Task SaveLogAndFans(string openId, string sourceId, int type, string ticket,int? tenantId)
+        {
+            using (CurrentUnitOfWork.SetTenantId(tenantId))
+            {
+                //关注之后新增推广日志
+                var qrCodeLog = new QrCodeLog();
+                qrCodeLog.AttentionTime = DateTime.Now;
+                qrCodeLog.OpenId = openId;
+                qrCodeLog.SourceId = sourceId;
+                qrCodeLog.SourceType = (SceneType)type;
+                qrCodeLog.Ticket = ticket;
+                await _qrcodelogRepository.InsertAsync(qrCodeLog);
+
+                if ((SceneType)type == SceneType.店铺)
+                {
+                    Logger.Info("进入店铺粉丝更新");
+                    var exists = _qrcodelogRepository.GetAll().Any(q => q.SourceId == sourceId && q.OpenId == openId);
+                    if (!exists)
+                    {
+                        var shop = await _shopRepository.GetAsync(new Guid(sourceId));
+                        shop.FansNum++;
+                        Logger.InfoFormat("店铺粉丝数：{0}", shop.FansNum);
+                    }
+                }
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
+        }
     }
 }
