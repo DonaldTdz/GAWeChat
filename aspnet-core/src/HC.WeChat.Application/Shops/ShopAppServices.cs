@@ -206,7 +206,7 @@ namespace HC.WeChat.Shops
                 }
                 else//新增
                 {
-                    var user = await _wechatuserManager.GetWeChatUserAsync(input.OpenId, input.TenantId);
+                    var user = await _wechatuserRepository.GetAll().Where(w => w.OpenId == input.OpenId).FirstOrDefaultAsync();//_wechatuserManager.GetWeChatUserAsync(input.OpenId, input.TenantId);
                     input.Shop.TenantId = input.TenantId;
                     input.Shop.RetailerId = user.UserId;
                     input.Shop.Status = WechatEnums.ShopAuditStatus.待审核;
@@ -599,7 +599,7 @@ namespace HC.WeChat.Shops
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                var user = await _wechatuserManager.GetWeChatUserAsync(openId, tenantId);
+                var user = await _wechatuserRepository.GetAll().Where(w => w.OpenId == openId).FirstOrDefaultAsync();//_wechatuserManager.GetWeChatUserAsync(openId, tenantId);
                 var shop = await _shopRepository.GetAll().Where(s => s.RetailerId == user.UserId).FirstOrDefaultAsync();
                 return shop.MapTo<ShopListDto>();
             }

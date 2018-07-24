@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Senparc.Weixin.Entities.Request;
+using Abp.Threading;
 
 namespace HC.WeChat.MessageHandler
 {
@@ -94,7 +95,7 @@ namespace HC.WeChat.MessageHandler
         {
             Logger.InfoFormat("取消关注:{0}", requestMessage);
             //取消关注
-            _wChatUserAppService.UnsubscribeAsync(requestMessage.FromUserName);
+            AsyncHelper.RunSync(() => _wChatUserAppService.UnsubscribeAsync(requestMessage.FromUserName));
         }
 
         public override void Subscribe(RequestMessageEvent_Subscribe requestMessage)
@@ -105,14 +106,12 @@ namespace HC.WeChat.MessageHandler
             var wechatUser = Senparc.Weixin.MP.AdvancedAPIs.UserApi.Info(appId, requestMessage.FromUserName);
 
             Logger.InfoFormat("关注用户:{0}", wechatUser);
-            Logger.InfoFormat("关注场景值id：{0}", requestMessage.EventKey);
             Logger.InfoFormat("关注ticket：{0}", requestMessage.Ticket);
 
             //关注公众号
             //_wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId, requestMessage.EventKey, requestMessage.Ticket);
-            _wChatUserAppService.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, requestMessage.EventKey, requestMessage.Ticket);
+            AsyncHelper.RunSync(() => _wChatUserAppService.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, requestMessage.EventKey, requestMessage.Ticket) );
             //_wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId);
-
         }
 
         /// <summary>

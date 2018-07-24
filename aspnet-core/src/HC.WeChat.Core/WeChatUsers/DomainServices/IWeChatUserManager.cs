@@ -18,7 +18,7 @@ namespace HC.WeChat.WeChatUsers.DomainServices
 
         Task<WeChatUser> BindWeChatUserAsync(WeChatUser user);
 
-        Task UnBindWeChatUserAsync(string openId, int? tenantId);
+        //Task UnBindWeChatUserAsync(string openId, int? tenantId);
 
         Task UnsubscribeAsync(string openId, int? tenantId);
 

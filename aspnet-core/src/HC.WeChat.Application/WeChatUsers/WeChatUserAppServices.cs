@@ -251,14 +251,15 @@ namespace HC.WeChat.WeChatUsers
             //    return new APIResultDto() { Code = 904, Msg = "绑定电话不能为空" };
             //}
             //Logger.InfoFormat("UserBindDto:", Newtonsoft.Json.Linq.JObject.FromObject(input).ToString());
-            var entity = await _wechatuserManager.GetWeChatUserAsync(input.OpenId, input.TenantId);
-            if (entity == null)
-            {
-                //entity = input.MapTo<WeChatUser>();
-                return new APIResultDto() { Code = 902, Msg = "用户不存在" };
-            }
             using (CurrentUnitOfWork.SetTenantId(input.TenantId))
             {
+                var entity = await _wechatuserRepository.GetAll().Where(w => w.OpenId == input.OpenId).FirstOrDefaultAsync();
+                if (entity == null)
+                {
+                    //entity = input.MapTo<WeChatUser>();
+                    return new APIResultDto() { Code = 902, Msg = "用户不存在" };
+                }
+
                 if (input.UserType == UserTypeEnum.零售客户)
                 {
                     //验证零售户
@@ -453,7 +454,7 @@ namespace HC.WeChat.WeChatUsers
             }
             using (CurrentUnitOfWork.SetTenantId(input.TenantId))
             {
-                var entity = await _wechatuserManager.GetWeChatUserAsync(input.OpenId, input.TenantId);
+                var entity = await _wechatuserRepository.GetAll().Where(w => w.OpenId == input.OpenId).FirstOrDefaultAsync();//_wechatuserManager.GetWeChatUserAsync(input.OpenId, input.TenantId);
                 if (entity == null)
                 {
                     return new APIResultDto() { Code = 902, Msg = "用户不存在" };
@@ -1190,17 +1191,15 @@ namespace HC.WeChat.WeChatUsers
 
         [AbpAllowAnonymous]
         //[UnitOfWork(isTransactional: false)]
-        public Task SubscribeAsync(string openId, string nickName, string headImgUrl, string scene, string ticket)
+        public async Task SubscribeAsync(string openId, string nickName, string headImgUrl, string scene, string ticket)
         {
-            var ta = _wechatuserManager.SubscribeAsync(openId, nickName, headImgUrl, null, scene, ticket);
-            return ta;
+            await _wechatuserManager.SubscribeAsync(openId, nickName, headImgUrl, null, scene, ticket);
         }
 
         [AbpAllowAnonymous]
-        public Task UnsubscribeAsync(string openId)
+        public async Task UnsubscribeAsync(string openId)
         {
-            var ta = _wechatuserManager.UnsubscribeAsync(openId, null);
-            return ta;
+            await _wechatuserManager.UnsubscribeAsync(openId, null);
         }
     }
 }
