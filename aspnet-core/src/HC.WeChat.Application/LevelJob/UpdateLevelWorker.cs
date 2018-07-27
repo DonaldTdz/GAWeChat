@@ -40,7 +40,7 @@ namespace HC.WeChat.LevelJob
         {
             Logger.InfoFormat("进入job开始时间：{0}", DateTime.Now);
             var jobConfig = _memberConfigAppService.GetJobConfig();
-            if (jobConfig.Value == "true")
+            if (jobConfig != null && jobConfig.Value == "true")
             {
                 var s = DateTime.Today;
                 var m = DateTime.Now.AddDays(-1);

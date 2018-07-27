@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
 import { AppSessionService } from '@shared/session/app-session.service';
 import { ShopServiceProxy } from '@shared/service-proxies/customer-service';
-import { HomeInfo, Parameter, ShopStatistic, WeChatUserStatistic } from '@shared/service-proxies/entity';
+import { HomeInfo, Parameter, ShopStatistic, WeChatUserStatistic, WeChatUserStatisticPic } from '@shared/service-proxies/entity';
 import { SettingsService } from '@delon/theme';
 
 import { UploadFile } from 'ng-zorro-antd';
@@ -11,6 +11,7 @@ import { AdviseService, PagedResultDtoOfAdvise } from '@shared/service-proxies/c
 import { Advise } from '@shared/entity/consumer';
 import { Router } from '@angular/router';
 import { WechatUserServiceProxy } from '@shared/service-proxies/wechat-service';
+import { yuan } from '@delon/abc';
 
 @Component({
     selector: 'app-home-index',
@@ -22,6 +23,7 @@ export class IndexComponent implements OnInit {
     homeInfo: HomeInfo = new HomeInfo();
     shopStatistics: ShopStatistic[] = [];
     wechatUserStatistic: WeChatUserStatistic[] = [];
+    wechatUserStatisticPic: WeChatUserStatisticPic[] = [];
     constructor(private _adviseService: AdviseService, private http: _HttpClient, public msg: NzMessageService, private _appSessionService: AppSessionService,
         private shopServiceProxy: ShopServiceProxy, private settings: SettingsService, private _router: Router,
         private wechatUserService: WechatUserServiceProxy) { }
@@ -39,8 +41,11 @@ export class IndexComponent implements OnInit {
     fileList = [];
     shopData: any[] = [];
     wechatData: any[] = [];
-    stotal: number;
-    wtotal: number;
+    weChatPicData: any[] = [];
+    stotal = 0;
+    wtotal = 0;
+    weChatTotal = 0;
+    loading=false;
     ngOnInit() {
         //近12个月申请单数 (模拟数据)
         const sd = [];
@@ -84,6 +89,7 @@ export class IndexComponent implements OnInit {
         this.getAdvise();
         this.getShopStatistic();
         this.getWechatUserStatistic();
+        this.getWeChatUserStatisticPic();
     }
 
     getFormInfo() {
@@ -101,7 +107,7 @@ export class IndexComponent implements OnInit {
      * 获取最新五条意见反馈
      */
     getAdvise() {
-        this._adviseService.getAll(0, 5, this.getParameter()).subscribe((result: PagedResultDtoOfAdvise) => {
+        this._adviseService.getAll(0, 8, this.getParameter()).subscribe((result: PagedResultDtoOfAdvise) => {
             this.adviseList = result.items;
         })
     }
@@ -166,5 +172,26 @@ export class IndexComponent implements OnInit {
             }
             this.wechatData = sd;
         });
+    }
+
+    getWeChatUserStatisticPic() {
+        this.loading=true;
+        this.wechatUserService.getWeChatUserStatisticPie().subscribe(data => {
+            this.loading=false;
+            this.wechatUserStatisticPic = data.items;
+            this.weChatTotal = data.total;
+            const sd = [];
+            for (let index = 0; index < this.wechatUserStatisticPic.length; index++) {
+                sd.push({
+                    x: this.wechatUserStatisticPic[index].typeName,
+                    y: this.wechatUserStatisticPic[index].count
+                });
+            }
+            this.weChatPicData = sd;
+        });
+    }
+    handlePieValueFormat(value: any) {
+        // return yuan(value);
+        return value+"人";
     }
 }

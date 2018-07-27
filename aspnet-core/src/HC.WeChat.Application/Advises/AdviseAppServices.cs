@@ -328,6 +328,7 @@ namespace HC.WeChat.Advises
 
             var advises = await query
                 .OrderByDescending(a => a.CreationTime)
+                .PageBy(input)
                 .ToListAsync();
 
             //var adviseListDtos = ObjectMapper.Map<List <AdviseListDto>>(advises);
