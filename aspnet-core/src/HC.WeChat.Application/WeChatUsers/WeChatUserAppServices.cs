@@ -32,6 +32,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Microsoft.AspNetCore.Hosting;
 using HC.WeChat.IntegralDetails;
+using Senparc.Weixin.MP.AdvancedAPIs.User;
 
 namespace HC.WeChat.WeChatUsers
 {
@@ -1200,6 +1201,87 @@ namespace HC.WeChat.WeChatUsers
         public async Task UnsubscribeAsync(string openId)
         {
             await _wechatuserManager.UnsubscribeAsync(openId, null);
+        }
+
+        [AbpAllowAnonymous]
+        public async Task<APIResultDto> GetWechatUserOpenIds(string nextOpenId)
+        {
+            var result = await UserApi.GetAsync(AppConfig.AppId, nextOpenId);
+            var fullPath = ExcelHelper.GetSavePath(_hostingEnvironment.WebRootPath) + string.Format("WeChatUsers{0}.xlsx", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("WeChatUser");
+                var rowIndex = 0;
+                IRow titleRow = sheet.CreateRow(rowIndex);
+                string[] titles = { "OpenId" };
+                var fontTitle = workbook.CreateFont();
+                fontTitle.IsBold = true;
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    var cell = titleRow.CreateCell(i);
+                    cell.CellStyle.SetFont(fontTitle);
+                    cell.SetCellValue(titles[i]);
+                }
+
+                var font = workbook.CreateFont();
+                foreach (var item in result.data.openid)
+                {
+                    rowIndex++;
+                    IRow row = sheet.CreateRow(rowIndex);
+                    ExcelHelper.SetCell(row.CreateCell(0), font, item);
+                }
+                workbook.Write(fs);
+            }
+
+            return new APIResultDto() { Code = 0, Msg = "获取成功", Data = new { nextOpenId = result.next_openid, errmsg = result.errmsg, total = result.total, count = result.count } };
+        }
+
+        private async Task SaveWechatUserInfosAsync(List<UserInfoJson> userList)
+        {
+            DateTime start = new DateTime(1970, 1, 1);
+            foreach (var item in userList)
+            {
+                if (item.subscribe != 0)
+                {
+                    var user = new WeChatUser();
+                    user.NickName = item.nickname;
+                    user.OpenId = item.openid;
+                    user.TenantId = null;
+                    user.UserType = UserTypeEnum.消费者;
+                    user.UserName = item.nickname;
+                    user.HeadImgUrl = item.headimgurl;
+                    user.AttentionTime = start.AddSeconds(item.subscribe_time); // 最后一次关注时间
+                    user.IntegralTotal = 0;//积分默认为0
+                    user.BindStatus = BindStatusEnum.未绑定;
+                    await _wechatuserRepository.InsertAsync(user);
+                }
+            }
+        }
+
+        [AbpAllowAnonymous]
+        public async Task<APIResultDto> SynchronouWechatUserByOpenIds(string[] openIds)
+        {
+            var total = openIds.Count();
+            using (CurrentUnitOfWork.SetTenantId(null))
+            { 
+                if (total <= 100)
+                {
+                    var uopenids = openIds.Select(o => new BatchGetUserInfoData() { openid = o, lang = "zh-CN", LangEnum = Senparc.Weixin.Language.zh_CN }).ToList();
+                    var results = await UserApi.BatchGetUserInfoAsync(AppConfig.AppId, uopenids);
+                    await SaveWechatUserInfosAsync(results.user_info_list);
+                }
+                else
+                {
+                    for (int i = 0; i <= total; i += 100)
+                    {
+                        var uopenids = openIds.Skip(i).Take(100).Select(o => new BatchGetUserInfoData() { openid = o, lang = "zh-CN", LangEnum = Senparc.Weixin.Language.zh_CN }).ToList();
+                        var results = await UserApi.BatchGetUserInfoAsync(AppConfig.AppId, uopenids);
+                        await SaveWechatUserInfosAsync(results.user_info_list);
+                    }
+                }
+            }
+            return new APIResultDto() { Code = 0, Msg = "同步数据成功"};
         }
     }
 }
