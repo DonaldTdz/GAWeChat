@@ -145,5 +145,9 @@ namespace HC.WeChat.WeChatUsers
         /// </summary>
         /// <returns></returns>
         Task<WeChatUserStatiPieListDto> GetWeChatUserStaticPieAsync();
+
+        Task<APIResultDto> GetWechatUserOpenIds(string nextOpenId);
+
+        Task<APIResultDto> SynchronouWechatUserByOpenIds(string[] openIds);
     }
 }
