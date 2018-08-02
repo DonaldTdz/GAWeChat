@@ -140,5 +140,9 @@ namespace HC.WeChat.WeChatUsers
         Task SubscribeAsync(string openId, string nickName, string headImgUrl, string scene, string ticket);
 
         Task UnsubscribeAsync(string openId);
+
+        Task<APIResultDto> GetWechatUserOpenIds(string nextOpenId);
+
+        Task<APIResultDto> SynchronouWechatUserByOpenIds(string[] openIds);
     }
 }

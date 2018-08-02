@@ -179,4 +179,15 @@ namespace HC.WeChat.Shops.Dtos
         public int? Total { get; set; }
 
     }
+
+    public class ShopUrlQrCodeDto
+    {
+        public Guid Id { get; set; }
+
+        public string Company { get; set; }
+
+        public string UserName { get; set; }
+
+        public string UserCode { get; set; }
+    }
 }

@@ -42,6 +42,8 @@ using SixLabors.ImageSharp.Processing.Drawing;
 using SixLabors.Primitives;
 using HC.WeChat.Authorization;
 using HC.WeChat.Authorization.WeChatOAuth;
+using QRCoder;
+using SixLabors.ImageSharp.Processing.Text;
 
 namespace HC.WeChat.Shops
 {
@@ -1364,7 +1366,7 @@ namespace HC.WeChat.Shops
                             image.Save(toPaht + "/" + fileName);
                         }
                     }
-                    
+
                 }
             }
 
@@ -1377,10 +1379,10 @@ namespace HC.WeChat.Shops
         /// <param name="shopId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        public string GetQrCodeUrl(Guid shopId,string host)
+        public string GetQrCodeUrl(Guid shopId, string host)
         {
-            var url = host+ "/GAWX/ShopAuth";
-            var qrUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, shopId.ToString(),OAuthScope.snsapi_base);
+            var url = host + "/GAWX/ShopAuth";
+            var qrUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, shopId.ToString(), OAuthScope.snsapi_base);
             return qrUrl;
         }
         /// <summary>
@@ -1394,6 +1396,49 @@ namespace HC.WeChat.Shops
             return await _shopRepository.GetAll().Where(s => s.Id == shopId).Select(s => s.QRUrl).FirstOrDefaultAsync();
         }
 
+        [AbpAllowAnonymous]
+        public Task<APIResultDto> GenerateShopQrCode(List<ShopUrlQrCodeDto> input)
+        {
+            string webRootPath = _hostingEnvironment.WebRootPath;
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            foreach (var item in input)
+            {
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(string.Format("http://ga.intcov.com/GAWX/ShopAuth?state={0}", item.Id), QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                System.Drawing.Bitmap qrCodeImage = qrCode.GetGraphic(20);
+                MemoryStream stream = new MemoryStream();
+                qrCodeImage.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                //using (FileStream stream = File.OpenRead(filePath))
+                using (Image<Rgba32> logo = Image.Load(webRootPath + "/upload/shopqr/logo.jpg"))
+                using (Image<Rgba32> qrimage = Image.Load(stream))
+                using (Image<Rgba32> orgimage = new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 430, 520, Rgba32.White))
+                {
+                    //画文字
+                    var fontCollection = new SixLabors.Fonts.FontCollection();
+                    //var fontPath = "C:/Windows/Fonts/simkai.ttf";
+                    var fontPath = "C:/Windows/Fonts/STXINWEI.TTF";
+                    var font = new SixLabors.Fonts.Font(fontCollection.Install(fontPath), 20f, SixLabors.Fonts.FontStyle.Bold);
+                    orgimage.Mutate(x => x.DrawText("单        位：" + item.Company, font, Rgba32.Black, new PointF(36, 20)));
+                    orgimage.Mutate(x => x.DrawText("客户姓名：" + item.UserName, font, Rgba32.Black, new PointF(36, 45)));
+                    orgimage.Mutate(x => x.DrawText("编        码：" + item.UserCode, font, Rgba32.Black, new PointF(36, 70)));
+                    //画logo
+                    logo.Mutate(x => x.Resize(180, 180));
+                    qrimage.Mutate(x => x.DrawImage(logo, PixelBlenderMode.Src, 1, new Point(qrimage.Width / 2 - 90, qrimage.Height / 2 - 90)));
+                    //画二维码
+                    qrimage.Mutate(x => x.Resize(430, 430));
+                    orgimage.Mutate(x => x.DrawImage(qrimage, PixelBlenderMode.Src, 1, new Point(0, 90)));
+                    var endRote = "/upload/shopUrlQrCodes/";
+                    var fileDire = webRootPath + endRote;
+                    if (!Directory.Exists(fileDire))
+                    {
+                        Directory.CreateDirectory(fileDire);
+                    }
+                    var path = fileDire + item.UserCode + '-' + item.UserName + ".jpg";
+                    orgimage.Save(path);
+                }
+            }
+            return Task.FromResult(new APIResultDto() { Code = 0, Msg = "生成成功" });
+        }
     }
 }
 

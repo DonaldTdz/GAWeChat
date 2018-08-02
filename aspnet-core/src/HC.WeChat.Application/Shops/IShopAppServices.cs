@@ -143,5 +143,7 @@ namespace HC.WeChat.Shops
         /// <param name="shopId">店铺id</param>
         /// <returns></returns>
         Task<string> GetShopQrCodeURL(Guid shopId);
+
+        Task<APIResultDto> GenerateShopQrCode(List<ShopUrlQrCodeDto> input);
     }
 }
