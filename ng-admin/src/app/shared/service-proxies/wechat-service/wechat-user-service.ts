@@ -13,7 +13,7 @@ import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { Http, Headers, ResponseContentType, Response } from '@angular/http';
 import { Activity } from '@shared/service-proxies/entity/acitivity';
 import { API_BASE_URL, SwaggerException } from '@shared/service-proxies/service-proxies';
-import { Parameter, ApiResult, WeChatUserStatistic } from '@shared/service-proxies/entity';
+import { Parameter, ApiResult, WeChatUserStatistic, WeChatUserStatisticPic } from '@shared/service-proxies/entity';
 import { WechatUser } from '@shared/entity/wechat';
 // import * as moment from 'moment';
 
@@ -586,6 +586,56 @@ export class WechatUserServiceProxy {
         }
         return Observable.of<ResultDtoOfWeChatUserStatistic>(<any>null);
     }
+
+    getWeChatUserStatisticPie(): Observable<ResultDtoOfWeChatUserStatisticPic> {
+        let url_ = this.baseUrl + "/api/services/app/WeChatUser/GetWeChatUserStaticPieAsync";
+
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processWeChatUserStatisticPie(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processWeChatUserStatisticPie(response_);
+                } catch (e) {
+                    return <Observable<ResultDtoOfWeChatUserStatisticPic>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<ResultDtoOfWeChatUserStatisticPic>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processWeChatUserStatisticPie(response: Response): Observable<ResultDtoOfWeChatUserStatisticPic> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? ResultDtoOfWeChatUserStatisticPic.fromJS(resultData200) : new ResultDtoOfWeChatUserStatisticPic();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<ResultDtoOfWeChatUserStatisticPic>(<any>null);
+    }
 }
 export class PagedResultDtoOfWeChatUser implements IPagedResultDtoOfWeChatUser {
     totalCount: number;
@@ -695,4 +745,60 @@ export class ResultDtoOfWeChatUserStatistic implements IResultDtoOfWeChatUserSta
 
 export interface IResultDtoOfWeChatUserStatistic {
     items: WeChatUserStatistic[];
+}
+
+export class ResultDtoOfWeChatUserStatisticPic implements IResultDtoOfWeChatUserStatisticPic {
+    total:number;
+    items: WeChatUserStatisticPic[];
+
+    constructor(data?: IResultDtoOfWeChatUserStatisticPic) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.total = data["total"];
+            if (data["wechatUserStaDto"] && data["wechatUserStaDto"].constructor === Array) {
+            // if (data && data.constructor === Array) {
+                this.items = [];
+                for (let item of data["wechatUserStaDto"])
+                    this.items.push(WeChatUserStatisticPic.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ResultDtoOfWeChatUserStatisticPic {
+        let result = new ResultDtoOfWeChatUserStatisticPic();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["total"] = this.total;
+        if (this.items && this.items.constructor === Array) {
+            data["wechatUserStaDto"] = [];
+            // data = [];
+            for (let item of this.items)
+                data["wechatUserStaDto"].push(item.toJSON());
+                // data.push(item.toJSON());
+        }
+        return data;
+    }
+
+    clone() {
+        const json = this.toJSON();
+        let result = new ResultDtoOfWeChatUserStatisticPic();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IResultDtoOfWeChatUserStatisticPic {
+    items: WeChatUserStatisticPic[];
 }

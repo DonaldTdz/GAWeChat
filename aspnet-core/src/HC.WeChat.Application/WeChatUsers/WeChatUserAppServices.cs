@@ -1203,6 +1203,23 @@ namespace HC.WeChat.WeChatUsers
             await _wechatuserManager.UnsubscribeAsync(openId, null);
         }
 
+        /// <summary>
+        /// 微信用户统计(用于饼图统计)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<WeChatUserStatiPieListDto> GetWeChatUserStaticPieAsync()
+        {
+            var query = (from w in _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注)
+                         join r in _retailerRepository.GetAll() on w.UserId equals r.Id into g
+                         from wr in g.DefaultIfEmpty()
+                         select new { w.UserType });
+            var list = await query.GroupBy(q => q.UserType).Select(g => new WeChatUserStatiPieDto() {  TypeName= g.Key.ToString(), Count = g.Count() }).ToListAsync();
+            var total = list.Sum(l => l.Count);
+            var result = new WeChatUserStatiPieListDto();
+            result.WechatUserStaDto = list;
+            result.Total = total;
+            return result;
+        }
         [AbpAllowAnonymous]
         public async Task<APIResultDto> GetWechatUserOpenIds(string nextOpenId)
         {

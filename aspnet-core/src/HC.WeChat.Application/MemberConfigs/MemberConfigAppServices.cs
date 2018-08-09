@@ -349,6 +349,18 @@ namespace HC.WeChat.MemberConfigs
                 return entity.MapTo<List<MemberConfigListDto>>();
             }
         }
+
+        /// <summary>
+        /// 获取job配置信息
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public MemberConfigListDto GetJobConfig()
+        {
+            var entity = _memberconfigRepository.GetAll().Where(m => m.Type == DeployTypeEnum.job配置 && m.Code == DeployCodeEnum.jo启动状态).FirstOrDefault();
+            return entity.MapTo<MemberConfigListDto>();
+        }
     }
 }
 

@@ -115,13 +115,31 @@ namespace HC.WeChat.WeChatUsers.Dtos
         public int GroupId { get; set; }
     }
 
-    public  class WeChatUserStatisticLiDto
+    public class WeChatUserStatisticLiDto
     {
         /// <summary>
         /// 微信用户信息统计
         /// </summary>
         public List<WeChatUserStatisticDto> WechatUserStaDto { get; set; }
 
+        /// <summary>
+        /// 微信用户总数(按零售户分区)
+        /// </summary>
+        public int? Total { get; set; }
+    }
+
+
+    /// <summary>
+    /// 微信用户信息统计(用于饼图)
+    /// </summary>
+    public class WeChatUserStatiPieDto
+    {
+        public string TypeName { get; set; }
+        public int? Count { get; set; }
+    }
+    public class WeChatUserStatiPieListDto
+    {
+        public List<WeChatUserStatiPieDto> WechatUserStaDto { get; set; }
         /// <summary>
         /// 微信用户总数(按零售户分区)
         /// </summary>
