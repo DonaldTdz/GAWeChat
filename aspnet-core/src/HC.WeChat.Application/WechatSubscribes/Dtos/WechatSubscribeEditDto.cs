@@ -49,6 +49,6 @@ namespace HC.WeChat.WechatSubscribes.Dtos
         /// </summary>
         //[Required]
         //public int TenantId { get; set; }
-
+        public string MediaId { get; set; }
     }
 }

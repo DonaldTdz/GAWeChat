@@ -73,5 +73,7 @@ namespace HC.WeChat.WechatAppConfigs
         /// <param name="input">微信配置实体</param>
         /// <returns></returns>
         Task CreateOrUpdateWechatAppConfigDto(WechatAppConfigEditDto input);
+
+        string UploadForeverPic(string appId);
     }
 }

@@ -31,5 +31,8 @@ namespace HC.WeChat.WechatSubscribes.Dtos
         /// 图片链接
         /// </summary>
         public string PicLink { get; set; }
+
+        public string MediaId { get; set; }
+
     }
 }

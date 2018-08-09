@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using Senparc.Weixin.Entities.Request;
 using Abp.Threading;
+using Senparc.Weixin.MP;
 
 namespace HC.WeChat.MessageHandler
 {
@@ -23,6 +24,7 @@ namespace HC.WeChat.MessageHandler
         private readonly IRepository<WechatSubscribe, Guid> _wechatsubscribeRepository;
         //private readonly IWeChatUserManager _wechatUserManager;
         private readonly IWeChatUserAppService _wChatUserAppService;
+        private readonly IRepository<WechatAppConfig, int> _wechatappconfigRepository;
         public ILogger Logger { protected get; set; }
 
         //private int? _tenantId = 0;
@@ -32,6 +34,7 @@ namespace HC.WeChat.MessageHandler
         public HCMessageHandler(IRepository<WechatMessage, Guid> wechatmessageRepository, 
             IRepository<WechatSubscribe, Guid> wechatsubscribeRepository,
             //IWeChatUserManager wechatUserManager,
+            IRepository<WechatAppConfig, int> wechatappconfigRepository,
             IWeChatUserAppService wChatUserAppService,
             int? tenantId, Stream inputStream, 
             PostModel postModel, 
@@ -43,6 +46,7 @@ namespace HC.WeChat.MessageHandler
             _wChatUserAppService = wChatUserAppService;
             Logger = NullLogger.Instance;
             _tenantId = tenantId;
+            _wechatappconfigRepository = wechatappconfigRepository;
         }
 
         private WechatSubscribe GetWechatSubscribe()
@@ -60,6 +64,15 @@ namespace HC.WeChat.MessageHandler
         {
             //处理图文消息
             return _wechatmessageRepository.GetAll().Where(w => w.TenantId == _tenantId && w.MsgType == WechatEnums.MsgTypeEnum.图文消息).ToList();
+        }
+
+        /// <summary>
+        /// 获取MediaId
+        /// </summary>
+        /// <returns></returns>
+        private string GetWechatSubscribeMediaId()
+        {
+            return _wechatsubscribeRepository.GetAll().Where(w => w.TenantId == _tenantId && w.MsgType==WechatEnums.MsgTypeEnum.纯图片).Select(w=>w.MediaId).FirstOrDefault();
         }
 
         public override void ConfigurationMessageInfo(RequestMessageText requestMessage)
@@ -135,6 +148,19 @@ namespace HC.WeChat.MessageHandler
                         Subscribe(requestMessage);
                         return responseMessage;
                     }
+                    //else if (sinfo.MsgType == WechatEnums.MsgTypeEnum.纯图片)
+                    //{
+                    //    string mediaid = GetWechatSubscribeMediaId();
+                    //    if (appId != null && mediaid != null)
+                    //    {
+                    //        IResponseMessageBase reponseMessage = null;
+                    //        var strongResponseMessage = CreateResponseMessage<ResponseMessageImage>();
+                    //        reponseMessage = strongResponseMessage;
+                    //        strongResponseMessage.Image.MediaId = mediaid;
+                    //        Subscribe(requestMessage);
+                    //        return reponseMessage;
+                    //    }
+                    //}
                     else
                     {
                         var responseMessagePic = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
