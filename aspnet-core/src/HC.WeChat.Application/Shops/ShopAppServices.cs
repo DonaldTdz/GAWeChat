@@ -1416,11 +1416,12 @@ namespace HC.WeChat.Shops
                     //画文字
                     var fontCollection = new SixLabors.Fonts.FontCollection();
                     //var fontPath = "C:/Windows/Fonts/simkai.ttf";
-                    var fontPath = "C:/Windows/Fonts/STXINWEI.TTF";
+                    //var fontPath = "C:/Windows/Fonts/STXINWEI.TTF";
+                    var fontPath = "C:/Windows/Fonts/simkai.ttf";
                     var font = new SixLabors.Fonts.Font(fontCollection.Install(fontPath), 20f, SixLabors.Fonts.FontStyle.Bold);
-                    orgimage.Mutate(x => x.DrawText("单        位：" + item.Company, font, Rgba32.Black, new PointF(36, 20)));
-                    orgimage.Mutate(x => x.DrawText("客户姓名：" + item.UserName, font, Rgba32.Black, new PointF(36, 45)));
-                    orgimage.Mutate(x => x.DrawText("编        码：" + item.UserCode, font, Rgba32.Black, new PointF(36, 70)));
+                    orgimage.Mutate(x => x.DrawText("单    位: " + item.Company, font, Rgba32.Black, new PointF(36, 20)));
+                    orgimage.Mutate(x => x.DrawText("客户姓名: " + item.UserName, font, Rgba32.Black, new PointF(36, 45)));
+                    orgimage.Mutate(x => x.DrawText("编    码: " + item.UserCode, font, Rgba32.Black, new PointF(36, 70)));
                     //画logo
                     logo.Mutate(x => x.Resize(180, 180));
                     qrimage.Mutate(x => x.DrawImage(logo, PixelBlenderMode.Src, 1, new Point(qrimage.Width / 2 - 90, qrimage.Height / 2 - 90)));
