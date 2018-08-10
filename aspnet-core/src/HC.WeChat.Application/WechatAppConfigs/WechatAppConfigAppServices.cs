@@ -234,6 +234,21 @@ namespace HC.WeChat.WechatAppConfigs
                 await CreateWechatAppConfigAsync(input);
             }
         }
+
+        /// <summary>
+        /// 新增并获取永久素材Media_Id
+        /// </summary>
+        /// <returns></returns>
+        public string UploadForeverPic(string appId)
+        {
+            var file = @"C:\SYQSubscribePic.jpg";
+            var uploadResult = Senparc.Weixin.MP.AdvancedAPIs.MediaApi.UploadForeverMedia(appId,
+                file);
+            Logger.InfoFormat("APPId:{0}", appId);
+            //设置图片信息
+            Logger.InfoFormat("上传的meadia_Id:{0}", uploadResult.media_id);
+            return uploadResult.media_id;
+        }
     }
 }
 

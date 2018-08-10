@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Abp.WeChat.Senparc.MessageHandlers;
+using HC.WeChat.WechatAppConfigs;
 using HC.WeChat.WechatMessages;
 using HC.WeChat.WechatSubscribes;
 using HC.WeChat.WeChatUsers;
@@ -20,15 +21,19 @@ namespace HC.WeChat.MessageHandler
         private readonly IRepository<WechatSubscribe, Guid> _wechatsubscribeRepository;
         //private readonly IWeChatUserManager _wechatUserManager;
         private readonly IWeChatUserAppService _wChatUserAppService;
-        public MessageHandlerAppServer(IRepository<WechatMessage, Guid> wechatmessageRepository, 
+        private readonly IRepository<WechatAppConfig, int> _wechatappconfigRepository;
+
+        public MessageHandlerAppServer(IRepository<WechatMessage, Guid> wechatmessageRepository,
             IRepository<WechatSubscribe, Guid> wechatsubscribeRepository,
+                        IRepository<WechatAppConfig, int> wechatappconfigRepository,
              IWeChatUserAppService wChatUserAppService)
-            //IWeChatUserManager wechatUserManager)
+        //IWeChatUserManager wechatUserManager)
         {
             _wechatmessageRepository = wechatmessageRepository;
             _wechatsubscribeRepository = wechatsubscribeRepository;
             //_wechatUserManager = wechatUserManager;
             _wChatUserAppService = wChatUserAppService;
+            _wechatappconfigRepository = wechatappconfigRepository;
         }
 
         public async Task<string> MessageHandler(PostModel postModel, Stream msgStream, int? tenantId)
@@ -41,7 +46,7 @@ namespace HC.WeChat.MessageHandler
 
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                var messageHandler = new HCMessageHandler(_wechatmessageRepository, _wechatsubscribeRepository, _wChatUserAppService, tenantId, inputStream, postModel, maxRecordCount);
+                var messageHandler = new HCMessageHandler(_wechatmessageRepository, _wechatsubscribeRepository, _wechatappconfigRepository, _wChatUserAppService, tenantId, inputStream, postModel, maxRecordCount);
                 messageHandler.Logger = Logger;
                 /* 如果需要添加消息去重功能，只需打开OmitRepeatedMessage功能，SDK会自动处理。
                  * 收到重复消息通常是因为微信服务器没有及时收到响应，会持续发送2-5条不等的相同内容的RequestMessage*/
@@ -62,24 +67,25 @@ namespace HC.WeChat.MessageHandler
 
         private async Task MessageHandlerLogAsync(AbpMessageHandler messageHandler)
         {
-             await Task.Run(() => {
-                 //记录 Request 日志
-                 Logger.InfoFormat("RequestDocument:{0}", messageHandler.RequestDocument);
+            await Task.Run(() =>
+            {
+                //记录 Request 日志
+                Logger.InfoFormat("RequestDocument:{0}", messageHandler.RequestDocument);
 
-                 if (messageHandler.UsingEcryptMessage)
-                 {
-                     Logger.InfoFormat("EcryptRequestDocument:{0}", messageHandler.EcryptRequestDocument);
-                 }
-                 Logger.Info("Request 日志 记录完成");
+                if (messageHandler.UsingEcryptMessage)
+                {
+                    Logger.InfoFormat("EcryptRequestDocument:{0}", messageHandler.EcryptRequestDocument);
+                }
+                Logger.Info("Request 日志 记录完成");
 
-                 //记录 Response 日志
-                 Logger.InfoFormat("ResponseDocument:{0}", messageHandler.ResponseDocument);
+                //记录 Response 日志
+                Logger.InfoFormat("ResponseDocument:{0}", messageHandler.ResponseDocument);
 
-                 if (messageHandler.UsingEcryptMessage && messageHandler.FinalResponseDocument != null)
-                 {
-                     Logger.InfoFormat("FinalResponseDocument:{0}", messageHandler.FinalResponseDocument);
-                 }
-             });
+                if (messageHandler.UsingEcryptMessage && messageHandler.FinalResponseDocument != null)
+                {
+                    Logger.InfoFormat("FinalResponseDocument:{0}", messageHandler.FinalResponseDocument);
+                }
+            });
         }
     }
 }

@@ -1260,7 +1260,9 @@ namespace HC.WeChat.Migrations
                 b.Property<long?>("CreatorUserId");
                 b.Property<DateTime?>("LastModificationTime");
                 b.Property<long>("LastModifierUserId"); b.HasKey("Id");
-
+                b.Property<string>("Title");
+                b.Property<string>("Desc");
+                b.Property<string>("PicLink");
                 //b.HasIndex("TargetTenantId", "TargetUserId", "ReadState");
 
                 b.ToTable("WechatMessages");
@@ -1276,7 +1278,9 @@ namespace HC.WeChat.Migrations
                 b.Property<long?>("CreatorUserId");
                 b.Property<DateTime?>("LastModificationTime");
                 b.Property<long>("LastModifierUserId"); b.HasKey("Id");
-
+                b.Property<string>("Title");
+                b.Property<string>("Desc");
+                b.Property<string>("PicLink");
                 //b.HasIndex("TargetTenantId", "TargetUserId", "ReadState");
 
                 b.ToTable("WechatSubscribes");
@@ -1442,6 +1446,7 @@ namespace HC.WeChat.Migrations
                 b.Property<DateTime?>("DeletionTime");
                 b.Property<long?>("DeleterUserId");
                 b.Property<string>("VerificationCode").HasMaxLength(50);
+                b.Property<string>("InnerCode").HasMaxLength(50);
 
                 b.HasKey("Id");
 
@@ -1514,6 +1519,8 @@ namespace HC.WeChat.Migrations
                 b.Property<bool?>("IsShopkeeper");
                 b.Property<int>("UserType").IsRequired();
                 b.Property<int?>("Status");
+                b.Property<DateTime?>("AttentionTime");
+                b.Property<DateTime?>("UnfollowTime");
                 b.Property<string>("Ticket").HasMaxLength(200);
                 b.Property<int?>("SourceType");
                 b.Property<string>("SourceId").HasMaxLength(100);
@@ -1774,10 +1781,12 @@ namespace HC.WeChat.Migrations
                 b.Property<DateTime>("CreationTime").IsRequired();
                 b.Property<int?>("TenantId");
                 b.Property<string>("Tel").HasMaxLength(20);
+                b.Property<string>("Reason").HasMaxLength(500);
                 b.Property<int?>("SingleTotal");
                 b.Property<string>("Ticket").HasMaxLength(200);
                 b.Property<string>("WechatUrl").HasMaxLength(150);
                 b.Property<string>("QRUrl").HasMaxLength(500);
+                b.Property<int?>("FansNum");
 
                 b.HasKey("Id");
 
@@ -1960,6 +1969,23 @@ namespace HC.WeChat.Migrations
                 //b.HasIndex("TargetTenantId", "TargetUserId", "ReadState");
 
                 b.ToTable("WinningRecords");
+            });
+            modelBuilder.Entity("HC.WeChat.QrCodeLogs.QrCodeLog", b =>
+            {
+                b.Property<Guid>("Id").ValueGeneratedOnAdd();
+                b.Property<DateTime?>("AttentionTime").IsRequired();
+                b.Property<string>("OpenId").HasMaxLength(50);
+                b.Property<string>("SourceId").HasMaxLength(100);
+                b.Property<int?>("SourceType");
+                b.Property<string>("Ticket").HasMaxLength(200);
+                b.Property<int?>("TenantId");
+                b.Property<DateTime>("CreationTime").IsRequired();
+                b.Property<long?>("CreatorUserId");
+                b.HasKey("Id");
+
+                //b.HasIndex("TargetTenantId", "TargetUserId", "ReadState");
+
+                b.ToTable("QrCodeLogs");
             });
             modelBuilder.Entity("HC.WeChat.Exhibitions.Exhibition", b =>
             {

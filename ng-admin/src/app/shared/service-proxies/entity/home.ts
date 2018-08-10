@@ -181,6 +181,63 @@ export interface IWeChatUserStatistic{
     count:number;
 }
 
+export class WeChatUserStatisticPic implements IWeChatUserStatisticPic{
+    typeName:string;
+    count:number;
+    
+    constructor(data?: IWeChatUserStatisticPic) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.typeName = data["typeName"];
+            this.count = data["count"];
+        }
+    }
+
+    static fromJS(data: any): WeChatUserStatisticPic {
+        let result = new WeChatUserStatisticPic();
+        result.init(data);
+        return result;
+    }
+
+    static fromJSArray(dataArray: any[]): WeChatUserStatisticPic[] {
+        let array = [];
+        dataArray.forEach(result => {
+            let item = new WeChatUserStatisticPic();
+            item.init(result);
+            array.push(item);
+        });
+
+        return array;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["typeName"] = this.typeName;
+        data["count"] = this.count;
+        return data;
+    }
+
+    clone() {
+        const json = this.toJSON();
+        let result = new WeChatUserStatisticPic();
+        result.init(json);
+        return result;
+    }
+}
+export interface IWeChatUserStatisticPic{
+    typeName:string;
+    count:number;
+}
+
+
 
 
 

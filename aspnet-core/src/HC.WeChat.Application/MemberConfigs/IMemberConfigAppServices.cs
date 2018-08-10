@@ -61,5 +61,11 @@ namespace HC.WeChat.MemberConfigs
 
         Task<List<MemberConfigListDto>> GetWXMemberConfigByTenantIdAsync(int? tenantId);
         Task CreateOrUpdateWXMemberConfigDtoAsync(MemberCodeEditDto input);
+
+        /// <summary>
+        /// 获取job配置信息
+        /// </summary>
+        /// <returns></returns>
+        MemberConfigListDto GetJobConfig();
     }
 }

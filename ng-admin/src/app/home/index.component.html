@@ -122,20 +122,29 @@
     </div>
 </div> -->
 <div nz-row nzGutter="16">
-    <div nz-col nzXs="24" nzMd="6">
-        <nz-card [nzBordered]="false" [nzTitle]="nzTitle2" class="ant-card__img">
-            <ng-template #nzTitle2>
-                微信公众号 渠江烟语
+    <div nz-col nzXs="24" nzMd="12">
+        <nz-card [nzLoading]="loading" [nzBordered]="false" nzTitle="微信用户类型占比" [nzBodyStyle]="{'padding.px': 24}" class="sales-card" style="min-height: 482px;">
+           
+            <ng-template #body>
+                <h4 class="margin:8px 0 32px 0;">微信用户</h4>
+                <pie
+                    [hasLegend]="true"
+                    subTitle="微信用户"
+                    [height]="248"
+                    [lineWidth]="4"
+                    [total]="weChatTotal"
+                    [data]="weChatPicData"
+                    [valueFormat]="handlePieValueFormat">
+                </pie>
             </ng-template>
-            <img class="img" src="./assets/img/weixin.jpg">
         </nz-card>
     </div>
-    <div nz-col nzXs="24" nzMd="18">
-        <nz-card [nzTitle]="nzTitle3" [nzBordered]="false" nzNoPadding>
+    <div nz-col nzXs="24" nzMd="12">
+        <nz-card  [nzTitle]="nzTitle3" [nzBordered]="false" nzNoPadding>
             <ng-template #nzTitle3>
                 最新用户建议反馈
             </ng-template>
-            <div nz-row [nzType]="'flex'" [nzJustify]="'center'" [nzAlign]="'middle'" class="py-sm bg-grey-lighter-h point" *ngFor="let item of adviseList"
+            <div nz-row  [nzType]="'flex'" [nzJustify]="'center'" [nzAlign]="'middle'" class="py-sm bg-grey-lighter-h point" *ngFor="let item of adviseList"
                 (click)="adviseDetail(item)">
                 <div nz-col [nzSpan]="20" style="padding-left: 24px;">
                     <strong>{{item.userTypeName}}</strong>
@@ -146,6 +155,19 @@
                 </div>
             </div>
         </nz-card>
+    </div>
+</div>
+<div nz-row nzGutter="16">
+    <div nz-col nzXs="24" nzMd="6">
+        <nz-card [nzBordered]="false" [nzTitle]="nzTitle2" class="ant-card__img">
+            <ng-template #nzTitle2>
+                微信公众号 渠江烟语
+            </ng-template>
+            <img class="img" src="./assets/img/weixin.jpg">
+        </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzMd="18">
+       
     </div>
 </div>
 

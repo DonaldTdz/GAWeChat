@@ -7,7 +7,8 @@ namespace HC.WeChat.WechatEnums
     public enum MsgTypeEnum
     {
         文字消息 = 1,
-        图文消息 = 2
+        图文消息 = 2,
+        纯图片 =3
     }
     /// <summary>
     /// 匹配模式
@@ -207,7 +208,9 @@ namespace HC.WeChat.WechatEnums
     public enum DeployTypeEnum
     {
         积分配置 = 1,
-        通知配置 = 2
+        通知配置 = 2,
+        job配置=3,
+
     }
     /// <summary>
     /// 配置代码
@@ -218,7 +221,8 @@ namespace HC.WeChat.WechatEnums
         商品评价 = 2,
         店铺扫码兑换 = 3,
         通知配置 = 4,
-        首次注册 = 5
+        首次注册 = 5,
+        jo启动状态=6
     }
     /// <summary>
     /// 文章发布状态
