@@ -138,7 +138,7 @@
     </nz-tab>
     <nz-tab>
         <ng-template #nzTabHeading>
-            预设配置
+            商品配置
         </ng-template>
         <nz-card>
             <form nz-form [formGroup]="form" id="frm_create_role" (ngSubmit)="save()">
@@ -146,14 +146,14 @@
                     <div nz-col [nzSpan]="16">
                         <div nz-form-item nz-row>
                             <div nz-form-label nz-col [nzSm]="5">
-                                <label for="value">商品名称</label>
+                                <label for="value">预搜索商品标签</label>
                             </div>
                             <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('value')">
                                 <nz-input formControlName="value" [(ngModel)]="preConfig.value" [nzId]="'value'"></nz-input>
                                 <div nz-form-explain *ngIf="getFormControl('value').dirty&&getFormControl('value').hasError('required')">请输入商品名称</div>
                             </div>
                             <div nz-form-control nz-col style="margin-left: 160px;" [nzSm]="19">
-                                商品名称请以英文 "," 分隔
+                                多个预搜索商品标签请以英文 "," 分隔
                             </div>
                         </div>
                         <div nz-form-item nz-row class="mb0">
