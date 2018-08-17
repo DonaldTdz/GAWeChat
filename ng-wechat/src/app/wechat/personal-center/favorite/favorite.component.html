@@ -1,6 +1,6 @@
 <!--component html goes here -->
 <Page [ngClass]="'panel'" [title]="'Panel'" [showTitle]="false" [spacing]="false">
-    <div class="weui-cells__title">我的收藏</div>
+    <div class="weui-cells__title">我收藏的店铺</div>
     <!-- <div>
         <div class="weui-panel weui-panel_access" *ngFor="let item of purchaseRecordList">
             <div class="weui-panel__bd">
@@ -13,8 +13,8 @@
             </div>
         </div>
     </div> -->
-    <div class="weui-panel weui-panel_access">
-        <div class="weui-panel__bd">
+    <!-- <div class="weui-panel weui-panel_access">
+        <div class="weui-panel__bd"  >
             <a href="javascript:void(0);" style="padding-top: 0px;padding-bottom: 0px;margin-top: 5px;margin-bottom: 5px;" class="weui-media-box weui-media-box_appmsg" *ngFor="let item of favoriteList" (click)="goDetailShop(item.shopId)">
                 <div class="weui-media-box__hd weui-cell_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.coverPhoto +')'}">
                 </div>
@@ -23,6 +23,17 @@
                 </div>
             </a>
         </div>
+    </div> -->
+    <div class="weui-cells" *ngIf="favoriteList && favoriteList.length > 0" >
+        <a class="weui-cell weui-cell_access" *ngFor="let item of favoriteList" (click)="goDetailShop(item.shopId)" >
+            <div class="weui-cell__hd weui-cell_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.coverPhoto +')'}">
+            </div>
+            <div class="weui-cell__bd">
+                <p>{{item.shopName}}</p>
+            </div>
+            <div class="weui-cell__ft">
+            </div>
+        </a>
     </div>
     <weui-loadmore type="line" *ngIf="!favoriteList || favoriteList.length == 0"></weui-loadmore>
     <div class="weui-btn-area" *ngIf="!favoriteList || favoriteList.length == 0">
