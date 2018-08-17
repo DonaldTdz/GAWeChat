@@ -45,6 +45,7 @@ using HC.WeChat.ExhibitionShops;
 using HC.WeChat.Exhibitions;
 using HC.WeChat.VoteLogs;
 using HC.WeChat.Favorites;
+using HC.WeChat.ShopReportDatas;
 
 namespace HC.WeChat.EntityFrameworkCore
 {
@@ -142,5 +143,7 @@ namespace HC.WeChat.EntityFrameworkCore
         public virtual DbSet<VoteLog> VoteLogs { get; set; }
 
         public virtual DbSet<Favorite> Favorites { get; set; }
+        public virtual DbSet<ShopReportData> ShopReportDatas { get; set; }
+
     }
 }
