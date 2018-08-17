@@ -6,7 +6,7 @@
             </div>
         </div>
     </div>
-    <weui-searchbar (search)="onSearch($event)" [(value)]="value" placeholder="输入商品名称" (cancel)="onCancel()" [debounceTime]="500" (clear)="onClear()"></weui-searchbar>
+    <weui-searchbar #searchbar (search)="onSearch($event)" [(value)]="value" placeholder="输入商品名称" (cancel)="onCancel()" [debounceTime]="500" (clear)="onClear()"></weui-searchbar>
     <div class="weui-panel" style="margin-top: 0px;" *ngIf="value">
         <div class="weui-panel__hd">包含【{{value}}】的商品,点击搜索附近3公里的店铺</div>
         <div class="weui-panel__bd" *ngIf="goodes | async; let goodes; else loading">

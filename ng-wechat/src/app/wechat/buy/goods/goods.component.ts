@@ -1,10 +1,11 @@
-import { Component, ViewEncapsulation, Injector, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation, Injector, OnInit, ViewChild } from '@angular/core';
 import { AppComponentBase } from '../../components/app-component-base';
 import { Observable } from 'rxjs';
 import { ShopService, AppConsts } from '../../../services';
 import { JWeiXinService } from 'ngx-weui/jweixin';
 import { ShopProduct, NearbyShop } from '../../../services/model';
 import { Router } from '@angular/router';
+import { SearchBarComponent } from 'ngx-weui';
 
 @Component({
     selector: 'wechat-goods',
@@ -13,6 +14,7 @@ import { Router } from '@angular/router';
     encapsulation: ViewEncapsulation.None
 })
 export class GoodsComponent extends AppComponentBase implements OnInit {
+    @ViewChild('searchbar') searchbar: SearchBarComponent;
     value: string;
     goodes: Observable<ShopProduct[]>;
     shops: NearbyShop[];
@@ -113,6 +115,7 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
     preText(text: string) {
         this.onCancel();
         this.value = text;
+        this.searchbar._doFocus();
         this.onSearch(text)
     }
 } 
