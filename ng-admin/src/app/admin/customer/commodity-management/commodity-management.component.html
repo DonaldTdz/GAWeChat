@@ -1,133 +1,171 @@
-<pro-header></pro-header>
-<nz-card [nzBordered]="false">
-    <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
-        <div nz-row [nzGutter]="24">
-            <ng-template #deleteContent>
-                <h2>是否删除商品 {{productName}}?</h2>
-            </ng-template>
-            <div nz-col [nzSpan]="6" class="mb-md">
-                <div nz-form-item class="d-flex">
-                    <div nz-form-label>
-                        <label>规格</label>
+<nz-tabset>
+    <nz-tab>
+        <ng-template #nzTabHeading>
+            商品列表
+        </ng-template>
+        <nz-card>
+            <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
+                <div nz-row [nzGutter]="24">
+                    <ng-template #deleteContent>
+                        <h2>是否删除商品 {{productName}}?</h2>
+                    </ng-template>
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label>规格</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-input [(ngModel)]="search.name" name="name" [nzSize]="'large'" [nzPlaceHolder]="'请输入规格'" nzId="name"></nz-input>
+                            </div>
+                        </div>
                     </div>
-                    <div nz-form-control class="flex-1">
-                        <nz-input [(ngModel)]="search.name" name="name" [nzSize]="'large'" [nzPlaceHolder]="'请输入规格'" nzId="name"></nz-input>
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label>类型</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-select name="type" [nzPlaceHolder]="'请选择类型'" [(ngModel)]="search.type" [nzShowSearch]="true" nzSize="large">
+                                    <nz-option *ngFor="let i of types" [nzLabel]="i.text" [nzValue]="i.value">
+                                    </nz-option>
+                                </nz-select>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div nz-col [nzSpan]="6" class="mb-md">
-                <div nz-form-item class="d-flex">
-                    <div nz-form-label>
-                        <label>类型</label>
+                    <div nz-col [nzSpan]="6" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label>是否是特色商品</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-select name="isRare" [nzPlaceHolder]="'请选择是否是特色商品'" [(ngModel)]="search.isRare" [nzShowSearch]="true" nzSize="large">
+                                    <nz-option *ngFor="let i of isRares" [nzLabel]="i.text" [nzValue]="i.value">
+                                    </nz-option>
+                                </nz-select>
+                            </div>
+                        </div>
                     </div>
-                    <div nz-form-control class="flex-1">
-                        <nz-select name="type" [nzPlaceHolder]="'请选择类型'" [(ngModel)]="search.type" [nzShowSearch]="true" nzSize="large">
-                            <nz-option *ngFor="let i of types" [nzLabel]="i.text" [nzValue]="i.value">
-                            </nz-option>
-                        </nz-select>
-                    </div>
-                </div>
-            </div>
-            <div nz-col [nzSpan]="6" class="mb-md">
-                <div nz-form-item class="d-flex">
-                    <div nz-form-label>
-                        <label>是否是特色商品</label>
-                    </div>
-                    <div nz-form-control class="flex-1">
-                        <nz-select name="isRare" [nzPlaceHolder]="'请选择是否是特色商品'" [(ngModel)]="search.isRare" [nzShowSearch]="true" nzSize="large">
-                            <nz-option *ngFor="let i of isRares" [nzLabel]="i.text" [nzValue]="i.value">
-                            </nz-option>
-                        </nz-select>
-                    </div>
-                </div>
-            </div>
-            <div nz-col [nzSpan]="6" class="mb-md" [class.text-right]="'true'">
-                <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading" [nzSize]="'large'">查询</button>
-                <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button>
-                <button nz-button type="button" (click)="createProduct()" [nzType]="'primary'" [nzSize]="'large'">
+                    <div nz-col [nzSpan]="6" class="mb-md" [class.text-right]="'true'">
+                        <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading" [nzSize]="'large'">查询</button>
+                        <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button>
+                        <button nz-button type="button" (click)="createProduct()" [nzType]="'primary'" [nzSize]="'large'">
                     <i class="anticon anticon-plus"></i>
                     <span>新建</span>
                 </button>
-            </div>
-        </div>
-        <div nz-row [nzGutter]="24">
-            <div nz-col style="float:right; padding-left:0px" [nzSpan]="2" [nzOffset]="22" class="mb-md">
-                <a style="display: none;" id="aProductsExcelUrl" href="#">
-                    <button type="button" id="btnProductsHref">隐藏下载</button>
-                </a>
-                <button nz-button type="button" style="float: right;" (click)="exportExcel()" [nzSize]="'large'" [nzLoading]="exportLoading">
+                    </div>
+                </div>
+                <div nz-row [nzGutter]="24">
+                    <div nz-col style="float:right; padding-left:0px" [nzSpan]="2" [nzOffset]="22" class="mb-md">
+                        <a style="display: none;" id="aProductsExcelUrl" href="#">
+                            <button type="button" id="btnProductsHref">隐藏下载</button>
+                        </a>
+                        <button nz-button type="button" style="float: right;" (click)="exportExcel()" [nzSize]="'large'" [nzLoading]="exportLoading">
                     <i class="anticon anticon-download"></i>
                     <span>导出</span>
                 </button>
-            </div>
-        </div>
-    </form>
-    <nz-table #nzTable [nzAjaxData]="products" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
-        <thead nz-thead>
-            <tr>
-                <th nz-th>
-                    <span>商品图片</span>
-                </th>
-                <th nz-th>
-                    <span>商品规格</span>
-                </th>
-                <th nz-th>
-                    <span>商品类型</span>
-                </th>
-                <th nz-th>
-                    <span>零售价(元/包)</span>
-                </th>
-                <th nz-th>
-                    <span>特色商品</span>
-                </th>
-                <th nz-th>
-                    <span>包码</span>
-                </th>
-                <th nz-th>
-                    <span>条码</span>
-                </th>
-                <th nz-th>
-                    <span>搜索次数</span>
-                    <nz-table-sort [(nzValue)]="sortValue" (nzValueChange)="sort($event)"></nz-table-sort>
-                </th>
-                <th nz-th>
-                    <span>是否启用</span>
-                </th>
-                <th nz-th>
-                    <span>操作</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody nz-tbody>
-            <tr nz-tbody-tr *ngFor="let product of nzTable.data">
-                <td nz-td>
-                    <nz-avatar [nzSrc]="(product.photoUrl | hostUrl)" style="width:80px;height: 80px;" (click)="handlePreview(product.photoUrl)" [nzSize]="'large'" [nzShape]="'square'"></nz-avatar>
+                    </div>
+                </div>
+            </form>
+            <nz-table #nzTable [nzAjaxData]="products" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+                <thead nz-thead>
+                    <tr>
+                        <th nz-th>
+                            <span>商品图片</span>
+                        </th>
+                        <th nz-th>
+                            <span>商品规格</span>
+                        </th>
+                        <th nz-th>
+                            <span>商品类型</span>
+                        </th>
+                        <th nz-th>
+                            <span>零售价(元/包)</span>
+                        </th>
+                        <th nz-th>
+                            <span>特色商品</span>
+                        </th>
+                        <th nz-th>
+                            <span>包码</span>
+                        </th>
+                        <th nz-th>
+                            <span>条码</span>
+                        </th>
+                        <th nz-th>
+                            <span>搜索次数</span>
+                            <nz-table-sort [(nzValue)]="sortValue" (nzValueChange)="sort($event)"></nz-table-sort>
+                        </th>
+                        <th nz-th>
+                            <span>是否启用</span>
+                        </th>
+                        <th nz-th>
+                            <span>操作</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody nz-tbody>
+                    <tr nz-tbody-tr *ngFor="let product of nzTable.data">
+                        <td nz-td>
+                            <nz-avatar [nzSrc]="(product.photoUrl | hostUrl)" style="width:80px;height: 80px;" (click)="handlePreview(product.photoUrl)" [nzSize]="'large'" [nzShape]="'square'"></nz-avatar>
 
-                </td>
-                <td nz-td>{{product.specification}}</td>
-                <td nz-td>{{product.typeName}}</td>
-                <td nz-td>{{product.price}}</td>
-                <td nz-td>{{product.isRare==true?"是":"否"}}</td>
-                <td nz-td>{{product.packageCode}}</td>
-                <td nz-td>{{product.barCode}}</td>
-                <td nz-td>{{product.searchCount}}</td>
-                <!-- <td nz-td>{{product.isAction}}</td> -->
-                <td nz-td>
-                    <nz-badge [nzStatus]="product.activeType" [nzText]="product.activeText"></nz-badge>
-                </td>
-                <td nz-td>
-                    <a (click)="editProduct(product)">详情</a>
-                    <span nz-table-divider></span>
-                    <a (click)="delete(product,deleteContent)">删除</a>
-                </td>
-            </tr>
-        </tbody>
-    </nz-table>
-</nz-card>
-<nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null" [nzWidth]="imgWidth" (nzOnCancel)="previewVisible=false">
-    <ng-template #modalContent>
-        <img [src]="(previewImage | hostUrl)" [ngStyle]="{ 'width': '100%' }" />
-    </ng-template>
-</nz-modal>
-<!-- <edit-employee-modal #editEmployeeModal (modalSave)="refreshData()"></edit-employee-modal>
+                        </td>
+                        <td nz-td>{{product.specification}}</td>
+                        <td nz-td>{{product.typeName}}</td>
+                        <td nz-td>{{product.price}}</td>
+                        <td nz-td>{{product.isRare==true?"是":"否"}}</td>
+                        <td nz-td>{{product.packageCode}}</td>
+                        <td nz-td>{{product.barCode}}</td>
+                        <td nz-td>{{product.searchCount}}</td>
+                        <!-- <td nz-td>{{product.isAction}}</td> -->
+                        <td nz-td>
+                            <nz-badge [nzStatus]="product.activeType" [nzText]="product.activeText"></nz-badge>
+                        </td>
+                        <td nz-td>
+                            <a (click)="editProduct(product)">详情</a>
+                            <span nz-table-divider></span>
+                            <a (click)="delete(product,deleteContent)">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </nz-card>
+        <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null" [nzWidth]="imgWidth" (nzOnCancel)="previewVisible=false">
+            <ng-template #modalContent>
+                <img [src]="(previewImage | hostUrl)" [ngStyle]="{ 'width': '100%' }" />
+            </ng-template>
+        </nz-modal>
+        <!-- <edit-employee-modal #editEmployeeModal (modalSave)="refreshData()"></edit-employee-modal>
 <create-employee-modal #createEmployeeModal (modalSave)="refreshData()"></create-employee-modal> -->
+    </nz-tab>
+    <nz-tab>
+        <ng-template #nzTabHeading>
+            预设配置
+        </ng-template>
+        <nz-card>
+            <form nz-form [formGroup]="form" id="frm_create_role" (ngSubmit)="save()">
+                <div nz-row>
+                    <div nz-col [nzSpan]="16">
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="value">商品名称</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('value')">
+                                <nz-input formControlName="value" [(ngModel)]="preConfig.value" [nzId]="'value'"></nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('value').dirty&&getFormControl('value').hasError('required')">请输入商品名称</div>
+                            </div>
+                            <div nz-form-control nz-col style="margin-left: 160px;" [nzSm]="19">
+                                商品名称请以英文 "," 分隔
+                            </div>
+                        </div>
+                        <div nz-form-item nz-row class="mb0">
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit" [nzLoading]="loading">
+                                    {{l("保存")}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </nz-card>
+    </nz-tab>
+</nz-tabset>

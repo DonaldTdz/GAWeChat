@@ -68,6 +68,15 @@
                 </div>
                 <div nz-form-item nz-row>
                     <div nz-form-label nz-col [nzSm]="4">
+                        <label for="desc">产品介绍</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('desc')">
+                        <nz-input formControlName="desc" [(ngModel)]="product.desc" [nzId]="'desc'"></nz-input>
+                        <div nz-form-explain *ngIf="getFormControl('specification').dirty&&getFormControl('specification').hasError('maxlength')">字符长度小于等于200</div>
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSm]="4">
                     </div>
                     <div nz-form-control nz-col [nzSm]="20">
                         <label nz-checkbox nz-col formControlName="isAction" [(ngModel)]="product.isAction">
@@ -129,8 +138,7 @@
                             <span>上传图片</span>
                         </button>
                         <div class="my-md" *ngIf="product.photoUrl!=defalutImg && !isUpload">
-                            <img [class.rounded-circle]="false" [src]="(product.photoUrl|hostUrl)" (click)="handlePreview(product.photoUrl)" [width]="cropperSettings.croppedWidth"
-                                [height]="cropperSettings.croppedHeight">
+                            <img [class.rounded-circle]="false" [src]="(product.photoUrl|hostUrl)" (click)="handlePreview(product.photoUrl)" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
                         </div>
                         <div class="my-md" *ngIf="isUpload && data1.image">
                             <img [class.rounded-circle]="false" [src]="data1.image" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
@@ -151,8 +159,7 @@
                             <span>上传图片</span>
                         </button>
                         <div class="my-md" *ngIf="product.photoUrl!=defalutImg && !isUploadY">
-                            <img [class.rounded-circle]="false" [src]="(product.photoUrl|hostUrl)" (click)="handlePreview(product.photoUrl)" [width]="cropperSettings.croppedWidth"
-                                [height]="cropperSettings.croppedHeight">
+                            <img [class.rounded-circle]="false" [src]="(product.photoUrl|hostUrl)" (click)="handlePreview(product.photoUrl)" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">
                         </div>
                         <div class="my-md" *ngIf="isUploadY && this.product.showPhotoUrl">
                             <img [class.rounded-circle]="false" [src]="this.product.showPhotoUrl" [width]="cropperSettings.croppedWidth" [height]="cropperSettings.croppedHeight">

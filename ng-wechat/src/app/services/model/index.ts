@@ -21,3 +21,4 @@ export * from './good-source';
 export * from './exhibition-shop';
 export * from './exhibition-config';
 export * from './voteLog';
+export * from './favorite';

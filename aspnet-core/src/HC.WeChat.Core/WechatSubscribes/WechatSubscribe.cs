@@ -48,7 +48,7 @@ namespace HC.WeChat.WechatSubscribes
         /// 图片链接
         /// </summary>
         public string PicLink { get; set; }
-        public string MediaId { get; set; }
+        //public string MediaId { get; set; }
 
         ///// <summary>
         ///// CreationTime

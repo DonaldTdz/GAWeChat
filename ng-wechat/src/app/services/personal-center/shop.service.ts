@@ -152,10 +152,15 @@ export class ShopService {
     });
   }
 
-  GetShopQrCodeUrl(params:any):Observable<string> {
+  GetShopQrCodeUrl(params: any): Observable<string> {
     return this.http.get('/api/services/app/Shop/GetShopQrCodeURL', params, true).map(data => {
       return data.result;
     });
   }
 
+  GetPreProductConfig(params: any): Observable<any> {
+    return this.http.get('/api/services/app/MemberConfig/GetWXPreProductConfigAsync', params).map(data => {
+      return data.result;
+    });
+  }
 }

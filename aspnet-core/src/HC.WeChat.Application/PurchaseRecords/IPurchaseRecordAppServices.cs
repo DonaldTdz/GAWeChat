@@ -71,6 +71,7 @@ namespace HC.WeChat.PurchaseRecords
         /// <param name="input"></param>
         /// <returns></returns>
         Task<PagedResultDto<PurchaseRecordListDto>> GetPagedPurchaseRecordsByIdAsync(GetPurchaseRecordsInput input);
-
+        Task<PagedResultDto<PurchaseRecordListDto>> GetPagedPurchaseRecordByShopIdAsync(GetPurchaseRecordsInput input);
+        Task<APIResultDto> ExportShopExcel(GetPurchaseRecordsInput input);
     }
 }

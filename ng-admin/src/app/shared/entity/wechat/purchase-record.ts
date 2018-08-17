@@ -13,6 +13,10 @@ export class PurchaseRecord implements IPurchaseRecord {
     operatorOpenId: string;
     operatorName: string;
     isEvaluation: boolean;
+    weChatName: string;
+    phone: string;
+    favouriteSpecification: string;
+    price: number;
     constructor(data?: IPurchaseRecord) {
         if (data) {
             for (var property in data) {
@@ -38,6 +42,10 @@ export class PurchaseRecord implements IPurchaseRecord {
             this.operatorOpenId = data["operatorOpenId"];
             this.operatorName = data["operatorName"];
             this.isEvaluation = data["isEvaluation"];
+            this.weChatName = data["weChatName"];
+            this.phone = data["phone"];
+            this.favouriteSpecification = data["favouriteSpecification"];
+            this.price = data["price"];
         }
     }
 
@@ -63,6 +71,10 @@ export class PurchaseRecord implements IPurchaseRecord {
         data["operatorOpenId"] = this.operatorOpenId;
         data["operatorName"] = this.operatorName;
         data["isEvaluation"] = this.isEvaluation;
+        data["weChatName"] = this.weChatName;
+        data["phone"] = this.phone;
+        data["favouriteSpecification"] = this.favouriteSpecification;
+        data["price"] = this.price;
         return data;
     }
 
@@ -88,4 +100,8 @@ export interface IPurchaseRecord {
     operatorOpenId: string;
     operatorName: string;
     isEvaluation: boolean;
+    weChatName: string;
+    phone: string;
+    favouriteSpecification: string;
+    price: number;
 }

@@ -100,5 +100,10 @@ namespace HC.WeChat.Products
         /// 商标所属公司
         /// </summary>
         public virtual string Company { get; set; }
+
+        /// <summary>
+        /// 产品介绍
+        /// </summary>
+        public virtual string Desc { get; set; }
     }
 }

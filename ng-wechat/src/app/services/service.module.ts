@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { HttpClient } from './httpclient';
-import { WechatUserService, SettingsService, ShopService, FeedBackService, ArticleService, IntegralDetailService, CommonService,CustomerService, LevelAccountAccpintService } from './index';
+import { WechatUserService, SettingsService, ShopService, FeedBackService, ArticleService, IntegralDetailService, CommonService, CustomerService, LevelAccountAccpintService, FavoriteService } from './index';
 import { GoodSourceService } from './personal-center/good-source.service';
 
 @NgModule({
@@ -15,7 +15,8 @@ import { GoodSourceService } from './personal-center/good-source.service';
                 CustomerService,
                 CommonService,
                 LevelAccountAccpintService,
-                GoodSourceService
+                GoodSourceService,
+                FavoriteService
         ]
 })
 export class ServiceModule { }

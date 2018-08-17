@@ -273,7 +273,8 @@ namespace HC.WeChat.ShopProducts
                                 Price = p.Price,
                                 PackageCode = p.PackageCode,
                                 BarCode = p.BarCode,
-                                PhotoUrl = p.PhotoUrl
+                                PhotoUrl = p.PhotoUrl,
+                                Desc = p.Desc
                             };
                 return await query.OrderBy(q => q.Type).ThenBy(q => q.Specification).ToListAsync();
             }

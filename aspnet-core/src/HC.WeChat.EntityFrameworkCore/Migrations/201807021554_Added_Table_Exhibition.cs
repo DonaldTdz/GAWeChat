@@ -67,6 +67,11 @@ namespace HC.WeChat.Migrations
                      name: "NoId",
                      table: "ExhibitionShops",
                      nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                     name: "Desc",
+                     table: "Products",
+                     nullable: true);
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
@@ -83,6 +88,10 @@ namespace HC.WeChat.Migrations
             migrationBuilder.DropColumn(
                 name: "NoId",
                 table: "ExhibitionShops");
+
+            migrationBuilder.DropColumn(
+           name: "Desc",
+           table: "Products");
         }
     }
 }

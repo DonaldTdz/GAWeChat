@@ -910,7 +910,8 @@ namespace HC.WeChat.Shops
                 var shops = await query
                               .OrderByDescending(s => s.CreationTime)
                               .ThenBy(input.Sorting)
-                              .ToListAsync(); var shopListDtos = shops.MapTo<List<ShopListDto>>();
+                              .ToListAsync();
+                var shopListDtos = shops.MapTo<List<ShopListDto>>();
                 return shopListDtos;
             }
         }

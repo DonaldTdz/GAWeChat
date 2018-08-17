@@ -54,8 +54,8 @@
     <weui-navbar style="width:100%;">
         <weui-tab heading="店铺信息">
             <div class="weui-panel weui-panel_access">
-                <div class="weui-cells" style="margin-top: 0px;" >
-                    <div class="weui-cell" style="border-top: 0px;" >
+                <div class="weui-cells" style="margin-top: 0px;">
+                    <div class="weui-cell" style="border-top: 0px;">
                         <!-- <div class="weui-cell__hd">
                             <img src="./assets/images/shop/network-o-4.png" alt="" style="width:24px;margin-right:5px;display:block">
                         </div> -->
@@ -67,7 +67,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="weui-cells__title">店铺介绍</div>
+                <div class="weui-cells__title" style="margin-bottom: 0px;margin-top: 0px;">
+                    <div class="weui-cell" style="border-top: 0px; padding-left: 0px;padding-right: 0px;padding-bottom: 5px; padding-top: 5px;">
+                        <div class="weui-cell__bd " style="font-size: 14px;">
+                            <p>店铺介绍</p>
+                        </div>
+                        <div class="weui-cell__ft" *ngIf="isCancel == true" style="width:10%;">
+                            <img src="./assets/images/shop/unfavorite.png" style="width: 26px;display: block ;" (click)="favorite('favorite')">
+                        </div>
+                        <div class="weui-cell__ft" *ngIf="isCancel == false" style="width:10%;">
+                            <img src="./assets/images/shop/favorite.png" style="width: 26px;display: block ;" (click)="favorite('unfavorite')">
+                        </div>
+                    </div>
+                </div>
                 <div class="weui-cells">
                     <div class="weui-cell" style="font-size: 14px; color: dimgrey;">
                         <p>{{shop.desc}}</p>
@@ -131,6 +143,7 @@
                         </div>
                         <div class="weui-media-box__bd">
                             <h4 class="weui-media-box__title">{{sp.specification}}</h4>
+                            <p *ngIf="sp.desc" style="margin-bottom: 2px;color:black" class="weui-media-box__desc">{{sp.desc}}</p>
                             <p class="weui-media-box__desc">{{sp.typeName}}</p>
                         </div>
                     </div>
@@ -178,4 +191,4 @@
     </weui-navbar>
     <weui-dialog #auto [config]="config"></weui-dialog>
 </Page>
-<shop-qrcode #qrcode  [config]="DEFCONFIG" ></shop-qrcode>
+<shop-qrcode #qrcode [config]="DEFCONFIG"></shop-qrcode>

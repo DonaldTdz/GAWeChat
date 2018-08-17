@@ -11,6 +11,7 @@ import { ExperienceDetailComponent } from "./experience-share/experience-detail/
 import { ContributeDetailComponent } from "./contribute-management/contribute-detail/contribute-detail.component";
 import { ExhibitionComponent } from "./exhibition/exhibition.component";
 import { ExhibitionDetailComponent } from "./exhibition/exhibition-detail/exhibition-detail.component";
+import { DataStatisticsComponent } from "./data-statistics/data-statistics.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'index', pathMatch: 'full' },
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'contribute-detail/:id', component: ContributeDetailComponent, data: { translate: 'contribute-management', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'exhibition', component: ExhibitionComponent, data: { translate: 'exhibition', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'exhibition-detail/:id', component: ExhibitionDetailComponent, data: { translate: 'exhibition-detail', permission: 'Pages' }, canActivate: [AppRouteGuard] },
+  { path: 'data-statistics', component: DataStatisticsComponent, data: { translate: 'data-statistics', permission: 'Pages' }, canActivate: [AppRouteGuard] },
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

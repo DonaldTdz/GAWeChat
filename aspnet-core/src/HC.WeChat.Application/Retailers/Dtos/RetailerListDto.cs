@@ -100,6 +100,79 @@ namespace HC.WeChat.Retailers.Dtos
         /// 片区
         /// </summary>
         public string Area { get; set; }
+        public string ShopName { get; set; }
 
+        /// <summary>
+        /// 组织机构
+        /// </summary>
+        //public string Organization { get; set; }
+
+        ///// <summary>
+        ///// 店铺数量
+        ///// </summary>
+        //public int ShopTotal { get; set; }
+
+        ///// <summary>
+        ///// 消费积分
+        ///// </summary>
+        //public int? CustIntegral { get; set; }
+
+        ///// <summary>
+        ///// 店铺积分
+        ///// </summary>
+        //public int? RetailerIntegral { get; set; }
+
+        ///// <summary>
+        ///// 扫码次数
+        ///// </summary>
+        //public int? ScanFrequency { get; set; }
+
+        ///// <summary>
+        ///// 扫码量
+        ///// </summary>
+        //public int? ScanQuantity { get; set; }
+
+        ///// <summary>
+        ///// 消费金额
+        ///// </summary>
+        //public decimal? PriceTotal { get; set; }
+    }
+
+    public class DataStatisticsListDto
+    {
+        /// <summary>
+        /// 组织机构
+        /// </summary>
+        public string Organization { get; set; }
+
+        /// <summary>
+        /// 店铺数量
+        /// </summary>
+        public int ShopTotal { get; set; }
+
+        /// <summary>
+        /// 消费积分
+        /// </summary>
+        public int? CustIntegral { get; set; }
+
+        /// <summary>
+        /// 店铺积分
+        /// </summary>
+        public int? RetailerIntegral { get; set; }
+
+        /// <summary>
+        /// 扫码次数
+        /// </summary>
+        public int? ScanFrequency { get; set; }
+
+        /// <summary>
+        /// 扫码量
+        /// </summary>
+        public int? ScanQuantity { get; set; }
+
+        /// <summary>
+        /// 消费金额
+        /// </summary>
+        public decimal? PriceTotal { get; set; }
     }
 }

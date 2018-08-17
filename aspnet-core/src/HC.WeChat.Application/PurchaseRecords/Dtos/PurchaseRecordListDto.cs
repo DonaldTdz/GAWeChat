@@ -26,6 +26,11 @@ namespace HC.WeChat.PurchaseRecords.Dtos
         public string OperatorName { get; set; }
         public string PhotoUrl { get; set; }
         public bool? IsEvaluation { get; set; }
+        public string WeChatName { get; set; }
+        public string Phone { get; set; }
+        public string FavouriteSpecification { get; set; }
+        public decimal? Price { get; set; }
+
     }
 
     [AutoMapTo(typeof(PurchaseRecord))]

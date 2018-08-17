@@ -37,7 +37,6 @@ namespace HC.WeChat.Retailers.Dtos
                 Sorting = "Id";
             }
         }
-
     }
     public class GetRetailersWeChatInput : PagedAndSortedInputDto, IShouldNormalize
     {

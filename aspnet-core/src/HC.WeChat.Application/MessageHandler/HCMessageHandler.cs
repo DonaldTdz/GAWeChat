@@ -70,10 +70,10 @@ namespace HC.WeChat.MessageHandler
         /// 获取MediaId
         /// </summary>
         /// <returns></returns>
-        private string GetWechatSubscribeMediaId()
-        {
-            return _wechatsubscribeRepository.GetAll().Where(w => w.TenantId == _tenantId && w.MsgType==WechatEnums.MsgTypeEnum.纯图片).Select(w=>w.MediaId).FirstOrDefault();
-        }
+        //private string GetWechatSubscribeMediaId()
+        //{
+        //    return _wechatsubscribeRepository.GetAll().Where(w => w.TenantId == _tenantId && w.MsgType==WechatEnums.MsgTypeEnum.纯图片).Select(w=>w.MediaId).FirstOrDefault();
+        //}
 
         public override void ConfigurationMessageInfo(RequestMessageText requestMessage)
         {

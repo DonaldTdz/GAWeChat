@@ -1,9 +1,9 @@
 import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { Shop, ShopEvaluation, ShopProduct } from '@shared/entity/customer';
-import { WechatUser } from '@shared/entity/wechat';
+import { WechatUser, PurchaseRecord } from '@shared/entity/wechat';
 import { AppComponentBase } from '@shared/app-component-base';
 import { ShopServiceProxy, ShopEvaluationServiceProxy, PagedResultDtoOfShopEvaluation, ShopProductsServiceProxy, PagedResultDtoOfShopProduct } from '@shared/service-proxies/customer-service';
-import { WechatUserServiceProxy, PagedResultDtoOfWeChatUser } from '@shared/service-proxies/wechat-service';
+import { WechatUserServiceProxy, PagedResultDtoOfWeChatUser, PagedResultDtoOfPurchaseRecords, PurchaseRecordServiceProxy } from '@shared/service-proxies/wechat-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Parameter } from '@shared/service-proxies/entity';
 import { NzModalService } from 'ng-zorro-antd';
@@ -35,13 +35,22 @@ export class StoreDetailComponent extends AppComponentBase implements OnInit {
         skipCount: function () { return (this.pageIndex - 1) * this.pageSize; },
         total: 0,
     };
+    //店铺统计
+    queryDS: any = {
+        pageIndex: 1,
+        pageSize: 5,
+        skipCount: function () { return (this.pageIndex - 1) * this.pageSize; },
+        total: 0,
+    };
     shop: Shop = new Shop();
     shopEmployees: WechatUser[] = [];
     shopEvaluations: ShopEvaluation[] = [];
     shopProducts: ShopProduct[] = [];
+    dataStatisticsList: PurchaseRecord[] = [];
     loading = false;
     loadingE = false;
     loadingSP = false;
+    loadingDS = false;
     shopName = '';
     id: number;
     evaluation: ShopEvaluation;
@@ -69,17 +78,29 @@ export class StoreDetailComponent extends AppComponentBase implements OnInit {
     showCoverPhoto = '';
     auteloading = false;
 
-  background = 'white';
-  backgroundAlpha = 1.0;
-  foreground = 'black';
-  foregroundAlpha = 1.0;
-  level = 'L';
-  mime = 'image/png';
-  padding = 10;
-  size = 220;
+    background = 'white';
+    backgroundAlpha = 1.0;
+    foreground = 'black';
+    foregroundAlpha = 1.0;
+    level = 'L';
+    mime = 'image/png';
+    padding = 10;
+    size = 220;
+
+    sortMap = {
+        quantity: null,
+        price: null,
+        integral: null,
+    };
+    sortQuantityTotal = null;
+    sortPriceTotal = null;
+    sortIntegralTotal = null;
+    exportLoading = false;
+    nickName: string = '';
     constructor(injector: Injector, private shopService: ShopServiceProxy, private shopEvaluationService: ShopEvaluationServiceProxy,
         private weChatService: WechatUserServiceProxy, private Acroute: ActivatedRoute, private modal: NzModalService,
         private shopProductService: ShopProductsServiceProxy,
+        private purchaseRecordService: PurchaseRecordServiceProxy,
         private router: Router) {
         super(injector);
         this.id = this.Acroute.snapshot.params['id'];
@@ -126,7 +147,7 @@ export class StoreDetailComponent extends AppComponentBase implements OnInit {
             this.refreshData();
             this.refreshDataE();
             this.getShopProducts();
-
+            this.refreshDataDS();
         });
     }
     refreshData() {
@@ -240,4 +261,78 @@ export class StoreDetailComponent extends AppComponentBase implements OnInit {
         this.previewVisible = true;
     }
 
+    refreshDataDS(reset = false) {
+        this.loadingDS = true;
+        if (reset) {
+            this.query.pageIndex = 1;
+            this.nickName = '';
+            this.sortQuantityTotal = null;
+            this.sortPriceTotal = null;
+            this.sortIntegralTotal = null;
+            this.sortMap = {
+                quantity: null,
+                price: null,
+                integral: null,
+            };
+        }
+        this.purchaseRecordService.getShopDataStatistics(this.queryDS.skipCount(), this.queryDS.pageSize, this.getParameterDS()).subscribe((result: PagedResultDtoOfPurchaseRecords) => {
+            this.loadingDS = false;
+            this.dataStatisticsList = result.items;
+            this.queryDS.total = result.totalCount;
+        });
+    }
+
+    getParameterDS(): Parameter[] {
+        var arry = [];
+        arry.push(Parameter.fromJS({ key: 'ShopId', value: this.shop.id }));
+        arry.push(Parameter.fromJS({ key: 'Name', value: this.nickName }));
+        arry.push(Parameter.fromJS({ key: 'SortQuantityTotal', value: this.sortQuantityTotal }));
+        arry.push(Parameter.fromJS({ key: 'SortPriceTotal', value: this.sortPriceTotal }));
+        arry.push(Parameter.fromJS({ key: 'SortIntegralTotal', value: this.sortIntegralTotal }));
+        return arry;
+    }
+    sort(value, para: string) {
+        if (para == 'quantity') {
+            this.sortQuantityTotal = value;
+            this.sortPriceTotal = null;
+            this.sortIntegralTotal = null;
+            this.sortMap.price = null;
+            this.sortMap.integral = null;
+            this.refreshDataDS();
+        } else if (para == 'price') {
+            this.sortPriceTotal = value;
+            this.sortQuantityTotal = null;
+            this.sortIntegralTotal = null;
+            this.sortMap.integral = null;
+            this.sortMap.quantity = null;
+            this.refreshDataDS();
+        } else {
+            this.sortIntegralTotal = value;
+            this.sortQuantityTotal = null;
+            this.sortPriceTotal = null;
+            this.sortMap.quantity = null;
+            this.sortMap.price = null;
+            this.refreshDataDS();
+        }
+    }
+
+    /**
+     * 导出店铺信息
+     */
+    exportExcel() {
+        this.exportLoading = true;
+        this.purchaseRecordService.ExportShopDataExcel(
+            {
+                shopId: this.shop.id, name: this.nickName, sortQuantityTotal: this.sortQuantityTotal, sortPriceTotal: this.sortPriceTotal, sortIntegralTotal: this.sortIntegralTotal
+            }).subscribe(data => {
+                if (data.code == 0) {
+                    var url = AppConsts.remoteServiceBaseUrl + data.data;
+                    document.getElementById('aShopDataExcelUrl').setAttribute('href', url);
+                    document.getElementById('btnShopDataHref').click();
+                } else {
+                    this.notify.error(data.msg);
+                }
+                this.exportLoading = false;
+            });
+    }
 }

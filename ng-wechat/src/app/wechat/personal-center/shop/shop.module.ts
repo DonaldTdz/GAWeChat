@@ -6,7 +6,7 @@ import { ComponentsModule } from '../../components/components.module';
 import { ShopComponent } from './shop.component';
 import { WaitAuditComponent } from './wait-audit/wait-audit.component';
 
-import { ShopService } from '../../../services';
+import { ShopService, FavoriteService } from '../../../services';
 import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
 
 
@@ -34,7 +34,8 @@ const routes: Routes = [
         ...COMPONENTS
     ],
     providers: [
-        ShopService
+        ShopService,
+        FavoriteService
     ]
 })
 export class ShopModule {

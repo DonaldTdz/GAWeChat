@@ -32,6 +32,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using HC.WeChat.StatisticalDetails;
 using HC.WeChat.StatisticalDetails.Dtos;
+using System.Collections;
+using HC.WeChat.EntityFrameworkCore.Repositories;
+using Abp.Domain.Uow;
+using HC.WeChat.Helpers;
+using System.IO;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace HC.WeChat.PurchaseRecords
 {
@@ -42,7 +49,7 @@ namespace HC.WeChat.PurchaseRecords
     [AbpAuthorize(AppPermissions.Pages)]
     public class PurchaseRecordAppService : WeChatAppServiceBase, IPurchaseRecordAppService
     {
-        private readonly IRepository<PurchaseRecord, Guid> _purchaserecordRepository;
+        private readonly IPurchaserecordRepository _purchaserecordRepository;
         private readonly IRepository<IntegralDetail, Guid> _integralDetailRepository;
         private readonly IRepository<WeChatUser, Guid> _weChatUserRepository;
         private readonly IRepository<Product, Guid> _productRepository;
@@ -53,6 +60,7 @@ namespace HC.WeChat.PurchaseRecords
         private readonly IPurchaseRecordManager _purchaserecordManager;
         private readonly IConfigurationRoot _appConfiguration;
         private readonly IRepository<WechatAppConfig, int> _wechatappconfigRepository;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         IWechatAppConfigAppService _wechatAppConfigAppService;
         private int? TenantId { get; set; }
@@ -60,7 +68,7 @@ namespace HC.WeChat.PurchaseRecords
         /// <summary>
         /// 构造函数
         /// </summary>
-        public PurchaseRecordAppService(IRepository<PurchaseRecord, Guid> purchaserecordRepository
+        public PurchaseRecordAppService(IPurchaserecordRepository purchaserecordRepository
         , IRepository<IntegralDetail, Guid> integralDetailRepository
         , IRepository<WeChatUser, Guid> weChatUserRepository
         , IRepository<MemberConfig, Guid> memberConfigRepository
@@ -71,7 +79,7 @@ namespace HC.WeChat.PurchaseRecords
                     , IWechatAppConfigAppService wechatAppConfigAppService
             , IRepository<WechatAppConfig, int> wechatappconfigRepository
             , IRepository<StatisticalDetail, Guid> statisticaldetailRepository
-        )
+            , IHostingEnvironment hostingEnvironment)
         {
             _purchaserecordRepository = purchaserecordRepository;
             _integralDetailRepository = integralDetailRepository;
@@ -86,6 +94,7 @@ namespace HC.WeChat.PurchaseRecords
             AppConfig = _wechatAppConfigAppService.GetWechatAppConfig(TenantId).Result;
             _wechatappconfigRepository = wechatappconfigRepository;
             _statisticaldetailRepository = statisticaldetailRepository;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         /// <summary>
@@ -252,7 +261,7 @@ namespace HC.WeChat.PurchaseRecords
                                 };
             var purchaserecordCount = await result.CountAsync();
             var purchaserecords = await result
-                .OrderByDescending(v=>v.CreationTime)
+                .OrderByDescending(v => v.CreationTime)
                 .PageBy(input)
                 .ToListAsync();
             var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
@@ -423,7 +432,7 @@ namespace HC.WeChat.PurchaseRecords
         /// <param name="openId"></param>
         /// <param name="shopId"></param>
         /// <returns></returns>
-        private async Task AddSingleTotalAsync(string openId,Guid ?shopId)
+        private async Task AddSingleTotalAsync(string openId, Guid? shopId)
         {
             try
             {
@@ -625,6 +634,373 @@ namespace HC.WeChat.PurchaseRecords
         //        return await entity.OrderByDescending(v => v.CreationTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
         //    }
         //}
+
+        /// <summary>
+        /// 根据店铺Id分页查询店铺购买记录.WhereIf(!string.IsNullOrEmpty(input.Name), s => s.ShopName.Contains(input.Name))
+        /// <returns></returns>
+        public async Task<PagedResultDto<PurchaseRecordListDto>> GetPagedPurchaseRecordByShopIdAsync(GetPurchaseRecordsInput input)
+        {
+            var user = _weChatUserRepository.GetAll();
+            var product = _productRepository.GetAll();
+            var purchaseRecord = _purchaserecordRepository.GetAll().Where(v => v.ShopId == input.ShopId);
+
+            var entity = (from pr in purchaseRecord
+                          join p in product on pr.ProductId equals p.Id
+                          join u in user on pr.OpenId equals u.OpenId
+                          group new { u.NickName, u.Phone, pr.Quantity, p.Price, pr.Integral, u.OpenId }
+                          by new { u.OpenId, u.NickName, u.Phone } into g
+                          select new PurchaseRecordListDto()
+                          {
+                              OpenId = g.Key.OpenId,
+                              Quantity = g.Sum(v => v.Quantity),
+                              Price = g.Sum(v => v.Price),
+                              Integral = g.Sum(v => v.Integral),
+                              Phone = g.Key.Phone,
+                              WeChatName = g.Key.NickName
+                          }).WhereIf(!string.IsNullOrEmpty(input.Name), s => s.WeChatName.Contains(input.Name));
+
+            //TODO:根据传入的参数添加过滤条件
+            var purchaserecordCount = await entity.CountAsync();
+            if (input.SortQuantityTotal != null && input.SortQuantityTotal == "ascend")
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Quantity).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+            else if (input.SortQuantityTotal != null && input.SortQuantityTotal == "descend")
+            {
+                var purchaserecords = await entity.OrderBy(v => v.Quantity).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+            else if (input.SortPriceTotal != null && input.SortPriceTotal == "ascend")
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Price).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+            else if (input.SortPriceTotal != null && input.SortPriceTotal == "descend")
+            {
+                var purchaserecords = await entity.OrderBy(v => v.Price).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+            else if (input.SortIntegralTotal != null && input.SortIntegralTotal == "ascend")
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Integral).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+            else if (input.SortIntegralTotal != null && input.SortIntegralTotal == "descend")
+            {
+                var purchaserecords = await entity.OrderBy(v => v.Integral).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+            else
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Price).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return new PagedResultDto<PurchaseRecordListDto>(
+                    purchaserecordCount,
+                    purchaserecordListDtos
+                    );
+            }
+        }
+
+        #region 单个店铺数据统计
+        /// <summary>
+        /// 单个店铺数据统计
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [UnitOfWork(isTransactional: false)]
+        public async Task<APIResultDto> ExportShopExcel(GetPurchaseRecordsInput input)
+        {
+            try
+            {
+                var exportData = await GeShopDataNoPage(input);
+                var result = new APIResultDto();
+                result.Code = 0;
+                result.Data = SaveShopDataExcel("店铺数据统计.xlsx", exportData);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("ExportShopExcel errormsg{0} Exception{1}", ex.Message, ex);
+                return new APIResultDto() { Code = 901, Msg = "网络忙...请待会儿再试！" };
+            }
+        }
+
+        /// <summary>
+        /// Excel获取单个店铺数据
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private async Task<List<PurchaseRecordListDto>> GeShopDataNoPage(GetPurchaseRecordsInput input)
+        {
+            var user = _weChatUserRepository.GetAll();
+            var product = _productRepository.GetAll();
+            var purchaseRecord = _purchaserecordRepository.GetAll().Where(v => v.ShopId == input.ShopId);
+
+            var entity = (from pr in purchaseRecord
+                          join p in product on pr.ProductId equals p.Id
+                          join u in user on pr.OpenId equals u.OpenId
+                          group new { u.NickName, u.Phone, pr.Quantity, p.Price, pr.Integral, u.OpenId }
+                          by new { u.OpenId, u.NickName, u.Phone } into g
+                          select new PurchaseRecordListDto()
+                          {
+                              OpenId = g.Key.OpenId,
+                              Quantity = g.Sum(v => v.Quantity),
+                              Price = g.Sum(v => v.Price),
+                              Integral = g.Sum(v => v.Integral),
+                              Phone = g.Key.Phone,
+                              WeChatName = g.Key.NickName
+                          }).WhereIf(!string.IsNullOrEmpty(input.Name), s => s.WeChatName.Contains(input.Name));
+
+            if (input.SortQuantityTotal != null && input.SortQuantityTotal == "ascend")
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Quantity).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+            }
+            else if (input.SortQuantityTotal != null && input.SortQuantityTotal == "descend")
+            {
+                var purchaserecords = await entity.OrderBy(v => v.Quantity).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+            }
+            else if (input.SortPriceTotal != null && input.SortPriceTotal == "ascend")
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Price).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+
+            }
+            else if (input.SortPriceTotal != null && input.SortPriceTotal == "descend")
+            {
+                var purchaserecords = await entity.OrderBy(v => v.Price).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+            }
+            else if (input.SortIntegralTotal != null && input.SortIntegralTotal == "ascend")
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Integral).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+            }
+            else if (input.SortIntegralTotal != null && input.SortIntegralTotal == "descend")
+            {
+                var purchaserecords = await entity.OrderBy(v => v.Integral).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+            }
+            else
+            {
+                var purchaserecords = await entity.OrderByDescending(v => v.Price).PageBy(input).ToListAsync();
+                //openId列表
+                var openIdList = purchaserecords.Select(v => v.OpenId);
+                //openId拼接字符串
+                string openIds = string.Join(',', openIdList.ToArray());
+                var favouriteSpecification = await _purchaserecordRepository.GetShopFavouriteSpecificationAsync(input.ShopId.ToString(), openIds);
+                foreach (var item in purchaserecords)
+                {
+                    item.FavouriteSpecification = favouriteSpecification.Where(u => u.OpenId == item.OpenId).First().Specification;
+                }
+
+                var purchaserecordListDtos = purchaserecords.MapTo<List<PurchaseRecordListDto>>();
+                return purchaserecordListDtos;
+            }
+        }
+
+        /// <summary>
+        /// 绘制EXCEL
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private string SaveShopDataExcel(string fileName, List<PurchaseRecordListDto> data)
+        {
+            var fullPath = ExcelHelper.GetSavePath(_hostingEnvironment.WebRootPath) + fileName;
+            using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("Employees");
+                var rowIndex = 0;
+                IRow titleRow = sheet.CreateRow(rowIndex);
+                string[] titles = { "微信用户名", "电话号码", "购买数量", "购买金额", "积分", "常买规格" };
+                var fontTitle = workbook.CreateFont();
+                fontTitle.IsBold = true;
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    var cell = titleRow.CreateCell(i);
+                    cell.CellStyle.SetFont(fontTitle);
+                    cell.SetCellValue(titles[i]);
+                }
+                var font = workbook.CreateFont();
+                foreach (var item in data)
+                {
+
+                    rowIndex++;
+                    IRow row = sheet.CreateRow(rowIndex);
+                    ExcelHelper.SetCell(row.CreateCell(0), font, item.WeChatName);
+                    ExcelHelper.SetCell(row.CreateCell(1), font, item.Phone);
+                    ExcelHelper.SetCell(row.CreateCell(2), font, item.Quantity.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.Price.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(4), font, item.Integral.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(5), font, item.FavouriteSpecification);
+                }
+                workbook.Write(fs);
+            }
+            return "/files/downloadtemp/" + fileName;
+        }
+        #endregion
     }
 }
-

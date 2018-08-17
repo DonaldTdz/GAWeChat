@@ -37,6 +37,13 @@
             </div>
             <div class="weui-cell__ft" style="font-size: 13px;">评价送积分</div>
         </div>
+        <div class="weui-cell weui-cell_access" (click)="goFavorite()">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">我的收藏</span>
+            </div>
+            <div class="weui-cell__ft">
+            </div>
+        </div>
         <div class="weui-cell weui-cell_access" (click)="goBindPhone()">
             <div class="weui-cell__bd">
                 <span style="vertical-align: middle">换绑手机</span>
@@ -44,8 +51,8 @@
             <div class="weui-cell__ft" style="font-size: 13px;">{{user.phone | phoneFormat}}</div>
         </div>
     </div>
-    <div class="weui-cells__title" *ngIf="isShowRetailer" >零售客户</div>
-    <div class="weui-cells" *ngIf="isShowRetailer" >
+    <div class="weui-cells__title" *ngIf="isShowRetailer">零售客户</div>
+    <div class="weui-cells" *ngIf="isShowRetailer">
         <div class="weui-cell weui-cell_access" (click)="goArchivalLevel()">
             <div class="weui-cell__bd">
                 <span style="vertical-align: middle">档级货源</span>

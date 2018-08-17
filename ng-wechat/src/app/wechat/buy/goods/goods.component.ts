@@ -21,7 +21,8 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
     hostUrl: string = AppConsts.remoteServiceBaseUrl;
     latitude: number;//当前纬度
     longitude: number;//当前经度
-
+    productConfig: string = '';
+    productList: string[];
     constructor(injector: Injector,
         private shopService: ShopService,
         private wxService: JWeiXinService,
@@ -56,6 +57,7 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
                 }
             });
         });
+        this.getPreProduct();
     }
 
     wxReady(): Promise<boolean> {
@@ -74,7 +76,8 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
     }
 
     onCancel() {
-        console.log('onCancel');
+        // this.onClear();
+        console.log('取消');
     }
 
     onClear() {
@@ -84,15 +87,32 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
     onSelectGoods(gds: ShopProduct) {
         this.value = '';
         this.sgoods = gds;
-        this.shopService.GetShopListByGoodsIdAsync({tenantId: this.settingsService.tenantId, goodsId: gds.id, latitude: this.latitude, longitude: this.longitude}).subscribe(res =>{
+        this.shopService.GetShopListByGoodsIdAsync({ tenantId: this.settingsService.tenantId, goodsId: gds.id, latitude: this.latitude, longitude: this.longitude }).subscribe(res => {
             this.shops = res;
-            if(!this.shops || this.shops.length == 0){
-                this.lineDesc = '附近3公里没有售卖【'+ this.sgoods.specification +'】的店铺';
+            if (!this.shops || this.shops.length == 0) {
+                this.lineDesc = '附近3公里没有售卖【' + this.sgoods.specification + '】的店铺';
             }
         });
     }
 
     goShop(id) {
         this.router.navigate(['/shops/shop', { shopId: id }]);
+    }
+
+    getPreProduct() {
+        let params: any = {};
+        params.tenantId = this.settingsService.tenantId;
+        this.shopService.GetPreProductConfig(params).subscribe(res => {
+            this.productConfig = res;
+            if (this.productConfig != null && this.productConfig.length != 0) {
+                this.productList = res.split(',');
+            }
+        });
+    }
+
+    preText(text: string) {
+        this.onCancel();
+        this.value = text;
+        this.onSearch(text)
     }
 } 

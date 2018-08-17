@@ -4,7 +4,7 @@ import 'rxjs/add/observable/timer';
 import { AppComponentBase } from '../../components/app-component-base';
 import { WechatUser, UserType, Shop, ShopProduct } from '../../../services/model';
 import { Router, Params } from '@angular/router';
-import { ShopService, AppConsts } from '../../../services';
+import { ShopService, AppConsts, FavoriteService } from '../../../services';
 
 import { PopupComponent } from "ngx-weui/popup";
 import { ToptipsService } from "ngx-weui/toptips";
@@ -14,6 +14,8 @@ import { DialogService, DialogConfig, DialogComponent } from 'ngx-weui/dialog';
 import 'jsbarcode';
 import { LoaderService } from 'ngx-weui/utils/loader.service';
 import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
+import { ToastService, ToastComponent } from 'ngx-weui/toast';
+import { ToastModule } from 'ngx-weui';
 
 @Component({
     selector: 'wechat-shop',
@@ -25,10 +27,12 @@ export class ShopComponent extends AppComponentBase implements OnInit {
 
     @ViewChild('auto') autoAS: DialogComponent;
     @ViewChild('qrcode') qrcodeAS: ShopQrcodeComponent;
-
+    @ViewChild('success') successToast: ToastComponent;
+    @ViewChild('loading') loadingToast: ToastComponent;
     user: WechatUser;
     shop: Shop;
     shopId: string;
+    x: boolean;
     shopProducts: ShopProduct[];
     shopProductIds: string[];
     @ViewChild('product') productPopup: PopupComponent;
@@ -48,13 +52,18 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     };
     config2: DialogConfig = {};
     //content = '';
+    isCancel: boolean = false;
+
     constructor(injector: Injector,
         private router: Router,
         private shopService: ShopService,
         private wxService: JWeiXinService,
         private srv: ToptipsService,
         private ds: DialogService,
-        private load: LoaderService) {
+        private load: LoaderService,
+        private favoriteService: FavoriteService,
+        private srvt: ToastService
+    ) {
         super(injector);
         this.activatedRoute.params.subscribe((params: Params) => {
             this.shopId = params['shopId'];
@@ -63,8 +72,9 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
+
         //this.load.loadScript('assets/libs/qrcode.min.js').then((res) => {
-            //this.generateQRcode('wechat_qrcode', '11112');
+        //this.generateQRcode('wechat_qrcode', '11112');
         //});
         //微信JS SDK配置
         this.wxService.get().then((res) => {
@@ -112,6 +122,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
         else {
             this.settingsService.getUser().subscribe(result => {
                 this.user = result;
+                this.x = this.user.isShopkeeper;
                 if (this.user) {
                     //console.table(this.user);
                     if (this.user.userType != UserType.Retailer) { //不是零售客户需先绑定
@@ -126,6 +137,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                                     if (!this.shop) {//如果没有店铺 需要新增 
                                         this.router.navigate(['/shopadds/shop-add']);
                                     }
+                                    this.shopId = this.shop.id;
                                     //  else {
                                     //     this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
                                     //         this.qrCodeUrl = data;
@@ -139,7 +151,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 }
             });
         }
-
+        this.IsCancelShop();
     }
 
     goEditShop() {
@@ -155,6 +167,8 @@ export class ShopComponent extends AppComponentBase implements OnInit {
 
             this.shopService.GetShopProductsByShopId(params).subscribe(result => {
                 this.shopProducts = result;
+                console.log(this.shopProducts);
+
                 this.shopProductIds = this.shopProducts.map(s => { return s.id });
             });
 
@@ -256,18 +270,18 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     showQrCode() {
-        
-      
-            // this.generateQRcode('wechat_qrcode', this.qrCodeUrl);
-           // this.content = '<div class="mdiv"><p>' + this.shop.name + '</p><div><img class="qrcode" src="' + AppConsts.remoteServiceBaseUrl + this.shop.qrUrl + '"></div><p>扫一扫，进入店铺</p></div>';
-            // this.config2 = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
-            //     content: '<div class="mdiv"><p>' + this.shop.name + '</p><div id="wechat_qrcode" class="payment_wechat_img" ><img class="payment_wechat_icon" src="assets/images/logo.jpg"></div><p>扫一扫，进入店铺</p></div>',
-            // });
-            // this.ds.show(this.config2).subscribe((res: any) => {
-            //     console.log(res);
-            //     this.generateQRcode('wechat_qrcode', this.qrCodeUrl);
-            // });
-            this.qrcodeAS.show(this.shop);
+
+
+        // this.generateQRcode('wechat_qrcode', this.qrCodeUrl);
+        // this.content = '<div class="mdiv"><p>' + this.shop.name + '</p><div><img class="qrcode" src="' + AppConsts.remoteServiceBaseUrl + this.shop.qrUrl + '"></div><p>扫一扫，进入店铺</p></div>';
+        // this.config2 = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+        //     content: '<div class="mdiv"><p>' + this.shop.name + '</p><div id="wechat_qrcode" class="payment_wechat_img" ><img class="payment_wechat_icon" src="assets/images/logo.jpg"></div><p>扫一扫，进入店铺</p></div>',
+        // });
+        // this.ds.show(this.config2).subscribe((res: any) => {
+        //     console.log(res);
+        //     this.generateQRcode('wechat_qrcode', this.qrCodeUrl);
+        // });
+        this.qrcodeAS.show(this.shop);
     }
 
     generateQRcode(id: string, url: any) {
@@ -277,5 +291,66 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             height: 230,
             correctLevel: QRCode.CorrectLevel.H
         });
+    }
+
+    IsCancelShop() {
+        setTimeout(() => {
+            let params: any =
+            {
+                shopId: this.shopId,
+                openId: this.settingsService.openId,
+            };
+            // this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => setTimeout(() => {
+            //     {
+            //         this.isCancel = data;
+            //     }
+            // }, 500));
+            this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => {
+                this.isCancel = data;
+            });
+        }, 1);
+    }
+
+    favorite(type: string) {
+        if (type == 'favorite') {
+            if (this.isCancel == true) {
+                let params: any =
+                {
+                    shopId: this.shopId,
+                    shopName: this.shop.name,
+                    openId: this.settingsService.openId,
+                    isCancel: false
+                };
+                this.favoriteService.AddOrCancelFavoriteShop(params).subscribe(data => {
+                    if (data && data.code === 0) {
+                        this.srvt['success']('收藏成功', 0);
+                        this.isCancel = false;
+                    }
+                    else {
+                        this.srvt['loading']('请重试');
+                        this.isCancel = true;
+                    }
+                });
+            }
+        } else { //取消收藏
+            if (this.isCancel == false) {
+                let params: any =
+                {
+                    shopId: this.shopId,
+                    openId: this.settingsService.openId,
+                    isCancel: true
+                };
+                this.favoriteService.AddOrCancelFavoriteShop(params).subscribe(data => {
+                    if (data && data.code === 0) {
+                        this.srvt['success']('已取消收藏', 0);
+                        this.isCancel = true;
+                    }
+                    else {
+                        this.srvt['loading']('请重试');
+                        this.isCancel = false;
+                    }
+                });
+            }
+        }
     }
 }

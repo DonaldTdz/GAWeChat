@@ -44,5 +44,10 @@ namespace HC.WeChat.ShopProducts.Dtos
                 return Type.ToString();
             }
         }
+
+        /// <summary>
+        /// 产品描述
+        /// </summary>
+        public string Desc { get; set; }
     }
 }

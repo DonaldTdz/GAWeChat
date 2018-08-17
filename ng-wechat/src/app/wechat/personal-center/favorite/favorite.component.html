@@ -1,0 +1,31 @@
+<!--component html goes here -->
+<Page [ngClass]="'panel'" [title]="'Panel'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells__title">我的收藏</div>
+    <!-- <div>
+        <div class="weui-panel weui-panel_access" *ngFor="let item of purchaseRecordList">
+            <div class="weui-panel__bd">
+                <div href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+                    <div class="weui-cell__hd weui-cell_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.photoUrl +')'}">
+                    </div>
+                    <div class="weui-media-box__bd">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="weui-panel weui-panel_access">
+        <div class="weui-panel__bd">
+            <a href="javascript:void(0);" style="padding-top: 0px;padding-bottom: 0px;margin-top: 5px;margin-bottom: 5px;" class="weui-media-box weui-media-box_appmsg" *ngFor="let item of favoriteList" (click)="goDetailShop(item.shopId)">
+                <div class="weui-media-box__hd weui-cell_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.coverPhoto +')'}">
+                </div>
+                <div class="weui-media-box__bd">
+                    <h4 class="weui-media-box__title">{{item.shopName}}</h4>
+                </div>
+            </a>
+        </div>
+    </div>
+    <weui-loadmore type="line" *ngIf="!favoriteList || favoriteList.length == 0"></weui-loadmore>
+    <div class="weui-btn-area" *ngIf="!favoriteList || favoriteList.length == 0">
+        <button weui-button (click)="goFindGoods()">附近店铺</button>
+    </div>
+</Page>

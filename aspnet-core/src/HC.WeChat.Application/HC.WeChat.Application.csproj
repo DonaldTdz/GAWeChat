@@ -27,5 +27,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Abp.WeChat.Senparc\Abp.WeChat.Senparc.csproj" />
     <ProjectReference Include="..\HC.WeChat.Core\HC.WeChat.Core.csproj" />
+    <ProjectReference Include="..\HC.WeChat.EntityFrameworkCore\HC.WeChat.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

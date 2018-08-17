@@ -51,6 +51,11 @@ namespace HC.WeChat.Products.Dtos
         /// 商标所属公司
         /// </summary>
         public string Company { get; set; }
+
+        /// <summary>
+        /// 产品介绍
+        /// </summary>
+        public string Desc { get; set; }
     }
 
     public class RareProductDto

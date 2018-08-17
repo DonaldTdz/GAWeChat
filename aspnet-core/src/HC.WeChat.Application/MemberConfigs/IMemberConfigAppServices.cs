@@ -67,5 +67,10 @@ namespace HC.WeChat.MemberConfigs
         /// </summary>
         /// <returns></returns>
         MemberConfigListDto GetJobConfig();
+
+        Task<MemberConfigListDto> GetPreProductConfigAsync();
+
+        Task CreateOrUpdatePreProductConfig(MemberConfigEditDto input);
+        Task<string> GetWXPreProductConfigAsync(int? tenantId);
     }
 }

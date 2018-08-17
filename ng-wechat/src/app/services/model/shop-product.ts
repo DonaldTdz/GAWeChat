@@ -15,6 +15,7 @@ export class ShopProduct implements IShopProduct {
     typeName: string;
     shopId: string;
     productId: string;
+    desc: string;
 
     constructor(data?: IShopProduct) {
         if (data) {
@@ -43,6 +44,7 @@ export class ShopProduct implements IShopProduct {
             this.typeName = data["typeName"];
             this.shopId = data["shopId"];
             this.productId = data["productId"];
+            this.desc = data["desc"];
         }
     }
 
@@ -58,8 +60,8 @@ export class ShopProduct implements IShopProduct {
             let item = new ShopProduct();
             item.init(result);
             array.push(item);
-        });   
-      
+        });
+
         return array;
     }
 
@@ -81,6 +83,7 @@ export class ShopProduct implements IShopProduct {
         data["typeName"] = this.typeName;
         data["shopId"] = this.shopId;
         data["productId"] = this.productId;
+        data["desc"] = this.desc;
         return data;
     }
 
@@ -108,6 +111,7 @@ export interface IShopProduct {
     typeName: string;
     shopId: string;
     productId: string;
+    desc: string;
 }
 
 export class ShopGoods implements IShopGoods {
@@ -150,8 +154,8 @@ export class ShopGoods implements IShopGoods {
             let item = new ShopGoods();
             item.init(result);
             array.push(item);
-        });   
-      
+        });
+
         return array;
     }
 

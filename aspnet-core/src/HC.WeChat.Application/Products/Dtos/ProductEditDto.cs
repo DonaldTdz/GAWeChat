@@ -79,5 +79,10 @@ namespace HC.WeChat.Products.Dtos
         /// base64
         /// </summary>
         public string Img64 { get; set; }
+
+        /// <summary>
+        /// 产品介绍
+        /// </summary>
+        public string Desc { get; set; }
     }
 }

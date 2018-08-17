@@ -6,6 +6,9 @@ import { Parameter } from '@shared/service-proxies/entity';
 import { NzModalService } from 'ng-zorro-antd';
 import { Router } from '@angular/router';
 import { AppConsts } from '@shared/AppConsts';
+import { FormGroup, FormBuilder, Validators } from '../../../../../node_modules/@angular/forms';
+import { MemberConfigs } from '@shared/entity/member/memberconfig';
+import { MemberConfigsServiceProxy, PagedResultDtoOfMemberConfigs } from '@shared/service-proxies/member/memberconfigs-service';
 
 @Component({
     moduleId: module.id,
@@ -42,14 +45,26 @@ export class CommodityManagementComponent extends AppComponentBase implements On
     sortValue = null;
     host = '';
     exportLoading = false;
-    constructor(injector: Injector, private productsService: ProductsServiceProxy, private modal: NzModalService,
+    form: FormGroup;
+    preConfig: MemberConfigs = new MemberConfigs();
+
+    constructor(injector: Injector, private fb: FormBuilder, private productsService: ProductsServiceProxy,
+        private configService: MemberConfigsServiceProxy, private modal: NzModalService,
         private router: Router) {
         super(injector);
     }
     ngOnInit(): void {
+        this.form = this.fb.group({
+            value: [null, Validators.compose([Validators.required])],
+        });
         this.refreshData();
+        this.getPreProductConfig();
         this.host = AppConsts.remoteServiceBaseUrl;
         // this.defalutImg = this.host + this.defalutImg;
+    }
+
+    getFormControl(id: string) {
+        return this.form.controls[id];
     }
 
     sort(value) {
@@ -154,4 +169,24 @@ export class CommodityManagementComponent extends AppComponentBase implements On
         });
     }
 
+    getPreProductConfig() {
+        this.configService.getPreProductConfigAsync().subscribe((result: MemberConfigs) => {
+            this.preConfig = result;
+        });
+    }
+
+    save() {
+        for (const i in this.form.controls) {
+            this.form.controls[i].markAsDirty();
+        }
+        if (this.form.valid) {
+            this.loading = true;
+            console.log(this.preConfig);
+            this.configService.updatePreProduct(this.preConfig).subscribe(() => {
+                this.notify.info('保存成功！');
+                this.getPreProductConfig();
+                this.loading = false;
+            });
+        }
+    }
 }

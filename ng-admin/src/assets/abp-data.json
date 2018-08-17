@@ -74,6 +74,12 @@
                             "link": "/admin/marketting/exhibition",
                             "translate": "exhibition",
                             "reuse": false
+                        },
+                        {
+                            "text": "数据报表",
+                            "link": "/admin/marketting/data-statistics",
+                            "translate": "data-statistics",
+                            "reuse": false
                         }
                     ]
                 },

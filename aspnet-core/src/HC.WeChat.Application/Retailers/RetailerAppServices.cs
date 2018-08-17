@@ -27,6 +27,11 @@ using NPOI.XSSF.UserModel;
 using HC.WeChat.LevelLogs;
 using HC.WeChat.GACustPoints;
 using HC.WeChat.GAGrades;
+using HC.WeChat.Shops;
+using HC.WeChat.IntegralDetails;
+using HC.WeChat.Products;
+using HC.WeChat.WeChatUsers;
+using HC.WeChat.WechatEnums;
 
 namespace HC.WeChat.Retailers
 {
@@ -42,6 +47,12 @@ namespace HC.WeChat.Retailers
         private readonly IRepository<Retailer, Guid> _retailerRepository;
         private readonly IRetailerManager _retailerManager;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IRepository<Shop, Guid> _shopRepository;
+        private readonly IPurchaserecordRepository _purchaserecordRepository;
+        private readonly IRepository<IntegralDetail, Guid> _integraldetailRepository;
+        private readonly IRepository<Product, Guid> _productRepository;
+        private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
+
 
         /// <summary>
         /// 构造函数
@@ -49,12 +60,21 @@ namespace HC.WeChat.Retailers
         public RetailerAppService(IRepository<Retailer, Guid> retailerRepository
       , IRetailerManager retailerManager
             , IHostingEnvironment hostingEnvironment
-
+            , IRepository<Shop, Guid> shopRepository
+            , IPurchaserecordRepository purchaserecordRepository
+            , IRepository<IntegralDetail, Guid> integraldetailRepository
+            , IRepository<Product, Guid> productRepository
+            , IRepository<WeChatUser, Guid> wechatuserRepository
         )
         {
             _hostingEnvironment = hostingEnvironment;
             _retailerRepository = retailerRepository;
             _retailerManager = retailerManager;
+            _shopRepository = shopRepository;
+            _purchaserecordRepository = purchaserecordRepository;
+            _integraldetailRepository = integraldetailRepository;
+            _productRepository = productRepository;
+            _wechatuserRepository = wechatuserRepository;
         }
 
         /// <summary>
@@ -276,7 +296,7 @@ namespace HC.WeChat.Retailers
                 .WhereIf(mid.HasValue, r => r.EmployeeId == mid);
             var retailers = await query.OrderByDescending(r => r.CreationTime).ToListAsync();
             var retailerListDtos = retailers.MapTo<List<RetailerListDto>>();
-            return  retailerListDtos;
+            return retailerListDtos;
         }
 
         public async Task<List<RetailerListDto>> GetRetailerLevelListAsync(GetRetailersInput input)
@@ -308,7 +328,7 @@ namespace HC.WeChat.Retailers
                 ISheet sheet = workbook.CreateSheet("RetailDetails");
                 var rowIndex = 0;
                 IRow titleRow = sheet.CreateRow(rowIndex);
-                string[] titles = {"客户ID", "客户编码", "客户姓名", "客户分档","经营地址","订货周期", "订货电话", "订货方式","业态","分公司", "客户经理","终端类型","商圈类型","经营规模","市场类型","市场部门ID","市场部门名","送货线路", "专卖证号" };
+                string[] titles = { "客户ID", "客户编码", "客户姓名", "客户分档", "经营地址", "订货周期", "订货电话", "订货方式", "业态", "分公司", "客户经理", "终端类型", "商圈类型", "经营规模", "市场类型", "市场部门ID", "市场部门名", "送货线路", "专卖证号" };
                 var fontTitle = workbook.CreateFont();
                 fontTitle.IsBold = true;
                 for (int i = 0; i < titles.Length; i++)
@@ -470,7 +490,7 @@ namespace HC.WeChat.Retailers
                         if (row == null) continue; //没有数据的行默认是null　　　　　　　
 
                         var retailerLevel = new RetailerListDto();
-                        if (row.GetCell(0) != null &&row.GetCell(2)!=null)
+                        if (row.GetCell(0) != null && row.GetCell(2) != null)
                         {
                             retailerLevel.Code = row.GetCell(0).ToString();
                             retailerLevel.ArchivalLevel = row.GetCell(2).ToString();
@@ -498,6 +518,7 @@ namespace HC.WeChat.Retailers
         }
 
         #endregion
+
         #region 微信
 
         /// <summary>
@@ -513,7 +534,7 @@ namespace HC.WeChat.Retailers
                 var retailList = new List<RetailerListDto>();
                 if (input.IsMore)
                 {
-                    var retailListQ = await _retailerRepository.GetAll().Where(r => r.Telephone.Contains(input.Filter) || r.LicenseKey.Contains(input.Filter) || r.Name.Contains(input.Filter) && r.IsAction==true)
+                    var retailListQ = await _retailerRepository.GetAll().Where(r => r.Telephone.Contains(input.Filter) || r.LicenseKey.Contains(input.Filter) || r.Name.Contains(input.Filter) && r.IsAction == true)
                    .OrderBy(r => r.Name).Skip(input.SkipCount).Take(input.MaxResultCount).ToListAsync();
                     retailList = retailListQ.MapTo<List<RetailerListDto>>();
                 }
@@ -550,6 +571,118 @@ namespace HC.WeChat.Retailers
 
             return entity.MapTo<RetailerListDto>();
         }
+        #endregion
+
+        #region 数据报表
+
+        public async Task<List<DataStatisticsListDto>> GetDataStatisticsAsync(GetRetailersInput input)
+        {
+            var retailer = _retailerRepository.GetAll().Where(v => v.BranchCompany != "" && v.BranchCompany != null);
+            var shop = _shopRepository.GetAll().Where(v => v.Status == ShopAuditStatus.已审核);
+            var products = _productRepository.GetAll();
+            var purchaserecord = _purchaserecordRepository.GetAll();
+            var integral = _integraldetailRepository.GetAll();
+            var user = _wechatuserRepository.GetAll();
+            //var x1 = from s in shop
+            //         join r in retailer on s.RetailerId equals r.Id
+            //         group new { r.BranchCompany, s.SaleTotal } by new { r.BranchCompany } into g
+            //         select new DataStatisticsListDto()
+            //         {
+            //             Organization = g.Key.BranchCompany,
+            //             ShopTotal = g.Count(),
+            //             ScanFrequency = g.Sum(v => v.SaleTotal)
+            //         };
+            //var x11 = x1.ToList();
+
+
+            //var rsR = (from s in shop
+            //           join r in retailer on s.RetailerId equals r.Id
+            //           into g
+            //           from table in g.DefaultIfEmpty()
+            //           select new DataStatisticsListDto()
+            //           {
+            //               ShopId = s.Id,
+            //               Organization = table.BranchCompany,
+            //               ScanFrequency = s.SaleTotal
+            //           }).ToList();
+
+
+            var entity2 = from s in shop
+                         join r in retailer on s.RetailerId equals r.Id
+                         join pur in purchaserecord on s.Id equals pur.ShopId
+                         into pur_srTable
+                         from table in pur_srTable.DefaultIfEmpty()
+                         join p in products on table.ProductId equals p.Id
+                         into p_pur_srTable
+                         from table2 in p_pur_srTable.DefaultIfEmpty()
+                         group new { r.BranchCompany, s.Id, s.SaleTotal, table.Quantity, table2.Price, table.Integral } by new { r.BranchCompany } into g
+                         select new DataStatisticsListDto()
+                         {
+                             Organization = g.Key.BranchCompany,
+                             ShopTotal = g.GroupBy(v => v.Id).Count(),
+                             ScanFrequency = (int)g.Sum(v => v.SaleTotal),
+                             ScanQuantity = g.Sum(v => v.Quantity),
+                             PriceTotal = g.Sum(v => v.Price),
+                             CustIntegral = g.Sum(v => v.Integral),
+                             RetailerIntegral = 0
+                         };
+            //var xxx = entity2.ToList();
+
+            var entity = from s in shop
+                     join r in retailer on s.RetailerId equals r.Id
+                     join pur in purchaserecord on s.Id equals pur.ShopId
+                     into pur_srTable
+                     from table in pur_srTable.DefaultIfEmpty()
+                     join p in products on table.ProductId equals p.Id
+                     into p_pur_srTable
+                     from table2 in p_pur_srTable.DefaultIfEmpty()
+                     group new { r.BranchCompany, s.Id,Pid = (Guid?)table.Id , table.Quantity, table2.Price, table.Integral } by new { r.BranchCompany } into g
+                     select new DataStatisticsListDto()
+                     {
+                         Organization = g.Key.BranchCompany,
+                         ShopTotal = g.GroupBy(v => v.Id).Count(),
+                         ScanFrequency = g.GroupBy(v => v.Pid).Count(),
+                         //ScanFrequency = g.Sum(v => v.SaleTotal),
+                         ScanQuantity = g.Sum(v => v.Quantity),
+                         PriceTotal = g.Sum(v => v.Price),
+                         CustIntegral = g.Sum(v => v.Integral),
+                     };
+           var x22 = entity.ToList();
+            //var entity = from s in shop
+            //             join r in retailer on s.RetailerId equals r.Id
+            //             join pur in purchaserecord on s.Id equals pur.ShopId
+            //             join p in products on pur.ProductId equals p.Id
+            //             join u in user on r.Id equals u.UserId
+            //             join i in integral on u.OpenId equals i.OpenId
+            //             group new { r.BranchCompany, s.Id, pur.Quantity, s.SaleTotal, p.Price, i.Integral, u.IsShopkeeper } by new { r.BranchCompany } into g
+            //             select new DataStatisticsListDto()
+            //             {
+            //                 Organization = g.Key.BranchCompany,
+            //                 ShopTotal = g.Count(),
+            //                 ScanFrequency = g.Sum(v => v.SaleTotal)??0,
+            //                 ScanQuantity = g.Sum(v => v.Quantity),
+            //                 PriceTotal = g.Sum(v => v.Price),
+            //                 CustIntegral = g.Where(v => v.IsShopkeeper == true).Sum(v => v.Integral),
+            //                 RetailerIntegral = g.Sum(v => v.Integral)
+            //             };
+            //var x3 = from sr in rsR
+            //         join pur in purchaserecord on sr.ShopId equals pur.ShopId
+            //         into sr_pur
+            //         from table in sr_pur.DefaultIfEmpty()
+            //         group new { sr.Organization, sr.ShopId, sr.ScanFrequency, table.Quantity } by new { sr.Organization } into g
+            //         select new DataStatisticsListDto()
+            //         {
+            //             Organization = g.Key.Organization,
+            //             ShopTotal = g.Key.Organization.Count(),
+            //             ScanFrequency = g.Sum(v => v.ScanFrequency),
+            //             ScanQuantity = g.Sum(v => v.Quantity),
+            //         };
+            //var x33 = x3.ToList();
+            var x = x22;
+            return x;
+        }
+
+
         #endregion
 
     }

@@ -15,13 +15,14 @@ export class Products implements IProducts {
     typeName: string;
     activeText: string;
     activeType: string;
-    showPhotoUrl:string;
-    itemId:string;
-    itemCode:string;
-    mfrId:string;
-    company:string;
-    fileName:string;
-    img64:string;
+    showPhotoUrl: string;
+    itemId: string;
+    itemCode: string;
+    mfrId: string;
+    company: string;
+    fileName: string;
+    img64: string;
+    desc: string;
     constructor(data?: IProducts) {
         if (data) {
             for (var property in data) {
@@ -52,7 +53,7 @@ export class Products implements IProducts {
             this.company = data["company"];
             this.fileName = data["fileName"];
             this.img64 = data["img64"];
-
+            this.desc = data["desc"];
         }
     }
 
@@ -83,7 +84,7 @@ export class Products implements IProducts {
         data["company"] = this.company;
         data["fileName"] = this.fileName;
         data["img64"] = this.img64;
-        
+        data["desc"] = this.desc;
         return data;
     }
 
@@ -108,10 +109,11 @@ export interface IProducts {
     tenantId: number;
     creatorUserId: number;
     photoUrl: string;
-    itemId:string;
-    itemCode:string;
-    mfrId:string;
-    company:string;
-    fileName:string;
-    img64:string;
+    itemId: string;
+    itemCode: string;
+    mfrId: string;
+    company: string;
+    fileName: string;
+    img64: string;
+    desc: string;
 }

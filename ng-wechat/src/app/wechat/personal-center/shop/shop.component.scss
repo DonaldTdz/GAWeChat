@@ -1,4 +1,4 @@
-.weui-icon-h18{
+.weui-icon-h18 {
     height: 24px;
 }
 
@@ -11,10 +11,10 @@
     margin-top: 0px;
 }
 
-.weui-shop-cell_img{
-    font-size: 14px; 
-    color:black; 
-    background:rgba(255,255,255,0.3); 
+.weui-shop-cell_img {
+    font-size: 14px;
+    color: black;
+    background: rgba(255, 255, 255, 0.75);
 }
 
 .weui-dialog__prompt {
@@ -24,46 +24,49 @@
         min-height: 20px;
         line-height: 20px;
     }
-    .weui-cells, .weui-dialog__error {
+    .weui-cells,
+    .weui-dialog__error {
         margin-top: 0;
         margin-bottom: 1.17647059em;
     }
 }
-.weui-cell-title{
-    margin-top: 0px; 
-    margin-bottom: 0px; 
-    padding-left: 0px; 
-    padding-right: 0px; 
+
+.weui-cell-title {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
-.qrcode{
-    width:100%;
+
+.qrcode {
+    width: 100%;
 }
-.mdiv{
-    text-align:center;
+
+.mdiv {
+    text-align: center;
 }
-.weui-dialog__bd .ng-star-inserted{
-    text-align:center;
+
+.weui-dialog__bd .ng-star-inserted {
+    text-align: center;
     // vertical-align: middle;
 }
+
 // .weui-dialog__bd:first-child{
 //     // margin-bottom:20px; 
 // }
-.payment_wechat_img{
+.payment_wechat_img {
     position: relative;
     width: 25vh;
     height: 25vh;
     padding: 10px;
     background: #ffffff;
-    img{
+    img {
         width: 100%
     }
-
-    .payment_wechat_icon{
+    .payment_wechat_icon {
         width: 50px;
         position: absolute;
         top: 10vh;
         left: 10vh;
     }
 }
-
-

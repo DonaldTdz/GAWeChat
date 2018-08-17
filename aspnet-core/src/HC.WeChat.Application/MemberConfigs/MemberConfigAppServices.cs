@@ -361,6 +361,57 @@ namespace HC.WeChat.MemberConfigs
             var entity = _memberconfigRepository.GetAll().Where(m => m.Type == DeployTypeEnum.job配置 && m.Code == DeployCodeEnum.jo启动状态).FirstOrDefault();
             return entity.MapTo<MemberConfigListDto>();
         }
+
+        /// <summary>
+        /// 获取预设商品搜索配置
+        /// </summary>
+        /// <returns></returns>
+        public async Task<MemberConfigListDto> GetPreProductConfigAsync()
+        {
+            var entity = await _memberconfigRepository.GetAll().Where(u => u.TenantId == AbpSession.TenantId && u.Code == DeployCodeEnum.预设商品搜索 && u.Type == DeployTypeEnum.预设商品配置).FirstOrDefaultAsync();
+            return entity.MapTo<MemberConfigListDto>();
+        }
+
+        /// <summary>
+        /// 新增Or修改预设搜索
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task CreateOrUpdatePreProductConfig(MemberConfigEditDto input)
+        {
+            input.Desc = input.Value;
+            input.Code = DeployCodeEnum.预设商品搜索;
+            input.Type = DeployTypeEnum.预设商品配置;
+            if (input.Id.HasValue)
+            {
+                await UpdateMemberConfigAsync(input);
+            }
+            else
+            {
+                await CreateMemberConfigAsync(input);
+            }
+        }
+
+
+        /// <summary>
+        /// 微信获取预设商品配置
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<string> GetWXPreProductConfigAsync(int? tenantId)
+        {
+            using (CurrentUnitOfWork.SetTenantId(tenantId))
+            {
+                //string[] preProducts =null;
+                var entity = await _memberconfigRepository.GetAll().Where(u => u.TenantId == AbpSession.TenantId && u.Code == DeployCodeEnum.预设商品搜索 && u.Type == DeployTypeEnum.预设商品配置).Select(v=>v.Value).FirstOrDefaultAsync();
+                //if (entity!=null)
+                //{
+                //  preProducts = entity.Value.Split(',');
+                //}
+                return entity;
+            }
+        }
     }
 }
 

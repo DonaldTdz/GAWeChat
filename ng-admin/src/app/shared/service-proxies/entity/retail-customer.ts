@@ -43,6 +43,14 @@ export class RetailCustomer implements IRetailCustomer {
     slsmanId: string;
     slsmanName: string;
 
+    organization: string;
+    shopTotal: number;
+    custIntegral: number;
+    retailerIntegral: number;
+    scanFrequency: number;
+    scanQuantity: number;
+    priceTotal: number;
+
     constructor(data?: IRetailCustomer) {
         if (data) {
             for (var property in data) {
@@ -95,6 +103,13 @@ export class RetailCustomer implements IRetailCustomer {
             this.slsmanId = data["slsmanId"];
             this.slsmanName = data["slsmanName"];
 
+            this.organization = data["organization"];
+            this.shopTotal = data["shopTotal"];
+            this.custIntegral = data["custIntegral"];
+            this.retailerIntegral = data["retailerIntegral"];
+            this.scanFrequency = data["scanFrequency"];
+            this.scanQuantity = data["scanQuantity"];
+            this.priceTotal = data["priceTotal"];
         }
     }
 
@@ -139,6 +154,13 @@ export class RetailCustomer implements IRetailCustomer {
         data["departmentId"] = this.departmentId;
         data["slsmanId"] = this.slsmanId;
         data["slsmanName"] = this.slsmanName;
+        data["organization"] = this.organization;
+        data["shopTotal"] = this.shopTotal;
+        data["custIntegral"] = this.custIntegral;
+        data["retailerIntegral"] = this.retailerIntegral;
+        data["scanFrequency"] = this.scanFrequency;
+        data["scanQuantity"] = this.scanQuantity;
+        data["priceTotal"] = this.priceTotal;
         return data;
     }
 
@@ -180,4 +202,12 @@ export interface IRetailCustomer {
     departmentId: string;
     slsmanId: string;
     slsmanName: string;
+
+    organization: string;
+    shopTotal: number;
+    custIntegral: number;
+    retailerIntegral: number;
+    scanFrequency: number;
+    scanQuantity: number;
+    priceTotal: number;
 }

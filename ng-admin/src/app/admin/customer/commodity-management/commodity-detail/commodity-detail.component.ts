@@ -60,7 +60,7 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
     //是否是上传状态 原图
     isUploadY = false;
     imgType = 1;
-   
+
     constructor(injector: Injector, private fb: FormBuilder, private productService: ProductsServiceProxy, private actRouter: ActivatedRoute,
         private router: Router, private http: HttpClient) {
         super(injector);
@@ -88,7 +88,7 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
             isAction: [true],
             photoUrl: [null, Validators.compose([Validators.maxLength(500)])],
             imgType: [null],
-
+            desc: [null, Validators.compose([Validators.maxLength(200)])],
         });
         this.getSingleProdct();
         this.host = AppConsts.remoteServiceBaseUrl;
@@ -141,7 +141,7 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
                     this.productService.update(this.product)
                         .finally(() => { this.isConfirmLoading = false; })
                         .subscribe((data) => {
-                            this.product=data;
+                            this.product = data;
                             this.notify.info(this.l('保存成功！'));
                             this.isUpload = false;
                             this.isUploadY = false;
@@ -219,16 +219,16 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
             this.product.fileName = file.name;
             if (this.imgType === 1) {
                 this.product.showPhotoUrl = image.src;
-                this.product.img64=image.src;
+                this.product.img64 = image.src;
                 this.isUploadY = true;
             } else {
                 this.isUpload = true;
                 setTimeout(() => {
-                that.cropper.setImage(image);
+                    that.cropper.setImage(image);
                 }, 200);
-                
+
             }
-            
+
             // this.selecteCutImgModal.show(image);
         };
         myReader.readAsDataURL(file);

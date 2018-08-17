@@ -102,5 +102,6 @@ namespace HC.WeChat.Retailers
         Task<List<RetailerListDto>> GetRetailerLevelListAsync(GetRetailersInput input);
         Task<APIResultDto> ExportRetailerLevelExcel(GetRetailersInput input);
         Task<APIResultDto> ExportRetailerAllExcel(GetRetailersInput input);
+        Task<List<DataStatisticsListDto>> GetDataStatisticsAsync(GetRetailersInput input);
     }
 }

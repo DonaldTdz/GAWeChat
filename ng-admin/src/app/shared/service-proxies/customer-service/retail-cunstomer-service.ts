@@ -468,6 +468,68 @@ export class RetailCustomerServiceProxy {
         return Observable.of<boolean>(<any>null);
     }
 
+
+    getDataStatisticsAsync(parameter: Parameter[]): Observable<PagedResultDtoOfRetailCustomer> {
+        let url_ = this.baseUrl + "/api/services/app/Retailer/GetDataStatisticsAsync?";
+        // if (skipCount !== undefined)
+        //     url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        // if (maxResultCount !== undefined)
+        //     url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+
+        if (parameter.length > 0) {
+            parameter.forEach(element => {
+                if (element.value !== undefined && element.value !== null) {
+                    url_ += element.key + "=" + encodeURIComponent("" + element.value) + "&";
+                }
+            });
+        }
+
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processGetDataStatisticsAsync(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetDataStatisticsAsync(response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfRetailCustomer>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfRetailCustomer>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetDataStatisticsAsync(response: Response): Observable<PagedResultDtoOfRetailCustomer> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfRetailCustomer.fromJS(resultData200) : new PagedResultDtoOfRetailCustomer();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<PagedResultDtoOfRetailCustomer>(<any>null);
+    }
 }
 export class PagedResultDtoOfRetailCustomer implements IPagedResultDtoOfRetailCustomer {
     totalCount: number;

@@ -16,9 +16,9 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
     isShowRetailer: boolean = false;
     accountTitle: string = '我的台账';
     countNotEvaluation: number;
-    noCheckShopEmployeeCount:number;
+    noCheckShopEmployeeCount: number;
     constructor(injector: Injector, private router: Router, private purchaserecordService: PurchaserecordService,
-    private wechatUserService:WechatUserService) {
+        private wechatUserService: WechatUserService) {
         super(injector);
     }
 
@@ -94,10 +94,13 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
     /**
      * 获取未审核店员数
      */
-    getNoCheckShopEmployeeCount(){
-        this.wechatUserService.getNoCheckShopEmployeeCount({tenantId:this.settingsService.tenantId,userId:this.user.userId}).subscribe(data=>{
-            this.noCheckShopEmployeeCount=data;
+    getNoCheckShopEmployeeCount() {
+        this.wechatUserService.getNoCheckShopEmployeeCount({ tenantId: this.settingsService.tenantId, userId: this.user.userId }).subscribe(data => {
+            this.noCheckShopEmployeeCount = data;
         });
     }
-    
+
+    goFavorite() {
+        this.router.navigate(['/favorites/favorite']);
+    }
 } 

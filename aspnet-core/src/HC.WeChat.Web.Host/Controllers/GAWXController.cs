@@ -94,12 +94,9 @@ namespace HC.WeChat.Web.Host.Controllers
             //UserOpenId = "oPM5Uv81jfyJqWbVxWAH-RUqsCAs";
             //UserOpenId = "oPM5Uv89yy7Iv8k9gLHjjsMTT5Gw";//零售户
             //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU0"; //杨帆 20
-            //UserOpenId = "oWusewEMAQ_9km_ME19diwMrEop4"; // 199
-            //UserOpenId = "oPM5Uv89yy7Iv8k9gLHjjsMTT5Gw";
+            UserOpenId = "oWusewEMAQ_9km_ME19diwMrEop4"; // 199
             //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU1"; //杨帆专用
             //UserOpenId = "oWusewPRxWuP4wMz3UmHR0y7CJME"; //回家测试用
-            //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU0";
-            //UserOpenId = "oWusewPRxWuP4wMz3UmHR0y7CJME";
             //UserOpenId = "o4l6swGJKxy4aEpUy3Hqm2DEeo_s";
             //UserOpenId = "o4l6swJ2RNer4X1OfB6yCvZorszs";
             //UserOpenId = "oWusewCseG_DDxU965N3UV2Dd8SM";
