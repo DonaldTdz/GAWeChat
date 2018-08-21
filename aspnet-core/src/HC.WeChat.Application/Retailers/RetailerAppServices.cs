@@ -44,7 +44,8 @@ namespace HC.WeChat.Retailers
     {
         ////BCC/ BEGIN CUSTOM CODE SECTION
         ////ECC/ END CUSTOM CODE SECTION
-        private readonly IRepository<Retailer, Guid> _retailerRepository;
+        //private readonly IRepository<Retailer, Guid> _retailerRepository;
+        private readonly IRetailerRepository _retailerRepository;
         private readonly IRetailerManager _retailerManager;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IRepository<Shop, Guid> _shopRepository;
@@ -57,7 +58,7 @@ namespace HC.WeChat.Retailers
         /// <summary>
         /// 构造函数
         /// </summary>
-        public RetailerAppService(IRepository<Retailer, Guid> retailerRepository
+        public RetailerAppService(IRetailerRepository retailerRepository
       , IRetailerManager retailerManager
             , IHostingEnvironment hostingEnvironment
             , IRepository<Shop, Guid> shopRepository
@@ -575,116 +576,358 @@ namespace HC.WeChat.Retailers
 
         #region 数据报表
 
-        public async Task<List<DataStatisticsListDto>> GetDataStatisticsAsync(GetRetailersInput input)
+        public async Task<PagedResultDto<ShopReportData>> GetDataStatisticsAsync(GetShopReportDataInput input)
         {
-            var retailer = _retailerRepository.GetAll().Where(v => v.BranchCompany != "" && v.BranchCompany != null);
+            var entity = await _retailerRepository.GetShopReportAsync();
+            var shopReportDataCount = entity.Count();
+
+            var statisticsListDto = entity.MapTo<List<ShopReportData>>();
+            return new PagedResultDto<ShopReportData>(
+                shopReportDataCount,
+                statisticsListDto
+                );
+        }
+
+        /// <summary>
+        /// 店铺报表详情
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<PagedResultDto<ShopReportData>> GetShopReportDataDetailAsync(GetShopReportDataInput input)
+        {
+            var retailer = _retailerRepository.GetAll();
             var shop = _shopRepository.GetAll().Where(v => v.Status == ShopAuditStatus.已审核);
             var products = _productRepository.GetAll();
             var purchaserecord = _purchaserecordRepository.GetAll();
-            var integral = _integraldetailRepository.GetAll();
-            var user = _wechatuserRepository.GetAll();
-            //var x1 = from s in shop
-            //         join r in retailer on s.RetailerId equals r.Id
-            //         group new { r.BranchCompany, s.SaleTotal } by new { r.BranchCompany } into g
-            //         select new DataStatisticsListDto()
-            //         {
-            //             Organization = g.Key.BranchCompany,
-            //             ShopTotal = g.Count(),
-            //             ScanFrequency = g.Sum(v => v.SaleTotal)
-            //         };
-            //var x11 = x1.ToList();
+            List<ShopReportData> entity = null;
+            int shopReportDataCount = 0;
+            if (input.OrganizatType == 1)
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
 
+                shopReportDataCount = await (from pur in purchaserecord
+                                             join p in products on pur.ProductId equals p.Id
+                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                             select new ShopReportData()
+                                             {
+                                                 Specification = g.Key.Specification,
+                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                                 ScanQuantity = g.Sum(v => v.Quantity),
+                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+            }
+            else if (input.OrganizatType == 2)
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                join s in shop on pur.ShopId equals s.Id
+                                join r in retailer on s.RetailerId equals r.Id
+                                where r.BranchCompany == input.Organization
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
 
-            //var rsR = (from s in shop
-            //           join r in retailer on s.RetailerId equals r.Id
-            //           into g
-            //           from table in g.DefaultIfEmpty()
-            //           select new DataStatisticsListDto()
-            //           {
-            //               ShopId = s.Id,
-            //               Organization = table.BranchCompany,
-            //               ScanFrequency = s.SaleTotal
-            //           }).ToList();
+                shopReportDataCount = await (from pur in purchaserecord
+                                             join p in products on pur.ProductId equals p.Id
+                                             join s in shop on pur.ShopId equals s.Id
+                                             join r in retailer on s.RetailerId equals r.Id
+                                             where r.BranchCompany == input.Organization
+                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                             select new ShopReportData()
+                                             {
+                                                 Specification = g.Key.Specification,
+                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                                 ScanQuantity = g.Sum(v => v.Quantity),
+                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+            }
+            else if (input.OrganizatType == 3)
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                join s in shop on pur.ShopId equals s.Id
+                                join r in retailer on s.RetailerId equals r.Id
+                                where r.Area == input.Organization
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
 
+                shopReportDataCount = await (from pur in purchaserecord
+                                             join p in products on pur.ProductId equals p.Id
+                                             join s in shop on pur.ShopId equals s.Id
+                                             join r in retailer on s.RetailerId equals r.Id
+                                             where r.Area == input.Organization
+                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                             select new ShopReportData()
+                                             {
+                                                 Specification = g.Key.Specification,
+                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                                 ScanQuantity = g.Sum(v => v.Quantity),
+                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+            }
+            else
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                join s in shop on pur.ShopId equals s.Id
+                                join r in retailer on s.RetailerId equals r.Id
+                                where r.SlsmanName == input.Organization
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
 
-            var entity2 = from s in shop
-                         join r in retailer on s.RetailerId equals r.Id
-                         join pur in purchaserecord on s.Id equals pur.ShopId
-                         into pur_srTable
-                         from table in pur_srTable.DefaultIfEmpty()
-                         join p in products on table.ProductId equals p.Id
-                         into p_pur_srTable
-                         from table2 in p_pur_srTable.DefaultIfEmpty()
-                         group new { r.BranchCompany, s.Id, s.SaleTotal, table.Quantity, table2.Price, table.Integral } by new { r.BranchCompany } into g
-                         select new DataStatisticsListDto()
-                         {
-                             Organization = g.Key.BranchCompany,
-                             ShopTotal = g.GroupBy(v => v.Id).Count(),
-                             ScanFrequency = (int)g.Sum(v => v.SaleTotal),
-                             ScanQuantity = g.Sum(v => v.Quantity),
-                             PriceTotal = g.Sum(v => v.Price),
-                             CustIntegral = g.Sum(v => v.Integral),
-                             RetailerIntegral = 0
-                         };
-            //var xxx = entity2.ToList();
+                shopReportDataCount = await (from pur in purchaserecord
+                                             join p in products on pur.ProductId equals p.Id
+                                             join s in shop on pur.ShopId equals s.Id
+                                             join r in retailer on s.RetailerId equals r.Id
+                                             where r.SlsmanName == input.Organization
+                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                             select new ShopReportData()
+                                             {
+                                                 Specification = g.Key.Specification,
+                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                                 ScanQuantity = g.Sum(v => v.Quantity),
+                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+            }
 
-            var entity = from s in shop
-                     join r in retailer on s.RetailerId equals r.Id
-                     join pur in purchaserecord on s.Id equals pur.ShopId
-                     into pur_srTable
-                     from table in pur_srTable.DefaultIfEmpty()
-                     join p in products on table.ProductId equals p.Id
-                     into p_pur_srTable
-                     from table2 in p_pur_srTable.DefaultIfEmpty()
-                     group new { r.BranchCompany, s.Id,Pid = (Guid?)table.Id , table.Quantity, table2.Price, table.Integral } by new { r.BranchCompany } into g
-                     select new DataStatisticsListDto()
-                     {
-                         Organization = g.Key.BranchCompany,
-                         ShopTotal = g.GroupBy(v => v.Id).Count(),
-                         ScanFrequency = g.GroupBy(v => v.Pid).Count(),
-                         //ScanFrequency = g.Sum(v => v.SaleTotal),
-                         ScanQuantity = g.Sum(v => v.Quantity),
-                         PriceTotal = g.Sum(v => v.Price),
-                         CustIntegral = g.Sum(v => v.Integral),
-                     };
-           var x22 = entity.ToList();
-            //var entity = from s in shop
-            //             join r in retailer on s.RetailerId equals r.Id
-            //             join pur in purchaserecord on s.Id equals pur.ShopId
-            //             join p in products on pur.ProductId equals p.Id
-            //             join u in user on r.Id equals u.UserId
-            //             join i in integral on u.OpenId equals i.OpenId
-            //             group new { r.BranchCompany, s.Id, pur.Quantity, s.SaleTotal, p.Price, i.Integral, u.IsShopkeeper } by new { r.BranchCompany } into g
-            //             select new DataStatisticsListDto()
-            //             {
-            //                 Organization = g.Key.BranchCompany,
-            //                 ShopTotal = g.Count(),
-            //                 ScanFrequency = g.Sum(v => v.SaleTotal)??0,
-            //                 ScanQuantity = g.Sum(v => v.Quantity),
-            //                 PriceTotal = g.Sum(v => v.Price),
-            //                 CustIntegral = g.Where(v => v.IsShopkeeper == true).Sum(v => v.Integral),
-            //                 RetailerIntegral = g.Sum(v => v.Integral)
-            //             };
-            //var x3 = from sr in rsR
-            //         join pur in purchaserecord on sr.ShopId equals pur.ShopId
-            //         into sr_pur
-            //         from table in sr_pur.DefaultIfEmpty()
-            //         group new { sr.Organization, sr.ShopId, sr.ScanFrequency, table.Quantity } by new { sr.Organization } into g
-            //         select new DataStatisticsListDto()
-            //         {
-            //             Organization = g.Key.Organization,
-            //             ShopTotal = g.Key.Organization.Count(),
-            //             ScanFrequency = g.Sum(v => v.ScanFrequency),
-            //             ScanQuantity = g.Sum(v => v.Quantity),
-            //         };
-            //var x33 = x3.ToList();
-            var x = x22;
-            return x;
+            var statisticsListDto = entity.MapTo<List<ShopReportData>>();
+            return new PagedResultDto<ShopReportData>(
+                shopReportDataCount,
+                statisticsListDto
+                );
         }
-
 
         #endregion
 
+        #region 机构报表Excel
+        [UnitOfWork(isTransactional: false)]
+        public async Task<APIResultDto> ExportShopReportDataExcel()
+        {
+            try
+            {
+                var exportData = await GetShopReportData();
+                var result = new APIResultDto();
+                result.Code = 0;
+                result.Data = SaveShopReportDataExcel("机构报表统计.xlsx", exportData);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("ExportShopExcel errormsg{0} Exception{1}", ex.Message, ex);
+                return new APIResultDto() { Code = 901, Msg = "网络忙...请待会儿再试！" };
+            }
+        }
+
+        private async Task<List<ShopReportData>> GetShopReportData()
+        {
+            var entity = await _retailerRepository.GetShopReportAsync();
+            var statisticsListDto = entity.MapTo<List<ShopReportData>>();
+            return statisticsListDto;
+        }
+
+        private string SaveShopReportDataExcel(string fileName, List<ShopReportData> data)
+        {
+            var fullPath = ExcelHelper.GetSavePath(_hostingEnvironment.WebRootPath) + fileName;
+            using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("机构报表");
+                var rowIndex = 0;
+                IRow titleRow = sheet.CreateRow(rowIndex);
+                string[] titles = { "组织机构", "注册店铺数", "扫码量	", "扫码次数	", "扫码金额	", "消费积分	", "店铺积分	" };
+                var fontTitle = workbook.CreateFont();
+                fontTitle.IsBold = true;
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    var cell = titleRow.CreateCell(i);
+                    cell.CellStyle.SetFont(fontTitle);
+                    cell.SetCellValue(titles[i]);
+                }
+                var font = workbook.CreateFont();
+                foreach (var item in data)
+                {
+
+                    rowIndex++;
+                    IRow row = sheet.CreateRow(rowIndex);
+                    ExcelHelper.SetCell(row.CreateCell(0), font, item.Organization);
+                    ExcelHelper.SetCell(row.CreateCell(1), font, item.ShopTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ScanQuantity.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.ScanFrequency.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(4), font, item.PriceTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(5), font, item.CustIntegral.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(5), font, item.RetailerIntegral.ToString());
+                }
+                workbook.Write(fs);
+            }
+            return "/files/downloadtemp/" + fileName;
+        }
+        #endregion 
+
+        #region 单个机构报表Excel
+        /// <summary>
+        /// 单个机构报表统计
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [UnitOfWork(isTransactional: false)]
+        public async Task<APIResultDto> ExportShopReportDataByOrganizationExcel(GetShopReportDataInput input)
+        {
+            try
+            {
+                var exportData = await GetShopReportDataByOrganizationExcel(input);
+                var result = new APIResultDto();
+                result.Code = 0;
+                result.Data = SaveShopReportDataByOrganizationExcelExcel($"{input.Organization}报表统计.xlsx", exportData);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("ExportShopExcel errormsg{0} Exception{1}", ex.Message, ex);
+                return new APIResultDto() { Code = 901, Msg = "网络忙...请待会儿再试！" };
+            }
+        }
+        private async Task<List<ShopReportData>> GetShopReportDataByOrganizationExcel(GetShopReportDataInput input)
+        {
+            var retailer = _retailerRepository.GetAll();
+            var shop = _shopRepository.GetAll().Where(v => v.Status == ShopAuditStatus.已审核);
+            var products = _productRepository.GetAll();
+            var purchaserecord = _purchaserecordRepository.GetAll();
+            List<ShopReportData> entity = null;
+            if (input.OrganizatType == 1)
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).ToListAsync();
+            }
+            else if (input.OrganizatType == 2)
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                join s in shop on pur.ShopId equals s.Id
+                                join r in retailer on s.RetailerId equals r.Id
+                                where r.BranchCompany == input.Organization
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).ToListAsync();
+            }
+            else if (input.OrganizatType == 3)
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                join s in shop on pur.ShopId equals s.Id
+                                join r in retailer on s.RetailerId equals r.Id
+                                where r.Area == input.Organization
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).ToListAsync();
+            }
+            else
+            {
+                entity = await (from pur in purchaserecord
+                                join p in products on pur.ProductId equals p.Id
+                                join s in shop on pur.ShopId equals s.Id
+                                join r in retailer on s.RetailerId equals r.Id
+                                where r.SlsmanName == input.Organization
+                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                                select new ShopReportData()
+                                {
+                                    Specification = g.Key.Specification,
+                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                    ScanQuantity = g.Sum(v => v.Quantity),
+                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
+                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).ToListAsync();
+            }
+            int shopReportDataCount =
+            await (from pur in purchaserecord
+                   join p in products on pur.ProductId equals p.Id
+                   group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
+                   select new ShopReportData()
+                   {
+                       Specification = g.Key.Specification,
+                       PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                       ScanQuantity = g.Sum(v => v.Quantity),
+                       ScanFrequency = g.GroupBy(v => v.Id).Count()
+                   }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+            var statisticsListDto = entity.MapTo<List<ShopReportData>>();
+            return statisticsListDto;
+        }
+        private string SaveShopReportDataByOrganizationExcelExcel(string fileName, List<ShopReportData> data)
+        {
+            var fullPath = ExcelHelper.GetSavePath(_hostingEnvironment.WebRootPath) + fileName;
+            using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("机构报表");
+                var rowIndex = 0;
+                IRow titleRow = sheet.CreateRow(rowIndex);
+                string[] titles = { "商品名称", "扫码数量", "扫码次数	", "扫码金额	" };
+                var fontTitle = workbook.CreateFont();
+                fontTitle.IsBold = true;
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    var cell = titleRow.CreateCell(i);
+                    cell.CellStyle.SetFont(fontTitle);
+                    cell.SetCellValue(titles[i]);
+                }
+                var font = workbook.CreateFont();
+                foreach (var item in data)
+                {
+                    rowIndex++;
+                    IRow row = sheet.CreateRow(rowIndex);
+                    ExcelHelper.SetCell(row.CreateCell(0), font, item.Specification);
+                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ScanQuantity.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.ScanFrequency.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(4), font, item.PriceTotal.ToString());
+                }
+                workbook.Write(fs);
+            }
+            return "/files/downloadtemp/" + fileName;
+        }
+        #endregion
     }
+
 }
 

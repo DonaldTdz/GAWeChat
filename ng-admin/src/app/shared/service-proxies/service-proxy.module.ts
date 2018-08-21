@@ -15,6 +15,7 @@ import { ShopEvaluationServiceProxy } from '@shared/service-proxies/customer-ser
 import { ShopProductsServiceProxy, ProductsServiceProxy, GoodSourceServiceProxy } from '@shared/service-proxies/customer-service';
 import { IntegralServiceProxy, LotterySettingServiceProxy, WinningRecordServiceProxy } from '@shared/service-proxies/member';
 import { MemberConfigsServiceProxy } from '@shared/service-proxies/member/memberconfigs-service';
+import { ShopReportDataServiceProxy } from '@shared/service-proxies/marketing-service/shopReportData-service';
 
 @NgModule({
     providers: [
@@ -56,6 +57,7 @@ import { MemberConfigsServiceProxy } from '@shared/service-proxies/member/member
         LotterySettingServiceProxy,
         WinningRecordServiceProxy,
         ExhibitionShopServiceProxy,
+        ShopReportDataServiceProxy
     ]
 })
 export class ServiceProxyModule { }

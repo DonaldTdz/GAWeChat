@@ -13,6 +13,7 @@ using HC.WeChat.Configuration;
 using HC.WeChat.EntityFrameworkCore;
 using Abp.Threading.BackgroundWorkers;
 using HC.WeChat.LevelJob;
+using HC.WeChat.UpdateShopReportDataJob;
 
 #if FEATURE_SIGNALR
 using Abp.Web.SignalR;
@@ -80,6 +81,7 @@ namespace HC.WeChat
         {
             var workManager = IocManager.Resolve<IBackgroundWorkerManager>();
             workManager.Add(IocManager.Resolve<UpdateLevelWorker>());
+            workManager.Add(IocManager.Resolve<UpdateShopReportDataWorker>());
         }
     }
 }

@@ -1,0 +1,59 @@
+<!--component html goes here -->
+<nz-card [nzBordered]="false" nzTitle={{organization}}>
+    <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="6" class="mb-md">
+                <div nz-form-item class="d-flex">
+                    <div nz-form-label>
+                        <label for="specification">商品名称</label>
+                    </div>
+                    <div nz-form-control class="flex-1">
+                        <nz-input [(ngModel)]="search.specification" name="specification" [nzSize]="'large'" [nzPlaceHolder]="'请输入商品名称'" nzId="specification"></nz-input>
+                    </div>
+                </div>
+            </div>
+            <div nz-col [nzSpan]="6" class="mb-md" [nzOffset]="19">
+                <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading" [nzSize]="'large'">查询</button>
+                <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button>
+                <a style="display: none;" id="aExcelUrl" href="#">
+                    <button type="button" id="btnHref">隐藏下载</button>
+                </a>
+                <button nz-button type="button" (click)="exportExcel()" [nzLoading]="exportLoading" [nzSize]="'large'">
+                                <i class="anticon anticon-download"></i>
+                            <span>导出</span></button>
+            </div>
+        </div>
+    </form>
+    <nz-table #nzTable [nzAjaxData]="dataStatisticsDetail" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()"
+        (nzPageSizeChange)="refreshData()">
+        <thead nz-thead>
+            <tr>
+                <th nz-th>
+                    <span>商品名称</span>
+                </th>
+                <th nz-th>
+                    <span>扫码数量</span>
+                </th>
+                <th nz-th>
+                    <span>扫码次数</span>
+                </th>
+                <th nz-th>
+                    <span>扫码金额</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody nz-tbody>
+            <tr nz-tbody-tr *ngFor="let item of nzTable.data">
+                <td nz-td>{{item.specification}}</td>
+                <td nz-td>{{item.scanQuantity}}</td>
+                <td nz-td>{{item.scanFrequency }}</td>
+                <td nz-td>{{item.priceTotal}}</td>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-card>
+<footer-toolbar>
+    <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
+        {{l("返回")}}
+    </button>
+</footer-toolbar>

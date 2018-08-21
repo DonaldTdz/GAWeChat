@@ -17,6 +17,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
 import { ExhibitionComponent } from "./exhibition/exhibition.component";
 import { ExhibitionDetailComponent } from "./exhibition/exhibition-detail/exhibition-detail.component";
 import { DataStatisticsComponent } from "./data-statistics/data-statistics.component";
+import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics-detail/data-statistics-detail.component";
 
 @NgModule({
     imports: [
@@ -40,7 +41,8 @@ import { DataStatisticsComponent } from "./data-statistics/data-statistics.compo
         ContributeDetailComponent,
         ExhibitionComponent,
         ExhibitionDetailComponent,
-        DataStatisticsComponent
+        DataStatisticsComponent,
+        DataStatisticsDetailComponent
     ],
     providers: [
         AppRouteGuard

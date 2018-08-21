@@ -294,4 +294,3 @@ namespace HC.WeChat.StatisticalDetails
         }
     }
 }
-
