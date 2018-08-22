@@ -781,7 +781,7 @@ namespace HC.WeChat.Retailers
                     ExcelHelper.SetCell(row.CreateCell(3), font, item.ScanFrequency.ToString());
                     ExcelHelper.SetCell(row.CreateCell(4), font, item.PriceTotal.ToString());
                     ExcelHelper.SetCell(row.CreateCell(5), font, item.CustIntegral.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(5), font, item.RetailerIntegral.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(6), font, item.RetailerIntegral.ToString());
                 }
                 workbook.Write(fs);
             }

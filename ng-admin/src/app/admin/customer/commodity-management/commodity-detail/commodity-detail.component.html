@@ -71,7 +71,9 @@
                         <label for="desc">产品介绍</label>
                     </div>
                     <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('desc')">
-                        <nz-input formControlName="desc" [(ngModel)]="product.desc" [nzId]="'desc'"></nz-input>
+                        <nz-input nzType="textarea" nzRows="3" formControlName="desc" [(ngModel)]="product.desc" [nzId]="'desc'"></nz-input>
+
+                        <!-- <nz-input formControlName="desc" [(ngModel)]="product.desc" [nzId]="'desc'"></nz-input> -->
                         <div nz-form-explain *ngIf="getFormControl('specification').dirty&&getFormControl('specification').hasError('maxlength')">字符长度小于等于200</div>
                     </div>
                 </div>
