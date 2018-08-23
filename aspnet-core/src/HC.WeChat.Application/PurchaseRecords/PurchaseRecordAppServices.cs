@@ -807,7 +807,7 @@ namespace HC.WeChat.PurchaseRecords
         {
             try
             {
-                var exportData = await GeShopDataNoPage(input);
+                var exportData = await GetShopDataNoPage(input);
                 var result = new APIResultDto();
                 result.Code = 0;
                 result.Data = SaveShopDataExcel("店铺数据统计.xlsx", exportData);
@@ -825,7 +825,7 @@ namespace HC.WeChat.PurchaseRecords
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private async Task<List<PurchaseRecordListDto>> GeShopDataNoPage(GetPurchaseRecordsInput input)
+        private async Task<List<PurchaseRecordListDto>> GetShopDataNoPage(GetPurchaseRecordsInput input)
         {
             var user = _weChatUserRepository.GetAll();
             var product = _productRepository.GetAll();

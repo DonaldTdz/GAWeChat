@@ -471,11 +471,6 @@ export class RetailCustomerServiceProxy {
 
     getDataStatisticsAsync(parameter: Parameter[]): Observable<PagedResultDtoOfRetailCustomer> {
         let url_ = this.baseUrl + "/api/services/app/Retailer/GetDataStatisticsAsync?";
-        // if (skipCount !== undefined)
-        //     url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
-        // if (maxResultCount !== undefined)
-        //     url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
-
         if (parameter.length > 0) {
             parameter.forEach(element => {
                 if (element.value !== undefined && element.value !== null) {

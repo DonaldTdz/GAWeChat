@@ -3,42 +3,18 @@
 <nz-card [nzBordered]="false">
     <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
         <div nz-row [nzGutter]="24">
-            <ng-template #deleteContent>
-                <h2>是否删除文章{{articleTitle}}?</h2>
-            </ng-template>
-            <div nz-col [nzSpan]="6" class="mb-md">
-                <div nz-form-item class="d-flex">
-                    <div nz-form-label>
-                        <label for="name">组织机构</label>
-                    </div>
-                    <div nz-form-control class="flex-1">
-                        <nz-input [(ngModel)]="search.OrganizationName" name="OrganizationName" [nzSize]="'large'" [nzPlaceHolder]="'请输入组织机构名称'" nzId="OrganizationName"></nz-input>
-                    </div>
-                </div>
-            </div>
-            <div nz-col [nzSpan]="18" class="mb-md" [class.text-right]="'true'">
-                <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading" [nzSize]="'large'">查询</button>
-                <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button>
-                <a style="display: none;" id="aActivityExcelUrl" href="#">
-                    <button type="button" id="btnActivityHref">隐藏下载</button>
+            <div nz-col style="float:right" [nzSpan]="18" class="mb-md" [class.text-right]="'true'">
+                <a style="display: none;" id="aShopReportDataExcelUrl" href="#">
+                    <button type="button" id="btnShopReportDataHref">隐藏下载</button>
                 </a>
                 <button nz-button type="button" style="float: right;" (click)="exportExcel()" [nzSize]="'large'" [nzLoading]="exportLoading">
                     <i class="anticon anticon-download"></i>
-                    <span>导出</span>
+                    <span>导出报表</span>
                 </button>
             </div>
-            <!-- <div nz-col [nzSpan]="6" class="mb-md" [class.text-right]="'true'">
-                <a style="display: none;" id="aActivityExcelUrl" href="#">
-                    <button type="button" id="btnActivityHref">隐藏下载</button>
-                </a>
-                <button nz-button type="button" style="float: right;" (click)="exportExcel()" [nzSize]="'large'" [nzLoading]="exportLoading">
-                    <i class="anticon anticon-download"></i>
-                    <span>导出</span>
-                </button>
-            </div> -->
         </div>
     </form>
-    <nz-table #nzTable [nzAjaxData]="dataList" [nzTotal]="query.total" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+    <nz-table #nzTable [nzAjaxData]="dataList" [nzTotal]="query.total" [nzLoading]="loading" [nzShowTotal]="true" [nzIsPagination]="false">
         <thead nz-thead>
             <tr>
                 <th nz-th>
@@ -46,27 +22,27 @@
                 </th>
                 <th nz-th>
                     <span>注册店铺数</span>
-                    <nz-table-sort [(nzValue)]="sortMap.registeredShop" (nzValueChange)="sort($event,'registeredShop')"></nz-table-sort>
+                    <!-- <nz-table-sort [(nzValue)]="sortMap.registeredShop " (nzValueChange)="sort($event, 'registeredShop') "></nz-table-sort> -->
                 </th>
                 <th nz-th>
                     <span>扫码量</span>
-                    <nz-table-sort [(nzValue)]="sortMap.scanCode" (nzValueChange)="sort($event,'scanCode')"></nz-table-sort>
+                    <!-- <nz-table-sort [(nzValue)]="sortMap.scanCode " (nzValueChange)="sort($event, 'scanCode') "></nz-table-sort> -->
                 </th>
                 <th nz-th>
                     <span>扫码次数</span>
-                    <nz-table-sort [(nzValue)]="sortMap.scanNum" (nzValueChange)="sort($event,'scanNum')"></nz-table-sort>
+                    <!-- <nz-table-sort [(nzValue)]="sortMap.scanNum " (nzValueChange)="sort($event, 'scanNum') "></nz-table-sort> -->
                 </th>
                 <th nz-th>
                     <span>扫码金额</span>
-                    <nz-table-sort [(nzValue)]="sortMap.scanCount" (nzValueChange)="sort($event,'scanCount')"></nz-table-sort>
+                    <!-- <nz-table-sort [(nzValue)]="sortMap.scanCount " (nzValueChange)="sort($event, 'scanCount') "></nz-table-sort> -->
                 </th>
                 <th nz-th>
                     <span>消费积分</span>
-                    <nz-table-sort [(nzValue)]="sortMap.consumerIntegral" (nzValueChange)="sort($event,'consumerIntegral')"></nz-table-sort>
+                    <!-- <nz-table-sort [(nzValue)]="sortMap.consumerIntegral " (nzValueChange)="sort($event, 'consumerIntegral') "></nz-table-sort> -->
                 </th>
                 <th nz-th>
                     <span>店铺积分</span>
-                    <nz-table-sort [(nzValue)]="sortMap.shopIntegral" (nzValueChange)="sort($event,'shopIntegral')"></nz-table-sort>
+                    <!-- <nz-table-sort [(nzValue)]="sortMap.shopIntegral " (nzValueChange)="sort($event, 'shopIntegral') "></nz-table-sort> -->
                 </th>
                 <th nz-th>
                     <span>操作</span>
@@ -74,18 +50,21 @@
             </tr>
         </thead>
         <tbody nz-tbody>
-            <tr nz-tbody-tr *ngFor="let item of nzTable.data">
+            <tr nz-tbody-tr *ngFor="let item of nzTable.data " [ngClass]="{ 'first': item.groupNum=='1' , 'second': item.groupNum=='2' , 'third': item.groupNum=='3' , 'four': item.groupNum=='4' } ">
                 <td nz-td>{{item.organization}}</td>
                 <td nz-td>{{item.shopTotal}}</td>
-                <td nz-td>{{item.scanFrequency }}</td>
                 <td nz-td>{{item.scanQuantity}}</td>
+                <td nz-td>{{item.scanFrequency }}</td>
                 <td nz-td>{{item.priceTotal}}</td>
                 <td nz-td>{{item.custIntegral}}</td>
                 <td nz-td>{{item.retailerIntegral}}</td>
                 <td nz-td>
-                    <a>查看详情</a>
+                    <a (click)="goDataStatisticsDetail(item.groupNum,item.organization) ">查看详情</a>
                 </td>
             </tr>
         </tbody>
     </nz-table>
+    <div style="float: right;margin-top: 5px;">
+        共{{query.total}}条
+    </div>
 </nz-card>

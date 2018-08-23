@@ -54,4 +54,25 @@ namespace HC.WeChat.Retailers.Dtos
             }
         }
     }
+
+    public class GetShopReportDataInput : PagedAndSortedInputDto, IShouldNormalize
+    {
+        public string Specification { get; set; }
+        public string Organization { get; set; }
+        public int OrganizatType { get; set; }
+        public string sortscanCodeTotal { get; set; }
+        public string sortscanNumTotal { get; set; }
+        public string sortscanCountTotal { get; set; }
+        public string sortconsumerIntegralTotal { get; set; }
+        public string sortshopIntegralTotal { get; set; }
+        public string sortregisteredShopTotal { get; set; }
+
+        public void Normalize()
+        {
+            if (string.IsNullOrEmpty(Sorting))
+            {
+                Sorting = "Id";
+            }
+        }
+    }
 }

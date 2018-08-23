@@ -1,10 +1,11 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, group } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
-import { Parameter, RetailCustomer } from '@shared/service-proxies/entity';
+import { Parameter, ShopReportData } from '@shared/service-proxies/entity';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd';
+import { RetailCustomerServiceProxy } from '@shared/service-proxies/customer-service';
+import { ShopReportDataServiceProxy, PagedResultDtoOfShopReportData } from '@shared/service-proxies/marketing-service/shopReportData-service';
 import { AppConsts } from '@shared/AppConsts';
-import { RetailCustomerServiceProxy, PagedResultDtoOfRetailCustomer } from '@shared/service-proxies/customer-service';
 
 @Component({
     moduleId: module.id,
@@ -13,7 +14,7 @@ import { RetailCustomerServiceProxy, PagedResultDtoOfRetailCustomer } from '@sha
     styleUrls: ['data-statistics.component.scss']
 })
 export class DataStatisticsComponent extends AppComponentBase implements OnInit {
-    dataList: RetailCustomer[] = [];
+    dataList: ShopReportData[] = [];
     loading = false;
     exportLoading = false;
     search: any = {};
@@ -33,7 +34,7 @@ export class DataStatisticsComponent extends AppComponentBase implements OnInit 
     sortshopIntegralTotal = null;
 
     constructor(injector: Injector, private router: Router, private modal: NzModalService,
-        private retailService: RetailCustomerServiceProxy) {
+        private shopReportDataService: ShopReportDataServiceProxy) {
         super(injector);
     }
     ngOnInit(): void {
@@ -150,50 +151,42 @@ export class DataStatisticsComponent extends AppComponentBase implements OnInit 
             this.query.pageIndex = 1;
         }
         this.loading = true;
-        this.retailService.getDataStatisticsAsync(this.getParameter()).subscribe((result: PagedResultDtoOfRetailCustomer) => {
+        this.shopReportDataService.getDataStatisticsAsync(this.getParameter()).subscribe((result: PagedResultDtoOfShopReportData) => {
             this.loading = false;
             this.dataList = result.items;
-            // this.query.total = result.totalCount;
+            this.query.total = result.totalCount;
         })
     }
 
     getParameter(): Parameter[] {
         var arry = [];
-        arry.push(Parameter.fromJS({ key: 'OrganizationName', value: this.search.OrganizationName }));
-        arry.push(Parameter.fromJS({ key: 'sortregisteredShopTotal', value: this.sortregisteredShopTotal }));
-        arry.push(Parameter.fromJS({ key: 'sortscanCodeTotal', value: this.sortscanCodeTotal }));
-        arry.push(Parameter.fromJS({ key: 'sortscanNumTotal', value: this.sortscanNumTotal }));
-        arry.push(Parameter.fromJS({ key: 'sortscanCountTotal', value: this.sortscanCountTotal }));
-        arry.push(Parameter.fromJS({ key: 'sortconsumerIntegralTotal', value: this.sortconsumerIntegralTotal }));
-        arry.push(Parameter.fromJS({ key: 'sortshopIntegralTotal', value: this.sortshopIntegralTotal }));
+        // arry.push(Parameter.fromJS({ key: 'OrganizationName', value: this.search.OrganizationName }));
+        // arry.push(Parameter.fromJS({ key: 'sortregisteredShopTotal', value: this.sortregisteredShopTotal }));
+        // arry.push(Parameter.fromJS({ key: 'sortscanCodeTotal', value: this.sortscanCodeTotal }));
+        // arry.push(Parameter.fromJS({ key: 'sortscanNumTotal', value: this.sortscanNumTotal }));
+        // arry.push(Parameter.fromJS({ key: 'sortscanCountTotal', value: this.sortscanCountTotal }));
+        // arry.push(Parameter.fromJS({ key: 'sortconsumerIntegralTotal', value: this.sortconsumerIntegralTotal }));
+        // arry.push(Parameter.fromJS({ key: 'sortshopIntegralTotal', value: this.sortshopIntegralTotal }));
         return arry;
     }
 
-    exhibitionDetails(id: string) {
-        this.router.navigate(['admin/marketting/exhibition-detail', id]);
+    goDataStatisticsDetail(groupNum: number, organization: string) {
+        this.router.navigate(['admin/marketting/data-statistics-detail', groupNum, organization]);
     }
 
-    // exportExcel() {
-    //     this.exportLoading = true;
-    //     this.exhibitionService.exportExcel(
-    //         {
-    //             OrganizationName: this.search.OrganizationName,
-    //             sortregisteredShopTotal: this.sortregisteredShopTotal,
-    //             sortscanCodeTotal: this.sortscanCodeTotal,
-    //             sortscanNumTotal: this.sortscanNumTotal,
-    //             sortscanCountTotal: this.sortscanCountTotal,
-    //             sortconsumerIntegralTotal: this.sortconsumerIntegralTotal,
-    //             sortshopIntegralTotal: this.sortshopIntegralTotal,
-    //         }).subscribe(result => {
-    //             if (result.code == 0) {
-    //                 var url = AppConsts.remoteServiceBaseUrl + result.data;
-    //                 document.getElementById('aExhibitionShopExcelUrl').setAttribute('href', url);
-    //                 document.getElementById('btnExhibitionShopHref').click();
-    //             } else {
-    //                 this.notify.error(result.msg);
-    //             }
-    //             this.exportLoading = false;
-    //         });
-    // }
+    exportExcel() {
+        this.exportLoading = true;
+        this.shopReportDataService.exportShopReportDataDetailExcel(
+            {}).subscribe(result => {
+                if (result.code == 0) {
+                    var url = AppConsts.remoteServiceBaseUrl + result.data;
+                    document.getElementById('aShopReportDataExcelUrl').setAttribute('href', url);
+                    document.getElementById('btnShopReportDataHref').click();
+                } else {
+                    this.notify.error(result.msg);
+                }
+                this.exportLoading = false;
+            });
+    }
 
 }

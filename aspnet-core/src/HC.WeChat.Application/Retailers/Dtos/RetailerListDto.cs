@@ -174,5 +174,10 @@ namespace HC.WeChat.Retailers.Dtos
         /// 消费金额
         /// </summary>
         public decimal? PriceTotal { get; set; }
+
+        /// <summary>
+        /// 品规
+        /// </summary>
+        public string Specification { get; set; }
     }
 }
