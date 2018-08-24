@@ -24,6 +24,7 @@ using HC.WeChat.WechatAppConfigs.Dtos;
 using HC.WeChat.WechatAppConfigs;
 using HC.WeChat.Retailers;
 using HC.WeChat.Employees;
+using Microsoft.AspNetCore.Hosting;
 
 namespace HC.WeChat.IntegralDetails
 {
@@ -348,7 +349,7 @@ namespace HC.WeChat.IntegralDetails
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
-        public async Task<WeChatUserListDto> GetUserInfoAsync(string openId)
+        public async Task<WeChatUserListDto> GetUserInfoAsync(string openId,string host)
         {
             //var entity = await (from u in _wechatusersRepository.GetAll().Where(v => v.OpenId == openId)
             //             select new WeChatUserListDto()
@@ -380,7 +381,8 @@ namespace HC.WeChat.IntegralDetails
                                    UnBindTime = u.UnBindTime,
                                    UnfollowTime = u.UnfollowTime,
                                    Code = table.Code ?? null,
-                                   OpenId = u.OpenId
+                                   OpenId = u.OpenId,
+                                   HeadImgUrl = string.IsNullOrEmpty(u.HeadImgUrl)? host + "/assets/images/timg-4.jpeg" : u.HeadImgUrl
                                }).FirstOrDefaultAsync();
             //return user.MapTo<WeChatUserListDto>();
             return query;

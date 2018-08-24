@@ -576,9 +576,22 @@ namespace HC.WeChat.Retailers
 
         #region 数据报表
 
+        /// <summary>
+        /// 查询店铺消费报表
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public async Task<PagedResultDto<ShopReportData>> GetDataStatisticsAsync(GetShopReportDataInput input)
         {
-            var entity = await _retailerRepository.GetShopReportAsync();
+            List<ShopReportData> entity = null;
+            if (input.TimeType == 2)
+            {
+                entity = await _retailerRepository.GetShopReportByRangeAsync(input.BeginTime, input.EndTime);
+            }
+            else
+            {
+                entity = await _retailerRepository.GetShopReportAsync();
+            }
             var shopReportDataCount = entity.Count();
 
             var statisticsListDto = entity.MapTo<List<ShopReportData>>();
@@ -727,11 +740,11 @@ namespace HC.WeChat.Retailers
 
         #region 机构报表Excel
         [UnitOfWork(isTransactional: false)]
-        public async Task<APIResultDto> ExportShopReportDataExcel()
+        public async Task<APIResultDto> ExportShopReportDataExcel(GetShopReportDataInput input)
         {
             try
             {
-                var exportData = await GetShopReportData();
+                var exportData = await GetShopReportData(input);
                 var result = new APIResultDto();
                 result.Code = 0;
                 result.Data = SaveShopReportDataExcel("机构报表统计.xlsx", exportData);
@@ -744,9 +757,17 @@ namespace HC.WeChat.Retailers
             }
         }
 
-        private async Task<List<ShopReportData>> GetShopReportData()
+        private async Task<List<ShopReportData>> GetShopReportData(GetShopReportDataInput input)
         {
-            var entity = await _retailerRepository.GetShopReportAsync();
+            List<ShopReportData> entity = null;
+            if (input.TimeType == 2)
+            {
+                entity = await _retailerRepository.GetShopReportByRangeAsync(input.BeginTime, input.EndTime);
+            }
+            else
+            {
+                entity = await _retailerRepository.GetShopReportAsync();
+            }
             var statisticsListDto = entity.MapTo<List<ShopReportData>>();
             return statisticsListDto;
         }

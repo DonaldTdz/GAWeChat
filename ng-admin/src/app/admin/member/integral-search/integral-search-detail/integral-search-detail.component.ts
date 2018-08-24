@@ -7,6 +7,8 @@ import { IntegralDetails } from '@shared/entity/member';
 import { WechatUser, PurchaseRecord } from '@shared/entity/wechat';
 import { WechatUserServiceProxy, PurchaseRecordServiceProxy, PagedResultDtoOfPurchaseRecords } from '@shared/service-proxies/wechat-service';
 import { WeChatUser } from '@shared/entity/customer/wechat-user';
+import { AppConsts } from '@shared/AppConsts';
+import { Parameter } from '@shared/service-proxies/entity';
 
 @Component({
     moduleId: module.id,
@@ -19,6 +21,7 @@ export class IntegralSearchDetailComponent extends AppComponentBase implements O
     loading = false;
     recordLoading = false;
     openId: string;
+    host: string;
     weChatUser: WechatUser = new WechatUser();
     queryRecord: any = {
         pageIndex: 1,
@@ -37,13 +40,14 @@ export class IntegralSearchDetailComponent extends AppComponentBase implements O
         private router: Router) {
         super(injector);
         this.openId = this.Acroute.snapshot.params['openId'];
+        this.host = AppConsts.remoteServiceBaseUrl;
     }
     ngOnInit(): void {
         this.getUserInfo();
     }
 
     getUserInfo() {
-        this.wechatUserService.getUserInfoAsync(this.openId).subscribe((result: WechatUser) => {
+        this.wechatUserService.getUserInfoAsync(this.openId, this.host).subscribe((result: WechatUser) => {
             this.weChatUser = result;
             this.getSingleIntegral();
             this.getPurchaseRecordsById();

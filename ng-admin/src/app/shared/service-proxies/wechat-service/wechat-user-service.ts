@@ -85,10 +85,11 @@ export class WechatUserServiceProxy {
         }
         return Observable.of<ApiResult>(<any>null);
     }
-    getUserInfoAsync(openId: string): Observable<WechatUser> {
+    getUserInfoAsync(openId: string, host: string): Observable<WechatUser> {
         let url_ = this.baseUrl + "/api/services/app/IntegralDetail/GetUserInfoAsync?";
         if (openId !== undefined)
             url_ += "openId=" + encodeURIComponent("" + openId) + "&";
+        url_ += "host=" + encodeURIComponent("" + host) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = {
@@ -692,7 +693,7 @@ export interface IPagedResultDtoOfWeChatUser {
 }
 
 export class ResultDtoOfWeChatUserStatistic implements IResultDtoOfWeChatUserStatistic {
-    total:number;
+    total: number;
     items: WeChatUserStatistic[];
 
     constructor(data?: IResultDtoOfWeChatUserStatistic) {
@@ -708,7 +709,7 @@ export class ResultDtoOfWeChatUserStatistic implements IResultDtoOfWeChatUserSta
         if (data) {
             this.total = data["total"];
             if (data["wechatUserStaDto"] && data["wechatUserStaDto"].constructor === Array) {
-            // if (data && data.constructor === Array) {
+                // if (data && data.constructor === Array) {
                 this.items = [];
                 for (let item of data["wechatUserStaDto"])
                     this.items.push(WeChatUserStatistic.fromJS(item));
@@ -730,7 +731,7 @@ export class ResultDtoOfWeChatUserStatistic implements IResultDtoOfWeChatUserSta
             // data = [];
             for (let item of this.items)
                 data["wechatUserStaDto"].push(item.toJSON());
-                // data.push(item.toJSON());
+            // data.push(item.toJSON());
         }
         return data;
     }
@@ -748,7 +749,7 @@ export interface IResultDtoOfWeChatUserStatistic {
 }
 
 export class ResultDtoOfWeChatUserStatisticPic implements IResultDtoOfWeChatUserStatisticPic {
-    total:number;
+    total: number;
     items: WeChatUserStatisticPic[];
 
     constructor(data?: IResultDtoOfWeChatUserStatisticPic) {
@@ -764,7 +765,7 @@ export class ResultDtoOfWeChatUserStatisticPic implements IResultDtoOfWeChatUser
         if (data) {
             this.total = data["total"];
             if (data["wechatUserStaDto"] && data["wechatUserStaDto"].constructor === Array) {
-            // if (data && data.constructor === Array) {
+                // if (data && data.constructor === Array) {
                 this.items = [];
                 for (let item of data["wechatUserStaDto"])
                     this.items.push(WeChatUserStatisticPic.fromJS(item));
@@ -786,7 +787,7 @@ export class ResultDtoOfWeChatUserStatisticPic implements IResultDtoOfWeChatUser
             // data = [];
             for (let item of this.items)
                 data["wechatUserStaDto"].push(item.toJSON());
-                // data.push(item.toJSON());
+            // data.push(item.toJSON());
         }
         return data;
     }

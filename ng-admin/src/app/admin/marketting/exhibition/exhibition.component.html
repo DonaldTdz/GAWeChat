@@ -141,7 +141,7 @@
                             <div nz-form-label nz-col [nzSm]="5">
                                 <label for="beginTime">开始时间</label>
                             </div>
-                            <div nz-form-control nz-col nzHasFeedback [nzValidateStatus]="getFormControl('beginTime')">
+                            <div nz-form-control nz-col [nzValidateStatus]="getFormControl('beginTime')">
                                 <nz-datepicker formControlName="beginTime" [(ngModel)]="exhibition.beginTime" [nzPlaceHolder]="'请选择日期'"></nz-datepicker>
                                 <div nz-form-explain *ngIf="getFormControl('beginTime').dirty&&getFormControl('beginTime').hasError('required')">请输入活动开始时间</div>
                             </div>
