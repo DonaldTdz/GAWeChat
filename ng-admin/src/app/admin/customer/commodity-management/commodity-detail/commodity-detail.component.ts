@@ -88,7 +88,7 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
             isAction: [true],
             photoUrl: [null, Validators.compose([Validators.maxLength(500)])],
             imgType: [null],
-            desc: [null, Validators.compose([Validators.maxLength(200)])],
+            desc: [null, Validators.compose([Validators.maxLength(500)])],
         });
         this.getSingleProdct();
         this.host = AppConsts.remoteServiceBaseUrl;

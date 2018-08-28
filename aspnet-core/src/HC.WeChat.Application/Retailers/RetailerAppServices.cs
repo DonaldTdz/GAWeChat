@@ -939,9 +939,9 @@ namespace HC.WeChat.Retailers
                     rowIndex++;
                     IRow row = sheet.CreateRow(rowIndex);
                     ExcelHelper.SetCell(row.CreateCell(0), font, item.Specification);
-                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ScanQuantity.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(3), font, item.ScanFrequency.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(4), font, item.PriceTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(1), font, item.ScanQuantity.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ScanFrequency.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.PriceTotal.ToString());
                 }
                 workbook.Write(fs);
             }
