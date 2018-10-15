@@ -24,7 +24,7 @@ export class DataStatisticsComponent extends AppComponentBase implements OnInit 
     timeTypes = [
         { text: '全部', value: 1 },
         { text: '按时间段', value: 2 },
-    ]
+    ];
     form: FormGroup;
 
     // sortMap = {
