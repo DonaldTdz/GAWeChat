@@ -25,6 +25,7 @@ using HC.WeChat.WechatAppConfigs;
 using HC.WeChat.Retailers;
 using HC.WeChat.Employees;
 using Microsoft.AspNetCore.Hosting;
+using Abp.Auditing;
 
 namespace HC.WeChat.IntegralDetails
 {
@@ -397,6 +398,7 @@ namespace HC.WeChat.IntegralDetails
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<IntegralDetailListDto>> GetWXPagedIntegralDetailAsync(int? tenantId, string openId, int pageIndex, int pageSize)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

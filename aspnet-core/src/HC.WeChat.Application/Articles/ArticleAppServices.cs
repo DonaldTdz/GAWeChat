@@ -24,6 +24,7 @@ using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using Abp.Domain.Uow;
 using HC.WeChat.Dto;
+using Abp.Auditing;
 
 namespace HC.WeChat.Articles
 {
@@ -264,6 +265,7 @@ namespace HC.WeChat.Articles
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<ArticleListDto>> GetWXPagedArticlesAsync(int? tenantId, int pageIndex, int pageSize)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -292,6 +294,7 @@ namespace HC.WeChat.Articles
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ArticleListDto> GetWXArticlesByIdAsync(Guid id, int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -309,6 +312,7 @@ namespace HC.WeChat.Articles
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<ArticleListDto>> GetWXPagedExpAsync(int? tenantId, int pageIndex, int pageSize)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -336,6 +340,7 @@ namespace HC.WeChat.Articles
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ArticleListDto> GetWXExpByIdAsync(Guid id, int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

@@ -17,6 +17,7 @@ using System.Linq;
 using HC.WeChat.WechatEnums;
 using HC.WeChat.Authorization;
 using HC.WeChat.WeChatUsers;
+using Abp.Auditing;
 
 namespace HC.WeChat.MemberConfigs
 {
@@ -341,6 +342,7 @@ namespace HC.WeChat.MemberConfigs
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<MemberConfigListDto>> GetWXMemberConfigByTenantIdAsync(int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -356,6 +358,7 @@ namespace HC.WeChat.MemberConfigs
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public MemberConfigListDto GetJobConfig()
         {
             var entity = _memberconfigRepository.GetAll().Where(m => m.Type == DeployTypeEnum.job配置 && m.Code == DeployCodeEnum.jo启动状态).FirstOrDefault();
@@ -399,6 +402,7 @@ namespace HC.WeChat.MemberConfigs
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<string> GetWXPreProductConfigAsync(int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

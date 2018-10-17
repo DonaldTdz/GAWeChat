@@ -17,6 +17,7 @@ using System;
 using HC.WeChat.Authorization;
 using HC.WeChat.ActivityGoodses;
 using HC.WeChat.WechatEnums;
+using Abp.Auditing;
 
 namespace HC.WeChat.Activities
 {
@@ -259,6 +260,7 @@ namespace HC.WeChat.Activities
             }
         }
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ActivityListDto> GetTenantWeChatActivityAsync(int? tenantId)
         {
             var activity = await _activityManager.GetTenantWeChatActivityAsync(tenantId);

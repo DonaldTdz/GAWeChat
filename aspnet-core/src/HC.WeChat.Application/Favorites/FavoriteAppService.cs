@@ -17,6 +17,7 @@ using HC.WeChat.Favorites.Dtos;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.Dto;
 using HC.WeChat.Shops;
+using Abp.Auditing;
 
 namespace HC.WeChat.Favorites
 {
@@ -185,7 +186,7 @@ favoriteListDtos
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-
+        [DisableAuditing]
         public async Task<bool> GetUserIsCancelShopAsycn(Guid shopId, string openId)
         {
             bool isCancel = false;
@@ -244,6 +245,7 @@ favoriteListDtos
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<FavoriteListDto>> GetWXMyFavoriteShopsAsync(string openId)
         {
             var query = _favoriteRepository.GetAll().Where(p => p.OpenId == openId && p.IsCancel ==false);

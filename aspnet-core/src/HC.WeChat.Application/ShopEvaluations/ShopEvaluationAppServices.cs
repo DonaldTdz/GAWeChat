@@ -26,6 +26,7 @@ using HC.WeChat.Shops.Dtos;
 using HC.WeChat.WechatEnums;
 using HC.WeChat.IntegralDetails;
 using HC.WeChat.MemberConfigs;
+using Abp.Auditing;
 
 namespace HC.WeChat.ShopEvaluations
 {
@@ -277,6 +278,7 @@ namespace HC.WeChat.ShopEvaluations
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<PurchaseRecordListDto>> GetWXNotEvaluationByIdAsync(int? tenantId, string openId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -342,7 +344,8 @@ namespace HC.WeChat.ShopEvaluations
         /// <param name="openId"></param>
         /// <returns></returns>
 
-        [AbpAllowAnonymous]  
+        [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<int> GetWXCountNotEvaluationByIdAsync(int? tenantId, string openId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -368,6 +371,7 @@ namespace HC.WeChat.ShopEvaluations
         /// <param name="shopEvaluationId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ShopEvaluationListDto> GetWXEvaluationByIdAsync(int? tenantId, Guid? Id)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -394,6 +398,7 @@ namespace HC.WeChat.ShopEvaluations
         /// <param name="productId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<PurchaseRecordListDto> GetWXProductsDetailsByIdAsync(int? tenantId, string openId, Guid? productId,Guid?id)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

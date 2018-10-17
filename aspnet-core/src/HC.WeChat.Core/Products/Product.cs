@@ -105,5 +105,10 @@ namespace HC.WeChat.Products
         /// 产品介绍
         /// </summary>
         public virtual string Desc { get; set; }
+
+        /// <summary>
+        /// 产品标签
+        /// </summary>
+        public virtual string Tags { get; set; }
     }
 }

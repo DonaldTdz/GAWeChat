@@ -4,7 +4,7 @@ import 'rxjs/add/observable/timer';
 import { AppComponentBase } from '../../components/app-component-base';
 import { Router } from '@angular/router';
 import { WechatUser, Shop, UserType, ShopGoods } from '../../../services/model';
-import { ShopService, AppConsts, WechatUserService } from '../../../services';
+import { ShopService, AppConsts } from '../../../services';
 import { JWeiXinService } from 'ngx-weui/jweixin';
 import { ToptipsService } from "ngx-weui/toptips";
 import { DialogConfig, DialogComponent } from 'ngx-weui/dialog';
@@ -43,7 +43,7 @@ export class ScanComponent extends AppComponentBase implements OnInit {
 
     constructor(injector: Injector,
         private shopService: ShopService,
-        private wechatUserService: WechatUserService,
+        // private wechatUserService: WechatUserService,
         private router: Router,
         private wxService: JWeiXinService,
         private srv: ToptipsService) {
@@ -111,10 +111,10 @@ export class ScanComponent extends AppComponentBase implements OnInit {
             }
             this.cardNum = resarry[1];
             //获取会员数据
-            this.wechatUserService.GetWeChatUserByMemberBarCodeAsync(this.cardNum, this.settingsService.tenantId).subscribe(result => {
-                this.member = result;
-                this.srv['success']('扫码成功');
-            });
+            // this.wechatUserService.GetWeChatUserByMemberBarCodeAsync(this.cardNum, this.settingsService.tenantId).subscribe(result => {
+            //     this.member = result;
+            //     this.srv['success']('扫码成功');
+            // });
         } else {
             this.srv['warn']('条码格式不匹配');
         }

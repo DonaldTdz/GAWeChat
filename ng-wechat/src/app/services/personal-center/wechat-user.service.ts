@@ -65,16 +65,22 @@ export class WechatUserService {
       return data.result;
     });
   }
-  unBindShopEmployee(input:any):Observable<any>{
-    return this.http.post('/api/services/app/WeChatUser/CheckWeChatUserBindStatusAsync',input,null,true).map(data=>{
+  unBindShopEmployee(input: any): Observable<any> {
+    return this.http.post('/api/services/app/WeChatUser/CheckWeChatUserBindStatusAsync', input, null, true).map(data => {
       return data.result;
     });
   }
 
-  getNoCheckShopEmployeeCount(input:any):Observable<number>{
-    return this.http.get('/api/services/app/WeChatUser/GetShopEmployeesNoCheckCountAsync',input).map(data=>{
+  getNoCheckShopEmployeeCount(input: any): Observable<number> {
+    return this.http.get('/api/services/app/WeChatUser/GetShopEmployeesNoCheckCountAsync', input).map(data => {
       return data.result;
     });
   }
 
+  getCustMemberCode(openId: any): Observable<WechatUser> {
+    let url_ = "/api/services/app/WeChatUser/GetMemberBarCodeAsync?openId=" + openId;
+    return this.http.get(url_).map(data => {
+      return WechatUser.fromJS(data.result);
+    });
+  }
 }

@@ -19,9 +19,10 @@ namespace HC.WeChat.Web.Host.Controllers
         IShopAppService _shopAppService;
         //private readonly IConfigurationRoot _appConfiguration;
         //private WeChatTenantSetting _settings;
-        private string host = "http://ga.intcov.com";
-        //private string host = "http://localhost:21021";
+        //private string host = "http://ga.intcov.com";
+        private string host = "http://localhost:21021";
         //private string host = "http://wx.photostory.top";
+        //private string host = "http://hcwx.sayequ.me";
         private int? tenantId;
 
         private string UserOpenId
@@ -97,7 +98,7 @@ namespace HC.WeChat.Web.Host.Controllers
             //UserOpenId = "oWusewEMAQ_9km_ME19diwMrEop4"; // 199
             //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU1"; //杨帆专用
             //UserOpenId = "oWusewPRxWuP4wMz3UmHR0y7CJME"; //回家测试用
-            //UserOpenId = "o4l6swGJKxy4aEpUy3Hqm2DEeo_s";
+            UserOpenId = "o4l6swGJKxy4aEpUy3Hqm2DEeo_s";
             //UserOpenId = "o4l6swJ2RNer4X1OfB6yCvZorszs";
             //UserOpenId = "oWusewCseG_DDxU965N3UV2Dd8SM";
             if (string.IsNullOrEmpty(UserOpenId))
@@ -509,7 +510,7 @@ namespace HC.WeChat.Web.Host.Controllers
     {
         public static string PersonalCenterUrl = "/gawechat/index.html#/personals/personal";
         public static string MemberCardUrl = "/gawechat/index.html#/members/member-card";
-        public static string MyShopUrl = "/gawechat/index.html#/shops/shop";
+        public static string MyShopUrl = "/gawechat/index.html#/shops/shop;isShowWindows=false";
         public static string ScanIntegralUrl = "/gawechat/index.html#/scans/scan";
 
         public static string NearbyShopUrl = "/gawechat/index.html#/nearbies/nearby";

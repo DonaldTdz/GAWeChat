@@ -16,7 +16,7 @@ export class ShopProduct implements IShopProduct {
     shopId: string;
     productId: string;
     desc: string;
-
+    tags: string;
     constructor(data?: IShopProduct) {
         if (data) {
             for (var property in data) {
@@ -45,6 +45,7 @@ export class ShopProduct implements IShopProduct {
             this.shopId = data["shopId"];
             this.productId = data["productId"];
             this.desc = data["desc"];
+            this.tags = data["tags"];
         }
     }
 
@@ -112,6 +113,7 @@ export interface IShopProduct {
     shopId: string;
     productId: string;
     desc: string;
+    tags: string;
 }
 
 export class ShopGoods implements IShopGoods {

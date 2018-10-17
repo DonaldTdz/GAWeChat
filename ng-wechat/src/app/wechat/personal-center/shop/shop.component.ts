@@ -4,7 +4,7 @@ import 'rxjs/add/observable/timer';
 import { AppComponentBase } from '../../components/app-component-base';
 import { WechatUser, UserType, Shop, ShopProduct } from '../../../services/model';
 import { Router, Params } from '@angular/router';
-import { ShopService, AppConsts, FavoriteService } from '../../../services';
+import { ShopService, AppConsts, FavoriteService, WechatUserService } from '../../../services';
 
 import { PopupComponent } from "ngx-weui/popup";
 import { ToptipsService } from "ngx-weui/toptips";
@@ -15,7 +15,7 @@ import 'jsbarcode';
 import { LoaderService } from 'ngx-weui/utils/loader.service';
 import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
 import { ToastService, ToastComponent } from 'ngx-weui/toast';
-import { ToastModule } from 'ngx-weui';
+import { ToastModule, SkinType } from 'ngx-weui';
 
 @Component({
     selector: 'wechat-shop',
@@ -43,8 +43,6 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     isAudit: boolean = false;
     qrCodeUrl = '';
     public DEFCONFIG: DialogConfig = <DialogConfig>{
-        // title: '弹窗标题',
-        // content: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
         skin: 'ios',
         backdrop: true,
         cancel: null,
@@ -53,6 +51,11 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     config2: DialogConfig = {};
     //content = '';
     isCancel: boolean = false;
+    goodsBarCode: string;// 商品码
+    shopKeeperCode: string;
+    host = AppConsts.remoteServiceBaseUrl;
+    goods = [];
+    isShowWindows: string = 'false';
 
     constructor(injector: Injector,
         private router: Router,
@@ -62,12 +65,15 @@ export class ShopComponent extends AppComponentBase implements OnInit {
         private ds: DialogService,
         private load: LoaderService,
         private favoriteService: FavoriteService,
-        private srvt: ToastService
+        private srvt: ToastService,
+        private dia: DialogService,
+        private wechatService: WechatUserService
     ) {
         super(injector);
         this.activatedRoute.params.subscribe((params: Params) => {
             this.shopId = params['shopId'];
             this.isAudit = params['isAudit'];
+            this.isShowWindows = params['isShowWindows'];
         });
     }
 
@@ -85,7 +91,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             let url = this.CurrentUrl;//encodeURIComponent(location.href.split('#')[0]);
             this.settingsService.getJsApiConfig(url).subscribe(result => {
                 if (result) {
-                    result.jsApiList = ['openLocation'];//指定调用的接口名
+                    result.jsApiList = ['openLocation', 'scanQRCode'];//指定调用的接口名                   
                     // 1、通过config接口注入权限验证配置
                     wx.config(result.toJSON());
                     // 2、通过ready接口处理成功验证
@@ -118,6 +124,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             //     //生成微信二维码
             //     //this.generateQRcode('wechat_qrcode', data);
             // });
+
         }
         else {
             this.settingsService.getUser().subscribe(result => {
@@ -152,8 +159,20 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             });
         }
         this.IsCancelShop();
+        setTimeout(() => {
+            if (this.isShowWindows != 'false') {
+                this.onShowBySrv('ios', true);
+            }
+        }, 500);
     }
-
+    // test() {
+    //     this.config2 = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+    //         content: '<img src="assets/images/shop/ScanActivity.png">',
+    //     });
+    //     this.ds.show(this.config2).subscribe((res: any) => {
+    //         console.log(res);
+    //     });
+    // }
     goEditShop() {
         this.router.navigate(['/shopadds/shop-add', { id: '1' }]);
     }
@@ -352,5 +371,140 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 });
             }
         }
+    }
+
+    //调用微信扫一扫
+    wxScanQRCode(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            wx.scanQRCode({
+                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                //scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                scanType: ['barCode'],
+                success: ((res) => {
+                    resolve(res.resultStr);
+                })
+            });
+        });
+    }
+
+    scanOk(memberCode: string) {
+        if (!memberCode) {
+            this.srv['warn']('请先绑定手机号');
+            this.router.navigate(["/personals/bind-member"]);
+        } else {
+            if (!this.goods || this.goods.length == 0) {
+                this.srv['warn']('没有商品信息');
+            } else {
+                let param: any = {};
+                param.shopProductList = this.goods;
+                param.shopId = this.shop.id;
+                param.shopName = this.shop.name;
+                param.openId = this.settingsService.openId;//消费者id
+                param.tenantId = this.settingsService.tenantId;
+                param.operatorOpenId = this.settingsService.openId;//消费者自己操作
+                param.operatorName = this.user.nickName;
+                param.retailerId = this.shop.retailerId;
+                param.host = this.host;
+                this.shopService.ExchangeIntegral(param).subscribe(res => {
+                    if (res && res.code == 0) {
+                        this.goPurchaserecord('ios', true, res.data.userIntegral);
+                        res.data
+                    } else {
+                        this.srv['warn']('兑换失败，请重试');
+                    }
+                });
+                //扫码后清空列表
+                this.goods = [];
+            }
+        }
+    }
+
+    /**
+     * 商品扫码
+     */
+    setGoodsBarCode(res: string) {
+        let resarry = res.split(',');
+        if (resarry.length == 2) {
+            if (resarry[0] != 'EAN_13') {
+                this.srv['warn']('条码格式不匹配');
+                return;
+            }
+            this.goodsBarCode = resarry[1];
+            //获取卷烟数据
+            let param: any = {};
+            param.code = this.goodsBarCode;
+            if (this.settingsService.tenantId) {
+                param.tenantId = this.settingsService.tenantId;
+            }
+            this.shopService.GetShopProductByCode(param).subscribe(result => {
+                if (result) {
+                    this.goods.push(result);
+                    this.getCustMemberCode();
+                } else {
+                    this.srv['warn']('没找到匹配商品');
+                }
+            });
+        }
+    }
+
+    onShowBySrv(type: SkinType, backdrop: boolean = true) {
+        this.DEFCONFIG = {
+            confirm: '扫一扫',
+        };
+        this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            skin: type,
+            backdrop: backdrop,
+            // content: '赢积分，兑好礼'
+            content: '<div class="test weui-dialog__bd"><p>扫条码</p><p>赢积分</p><p>兑好礼</p></div>'
+        });
+        this.dia.show(this.config).subscribe((res: any) => {
+            if (res.value == true) {
+                this.wxScanQRCode().then((res) => {
+                    this.setGoodsBarCode(res);
+                });
+            }
+        });
+        return false;
+    }
+
+    /**
+     *兑换成功弹出框
+     */
+    goPurchaserecord(type: SkinType, backdrop: boolean = true, userIntegral: number) {
+        this.DEFCONFIG = {
+            confirm: '立即评价',
+            cancel: '扫一扫'
+        };
+        let content: string = `<p class="textFir">扫码积分兑换成功</p><p class="textSec">兑换积分:${userIntegral}</p>`;
+
+        this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            skin: type,
+            backdrop: backdrop,
+            content: content
+        });
+        this.dia.show(this.config).subscribe((res: any) => {
+            if (res.value == true) {
+                this.router.navigate(['/purchaserecords/purchaserecord']);
+            } else {
+                this.wxScanQRCode().then((res) => {
+                    this.setGoodsBarCode(res);
+                });
+            }
+        });
+        return false;
+    }
+
+    /**
+     *获取消费者会员卡
+     */
+    getCustMemberCode() {
+        this.wechatService.getCustMemberCode(this.settingsService.openId).subscribe(data => {
+            this.user = data;
+            this.scanOk(this.user.memberBarCode);
+        });
+    }
+
+    goGoodDetail(id: string) {
+        this.router.navigate(['/shops/shop-good-detail', { id: id }]);
     }
 }

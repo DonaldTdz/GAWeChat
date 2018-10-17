@@ -25,6 +25,7 @@ using System;
 using HC.WeChat.Dto;
 using HC.WeChat.WechatEnums;
 using Senparc.Weixin.MP.AdvancedAPIs.UserTag;
+using Abp.Auditing;
 
 namespace HC.WeChat.WeChatGroups
 {
@@ -365,6 +366,7 @@ namespace HC.WeChat.WeChatGroups
         /// <param name="tagName"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<int> GetTagIdAsync(UserTypeEnum typeSCode)
         {
             int tagId = 0;
@@ -433,6 +435,7 @@ namespace HC.WeChat.WeChatGroups
         /// <param name="code"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<WeChatGroupListDto> GetWeChatGroupByUserType(UserTypeEnum code)
         {
             var result = await _wechatgroupRepository.GetAll().Where(g => g.TypeCode == code).FirstOrDefaultAsync();

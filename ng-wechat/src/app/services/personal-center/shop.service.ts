@@ -163,4 +163,11 @@ export class ShopService {
       return data.result;
     });
   }
+
+  GetProductInfo(id: string): Observable<ShopProduct> {
+    let url_ = "/api/services/app/Product/GetWXProductByIdAsync?id=" + id;
+    return this.http.get(url_).map(data => {
+      return data.result;
+    });
+  }
 }

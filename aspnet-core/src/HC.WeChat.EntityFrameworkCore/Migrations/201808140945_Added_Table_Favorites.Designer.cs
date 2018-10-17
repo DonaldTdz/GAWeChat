@@ -1728,6 +1728,7 @@ namespace HC.WeChat.Migrations
                 b.Property<long?>("CreatorUserId");
                 b.Property<string>("PhotoUrl").HasMaxLength(500);
                 b.Property<string>("Desc").HasMaxLength(500);
+                b.Property<string>("Tags").HasMaxLength(500);
                 b.HasKey("Id");
 
                 //b.HasIndex("TargetTenantId", "TargetUserId", "ReadState");

@@ -19,6 +19,7 @@ using HC.WeChat.Articles;
 using HC.WeChat.WechatEnums;
 using HC.WeChat.Shops;
 using HC.WeChat.Shops.Dtos;
+using Abp.Auditing;
 
 namespace HC.WeChat.StatisticalDetails
 {
@@ -249,6 +250,7 @@ namespace HC.WeChat.StatisticalDetails
         /// <param name="articleId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<bool> GetIsGoodAsync(int? tenantId,string openId,Guid? articleId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

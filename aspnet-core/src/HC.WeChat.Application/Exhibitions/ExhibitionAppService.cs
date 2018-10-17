@@ -15,6 +15,7 @@ using HC.WeChat.Exhibitions.Dtos;
 using HC.WeChat.Exhibitions;
 using System;
 using HC.WeChat.Authorization;
+using Abp.Auditing;
 
 namespace HC.WeChat.Exhibitions
 {
@@ -191,6 +192,7 @@ namespace HC.WeChat.Exhibitions
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ExhibitionEditDto> GetExhibitionConfigAsync()
         {
             var config = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();

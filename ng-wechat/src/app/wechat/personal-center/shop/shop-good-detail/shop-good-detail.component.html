@@ -1,0 +1,45 @@
+<!--component html goes here -->
+<Page [ngClass]="'ShopGoodDetail'" [title]="'商品详情'" [showTitle]="false" [spacing]="false">
+    <!-- <div class="weui-panel weui-panel_access" *ngIf="product.photoUrl"> -->
+    <!-- <div class="weui-media-box__hd weui-cell_img" *ngIf="product.photoUrl"> -->
+    <!-- <div style="height:240px;" *ngIf="product.photoUrl"> -->
+    <img *ngIf="product.photoUrl" style="width: 100%;height:240px;" class="weui-media-box__thumb" src="{{hostUrl+product.photoUrl}}" alt="">
+    <!-- </div> -->
+    <!-- </div> -->
+    <div class="weui-panel weui-panel_access" style="margin-top:0px;" *ngIf="product.desc">
+        <div class="weui-panel__hd">产品介绍</div>
+        <div class="weui-panel__bd">
+            <div class="weui-media-box weui-media-box_text">
+                <p style="font-size:13px;color:#999;">{{product.desc}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells__title">商品信息</div>
+    <div class="weui-cells" *ngIf="product" style="margin-top: 0px;">
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>商品规格</p>
+            </div>
+            <div class="weui-cell__ft">{{product.specification}}</div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>商品类型</p>
+            </div>
+            <div class="weui-cell__ft">{{product.typeName}}</div>
+        </div>
+        <div class="weui-cell" *ngIf="tagsList.length > 0">
+            <div class="weui-cell__bd">
+                <p>商品标签</p>
+            </div>
+            <div class="weui-cell__ft" style="border-color:gray; border-width:1px; border-style:solid;border-radius:3px;margin-left:10px;padding: 2px;font-size: 12px;" *ngFor="let item of tagsList">{{item}}</div>
+        </div>
+        <div class="weui-cell" *ngIf="product.price!=0">
+            <div class="weui-cell__bd">
+                <p>指导零售价</p>
+            </div>
+            <div class="weui-cell__ft">{{product.price}}￥</div>
+        </div>
+    </div>
+    <weui-loadmore type="line" *ngIf="!product"></weui-loadmore>
+</Page>

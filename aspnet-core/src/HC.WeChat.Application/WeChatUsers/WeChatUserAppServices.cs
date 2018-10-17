@@ -33,6 +33,7 @@ using NPOI.XSSF.UserModel;
 using Microsoft.AspNetCore.Hosting;
 using HC.WeChat.IntegralDetails;
 using Senparc.Weixin.MP.AdvancedAPIs.User;
+using Abp.Auditing;
 
 namespace HC.WeChat.WeChatUsers
 {
@@ -421,6 +422,7 @@ namespace HC.WeChat.WeChatUsers
 
         [AbpAllowAnonymous]
         [UnitOfWork(isTransactional: false)]
+        [DisableAuditing]
         public async Task<WeChatUserListDto> GetWeChatUserAsync(string openId, int? tenantId)
         {
             var user = await _wechatuserManager.GetWeChatUserAsync(openId, tenantId);
@@ -612,6 +614,7 @@ namespace HC.WeChat.WeChatUsers
         }
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         [UnitOfWork(isTransactional: false)]
         public async Task<WeChatUserListDto> GetWeChatUserByMemberBarCodeAsync(string memberBarCode, int? tenantId)
         {
@@ -629,6 +632,7 @@ namespace HC.WeChat.WeChatUsers
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<WeChatUserListDto> GetSingleWeChatUser(Guid userId, int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -763,6 +767,7 @@ namespace HC.WeChat.WeChatUsers
         /// <param name="userId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<WeChatUserListDto>> GetShopEmployeesAsync(int? tenantId, Guid userId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -832,6 +837,7 @@ namespace HC.WeChat.WeChatUsers
         /// <param name="userId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<int> GetShopEmployeesNoCheckCountAsync(int? tenantId, Guid userId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -1168,6 +1174,7 @@ namespace HC.WeChat.WeChatUsers
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<bool> GetWeChatUserIsExsit(string openId)
         {
             return await _wechatuserRepository.GetAll().AnyAsync(w => w.OpenId == openId && w.UserType!=UserTypeEnum.取消关注);
@@ -1180,6 +1187,7 @@ namespace HC.WeChat.WeChatUsers
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<bool> GetIsAttentionByOpenIdAsync(string openId)
         {
             int weChat = await _wechatuserRepository.GetAll().Where(v=>v.OpenId == openId && v.UserType!= UserTypeEnum.取消关注).CountAsync();
@@ -1221,6 +1229,7 @@ namespace HC.WeChat.WeChatUsers
             return result;
         }
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<APIResultDto> GetWechatUserOpenIds(string nextOpenId)
         {
             var result = await UserApi.GetAsync(AppConfig.AppId, nextOpenId);
@@ -1299,6 +1308,20 @@ namespace HC.WeChat.WeChatUsers
                 }
             }
             return new APIResultDto() { Code = 0, Msg = "同步数据成功"};
+        }
+
+
+        /// <summary>
+        /// 获取会员卡
+        /// </summary>
+        /// <param name="retailerId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<WeChatUserListDto> GetMemberBarCodeAsync(string openId)
+        {
+            var userInfo = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
+            return userInfo.MapTo<WeChatUserListDto>();
         }
     }
 }

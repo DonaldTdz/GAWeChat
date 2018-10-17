@@ -134,6 +134,7 @@ namespace HC.WeChat.MessageHandler
         {
             try
             {
+                Subscribe(requestMessage);
                 if (MessageInfo == null)
                 {
                     return new SuccessResponseMessage();
@@ -145,7 +146,7 @@ namespace HC.WeChat.MessageHandler
                     {
                         var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageText>(requestMessage);
                         responseMessage.Content = MessageInfo.SubscribeMsg;
-                        Subscribe(requestMessage);
+                        //Subscribe(requestMessage);
                         return responseMessage;
                     }
                     //else if (sinfo.MsgType == WechatEnums.MsgTypeEnum.纯图片)
@@ -166,7 +167,7 @@ namespace HC.WeChat.MessageHandler
                         var responseMessagePic = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
                         responseMessagePic.ArticleCount = 1;
                         responseMessagePic.Articles.Add(GetPicSubscribe());
-                        Subscribe(requestMessage);
+                        //Subscribe(requestMessage);
                         return responseMessagePic;
                     }
                 }

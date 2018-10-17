@@ -32,6 +32,7 @@ using HC.WeChat.IntegralDetails;
 using HC.WeChat.Products;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.WechatEnums;
+using Abp.Auditing;
 
 namespace HC.WeChat.Retailers
 {
@@ -115,6 +116,7 @@ namespace HC.WeChat.Retailers
         /// 通过指定id获取RetailerListDto信息
         /// </summary>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailerListDto> GetRetailerByIdAsync(EntityDto<Guid> input)
         {
             var entity = await _retailerRepository.GetAsync(input.Id);
@@ -528,6 +530,7 @@ namespace HC.WeChat.Retailers
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<RetailerListDto>> GetAllRetailByPageAsync(GetRetailersWeChatInput input)
         {
             using (CurrentUnitOfWork.SetTenantId(input.tenantId))
@@ -555,6 +558,7 @@ namespace HC.WeChat.Retailers
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailerListDto> GetRetailerByIdDtoForWeChatAsync(Guid id)
         {
             var entity = await _retailerRepository.GetAll().Where(r => r.Id == id).FirstOrDefaultAsync();
@@ -566,6 +570,7 @@ namespace HC.WeChat.Retailers
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailerListDto> GetRetailerByIdDtoByLKeyForWeChatAsync(Guid userId)
         {
             var entity = await _retailerRepository.GetAll().Where(r => r.Id == userId).FirstOrDefaultAsync();

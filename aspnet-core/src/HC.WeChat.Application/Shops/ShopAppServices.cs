@@ -44,6 +44,7 @@ using HC.WeChat.Authorization;
 using HC.WeChat.Authorization.WeChatOAuth;
 using QRCoder;
 using SixLabors.ImageSharp.Processing.Text;
+using Abp.Auditing;
 
 namespace HC.WeChat.Shops
 {
@@ -597,6 +598,7 @@ namespace HC.WeChat.Shops
 
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ShopListDto> GetShopByOpenId(int? tenantId, string openId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -676,6 +678,7 @@ namespace HC.WeChat.Shops
         /// </summary>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<NearbyShopDto>> GetNearbyShopByLocationAsync(double latitude, double longitude, int? tenantId, string openId)
         {
             var mbr = new MapMBR(latitude, longitude, 3.1);//确定搜索范围3.1公里 搜索范围扩大0.1公里
@@ -721,6 +724,7 @@ namespace HC.WeChat.Shops
         }
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<NearbyShopDto>> GetShopListByGoodsIdAsync(int? tenantId, Guid goodsId, double latitude, double longitude)
         {
             var mbr = new MapMBR(latitude, longitude, 3.1);//确定搜索范围3.1公里 搜索范围扩大0.1公里
@@ -1272,6 +1276,7 @@ namespace HC.WeChat.Shops
         /// <param name="shopId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<string> GetQRUrlByShopId(Guid shopId)
         {
             string url = await _shopRepository.GetAll().Where(v => v.Id == shopId).Select(v => v.QRUrl).FirstOrDefaultAsync();
@@ -1380,6 +1385,7 @@ namespace HC.WeChat.Shops
         /// <param name="shopId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public string GetQrCodeUrl(Guid shopId, string host)
         {
             var url = host + "/GAWX/ShopAuth";
@@ -1392,6 +1398,7 @@ namespace HC.WeChat.Shops
         /// <param name="shopId">店铺id</param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<string> GetShopQrCodeURL(Guid shopId)
         {
             return await _shopRepository.GetAll().Where(s => s.Id == shopId).Select(s => s.QRUrl).FirstOrDefaultAsync();

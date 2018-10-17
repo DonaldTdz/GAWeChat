@@ -9,6 +9,7 @@ import { AppConsts } from '@shared/AppConsts';
 import { HttpRequest, HttpClient, HttpResponse } from '@angular/common/http';
 import { filter } from 'rxjs/operators';
 import { CropperSettings, ImageCropperComponent, Bounds } from 'ng2-img-cropper';
+import { ThemesService } from '@delon/theme';
 
 @Component({
     moduleId: module.id,
@@ -60,7 +61,8 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
     //是否是上传状态 原图
     isUploadY = false;
     imgType = 1;
-
+    tagsList: string[] = [];
+    tagsText: string;
     constructor(injector: Injector, private fb: FormBuilder, private productService: ProductsServiceProxy, private actRouter: ActivatedRoute,
         private router: Router, private http: HttpClient) {
         super(injector);
@@ -74,7 +76,6 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
         this.cropperSettings.cropperDrawSettings.strokeColor = 'rgba(255,255,255,1)';
         this.cropperSettings.cropperDrawSettings.strokeWidth = 2;
         this.cropperSettings.noFileInput = true;
-
     }
 
     ngOnInit(): void {
@@ -89,6 +90,7 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
             photoUrl: [null, Validators.compose([Validators.maxLength(500)])],
             imgType: [null],
             desc: [null, Validators.compose([Validators.maxLength(500)])],
+            tags: null
         });
         this.getSingleProdct();
         this.host = AppConsts.remoteServiceBaseUrl;
@@ -120,6 +122,9 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
             }
             else {
                 this.cardTitle = '编辑商品';
+                if (this.product.tags != null && this.product.tags.length != 0) {
+                    this.tagsList = this.product.tags.split(',');
+                }
                 // this.actionUrl=this.host + '/WeChatFile/MarketingInfoPosts?fileName=product&name='+this.product.id;
             }
         });
@@ -138,6 +143,7 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
             this.isConfirmLoading = true;
             this.productService.CheckCode(this.product.id, this.product.packageCode, this.product.barCode).subscribe((result: number) => {
                 if (result === 0) {
+                    this.product.tags = this.tagsList.join(',');
                     this.productService.update(this.product)
                         .finally(() => { this.isConfirmLoading = false; })
                         .subscribe((data) => {
@@ -239,6 +245,36 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
     //     this.product.img64=this.data1.image;
     // }
 
+    addTag(tagsText: string) {
+        if (tagsText != null && tagsText.trim().length !== 0 && !this.existsEmployee(tagsText)) {
+            this.tagsText = this.tagsText.replace(/ /g, '').replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g, "")
+            this.tagsList.push(this.tagsText);
+        }
+        this.tagsText = null;
+    }
 
+    existsEmployee(tagsText: string): boolean {
+        let bo = false;
+        this.tagsList.forEach(v => {
+            if (v == tagsText) {
+                bo = true;
+                return;
+            }
+        });
+        return bo;
+    }
 
+    onClose(event: Event, tagsText: string): void {
+        let i = 0;
+        this.tagsList.forEach(v => {
+            if (v == tagsText) {
+                this.tagsList.splice(i, 1);
+                return;
+            }
+            i++;
+        });
+        if (this.tagsList.length < 0) {
+            this.tagsList = null;
+        }
+    }
 }

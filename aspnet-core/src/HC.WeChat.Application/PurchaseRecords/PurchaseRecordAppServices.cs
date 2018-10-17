@@ -39,6 +39,7 @@ using HC.WeChat.Helpers;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using Abp.Auditing;
 
 namespace HC.WeChat.PurchaseRecords
 {
@@ -538,6 +539,7 @@ namespace HC.WeChat.PurchaseRecords
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<PurchaseRecordListDto>> GetWXPagedPurchaseRecordAsync(int? tenantId, string openId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

@@ -29,6 +29,19 @@
                 </div>
                 <div nz-form-item nz-row>
                     <div nz-form-label nz-col [nzSm]="4">
+                        <label for="tags">商品标签</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" [nzValidateStatus]="getFormControl('tags')">
+                        <nz-input [(ngModel)]="tagsText" formControlName="tags">
+                            <ng-template #addOnAfter><i style="cursor:pointer;" class="anticon anticon-plus" (click)="addTag(tagsText)"></i></ng-template>
+                        </nz-input>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="19">
+                        <nz-tag *ngFor="let item of tagsList" nzClosable (nzClose)="onClose($event, item)">{{item}}</nz-tag>
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSm]="4">
                         <label for="price">指导零售价</label>
                     </div>
                     <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('price')">

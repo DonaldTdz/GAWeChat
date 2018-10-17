@@ -28,7 +28,10 @@
             <div class="weui-cell__ft">{{gDate | date:'yyyy-MM-dd HH:mm'}}</div>
         </div>
         <div class="weui-cell">
-            <button weui-button (click)="goBack()">继续兑换</button>
+            <button weui-button (click)="goEvaluation()">立即评价</button>
+        </div>
+        <div class="weui-cell">
+            <button weui-button [weui-type]="'default'" [disabled]="disabled" (click)="goBack()">继续兑换</button>
         </div>
     </div>
 </Page>
