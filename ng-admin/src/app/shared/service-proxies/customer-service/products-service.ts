@@ -205,6 +205,62 @@ export class ProductsServiceProxy {
     }
 
     /**
+    * 修改产品标签
+    * @param input 
+    */
+    updateProductTags(input: any): Observable<Products> {
+        let url_ = this.baseUrl + "/api/services/app/Product/CreateOrUpdateProductTags";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(input);
+
+        let options_ = {
+            body: content_,
+            method: "post",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processUpdate(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processUpdate(response_);
+                } catch (e) {
+                    return <Observable<Products>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<Products>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processUpdateProductTags(response: Response): Observable<Products> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? Products.fromJS(resultData200) : new Products();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<Products>(<any>null);
+    }
+
+    /**
     * @return Success
     */
     delete(id: string): Observable<void> {
@@ -255,7 +311,7 @@ export class ProductsServiceProxy {
     }
 
 
-    CheckCode(id: string,pCode:string,bCode:string): Observable<number> {
+    CheckCode(id: string, pCode: string, bCode: string): Observable<number> {
         let url_ = this.baseUrl + "/api/services/app/Product/GetCheckCode?";
         if (id !== undefined)
             url_ += "ProductId=" + encodeURIComponent("" + id) + "&";
@@ -308,7 +364,7 @@ export class ProductsServiceProxy {
         return Observable.of<number>(<any>null);
     }
 
-    ExportExcel(input:any):Observable<ApiResult> {
+    ExportExcel(input: any): Observable<ApiResult> {
         let url_ = this.baseUrl + "/api/services/app/Product/ExportProductsExcel";
         url_ = url_.replace(/[?&]$/, "");
 

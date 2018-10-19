@@ -249,6 +249,13 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
         if (tagsText != null && tagsText.trim().length !== 0 && !this.existsEmployee(tagsText)) {
             this.tagsText = this.tagsText.replace(/ /g, '').replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g, "")
             this.tagsList.push(this.tagsText);
+            if (this.cardTitle == '编辑商品') {
+                this.product.tags = this.tagsList.join(',');
+                this.productService.updateProductTags(this.product)
+                    .subscribe((data) => {
+                        this.product.tags = data.tags;
+                    });
+            }
         }
         this.tagsText = null;
     }
@@ -275,6 +282,13 @@ export class CommodityDetailComponent extends AppComponentBase implements OnInit
         });
         if (this.tagsList.length < 0) {
             this.tagsList = null;
+        }
+        if (this.cardTitle == '编辑商品') {
+            this.product.tags = this.tagsList.join(',');
+            this.productService.updateProductTags(this.product)
+                .subscribe((data) => {
+                    this.product.tags = data.tags;
+                });
         }
     }
 }

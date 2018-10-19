@@ -66,12 +66,13 @@ export class ShopQrcodeComponent extends AppComponentBase implements OnInit {
         //console.log(this.shop.id)
         this.toastServ.show(null, 10000, null, 'loading');
         this.load.loadScript('assets/libs/qrcode.min.js').then((res) => {
+            let isShowWindows: string = 'false';
             //this.shopService.GetQrCodeUrl({shopId:this.shop.id,host:AppConsts.remoteServiceBaseUrl}).subscribe(data => {
-            let url = AppConsts.remoteServiceBaseUrl + '/GAWX/ShopAuth?state='+this.shop.id;    
+            let url = AppConsts.remoteServiceBaseUrl + '/GAWX/ShopAuth?state=' + this.shop.id + '&isShowWindows=' + isShowWindows;
             //生成微信二维码
-                this.generateQRcode('wechat_qrcode', url);
-                this.isExist = true;
-                this.toastServ.hide();
+            this.generateQRcode('wechat_qrcode', url);
+            this.isExist = true;
+            this.toastServ.hide();
             //});
         })
     }

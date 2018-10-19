@@ -117,6 +117,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             this.shopService.AddSingleTotalAsync({ articleId: this.shopId, openId: this.settingsService.openId, type: 3, tenantId: this.settingsService.tenantId }).subscribe(res => {
                 this.shop = res;
             });
+            this.IsCancelShop();
             // this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
             //     this.qrCodeUrl = data;
             //     console.log("data")
@@ -145,6 +146,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                                         this.router.navigate(['/shopadds/shop-add']);
                                     }
                                     this.shopId = this.shop.id;
+                                    this.IsCancelShop();
                                     //  else {
                                     //     this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
                                     //         this.qrCodeUrl = data;
@@ -158,21 +160,18 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 }
             });
         }
-        this.IsCancelShop();
+        // this.IsCancelShop();
         setTimeout(() => {
             if (this.isShowWindows != 'false') {
                 this.onShowBySrv('ios', true);
+                // let data: any = {};
+                // data.productName = '黄金叶';
+                // data.price = 20;
+                // data.userIntegral = 200;
+                // this.goPurchaserecord('ios', true, data);
             }
         }, 500);
     }
-    // test() {
-    //     this.config2 = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
-    //         content: '<img src="assets/images/shop/ScanActivity.png">',
-    //     });
-    //     this.ds.show(this.config2).subscribe((res: any) => {
-    //         console.log(res);
-    //     });
-    // }
     goEditShop() {
         this.router.navigate(['/shopadds/shop-add', { id: '1' }]);
     }
@@ -313,21 +312,31 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     IsCancelShop() {
+        // setTimeout(() => {
+        //     let params: any =
+        //     {
+        //         shopId: this.shopId,
+        //         openId: this.settingsService.openId,
+        //     };
+        //     // this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => setTimeout(() => {
+        //     //     {
+        //     //         this.isCancel = data;
+        //     //     }
+        //     // }, 500));
+        //     this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => {
+        //         this.isCancel = data;
+        //     });
+        // }, 1);
         setTimeout(() => {
             let params: any =
             {
                 shopId: this.shopId,
                 openId: this.settingsService.openId,
             };
-            // this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => setTimeout(() => {
-            //     {
-            //         this.isCancel = data;
-            //     }
-            // }, 500));
             this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => {
                 this.isCancel = data;
             });
-        }, 1);
+        }, 500);
     }
 
     favorite(type: string) {
@@ -407,8 +416,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 param.host = this.host;
                 this.shopService.ExchangeIntegral(param).subscribe(res => {
                     if (res && res.code == 0) {
-                        this.goPurchaserecord('ios', true, res.data.userIntegral);
-                        res.data
+                        this.goPurchaserecord('ios', true, res.data);
                     } else {
                         this.srv['warn']('兑换失败，请重试');
                     }
@@ -454,8 +462,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
         this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
             skin: type,
             backdrop: backdrop,
-            // content: '赢积分，兑好礼'
-            content: '<div class="test weui-dialog__bd"><p>扫条码</p><p>赢积分</p><p>兑好礼</p></div>'
+            content: '<div class="logoCssDiv"><img class="logoCss" src="assets/images/shop/ScanLogo.png" alt=""> </div>'
         });
         this.dia.show(this.config).subscribe((res: any) => {
             if (res.value == true) {
@@ -470,13 +477,22 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     /**
      *兑换成功弹出框
      */
-    goPurchaserecord(type: SkinType, backdrop: boolean = true, userIntegral: number) {
+    goPurchaserecord(type: SkinType, backdrop: boolean = true, data: any) {
         this.DEFCONFIG = {
             confirm: '立即评价',
             cancel: '扫一扫'
         };
-        let content: string = `<p class="textFir">扫码积分兑换成功</p><p class="textSec">兑换积分:${userIntegral}</p>`;
-
+        let content: string = `<div class="divFull">
+        <div class="divLeft">
+        <img src="assets/images/shop/ScanOk.png" alt="">
+        </div>
+        <div class="divRight">
+            <div class="textUp">兑换成功</div>
+            <div class="textDown">${data.productName}</div>
+            <div class="textDown">建议零售价(包):￥${data.price}</div>
+            <div class="textDown">获得积分:${data.userIntegral}</div>
+        </div>
+    </div>`
         this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
             skin: type,
             backdrop: backdrop,

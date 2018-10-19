@@ -337,6 +337,9 @@ namespace HC.WeChat.PurchaseRecords
         {
             using (CurrentUnitOfWork.SetTenantId(input.TenantId))
             {
+                //快捷扫码专用字段
+                string productName = "";
+                decimal? price =0;
                 //获取积分配置
                 var config = await GetIntegralConfig(input.TenantId);
 
@@ -351,10 +354,11 @@ namespace HC.WeChat.PurchaseRecords
                     purchaseRecord.Quantity = item.Num;
                     purchaseRecord.ProductId = item.Id;
                     purchaseRecord.Specification = item.Specification;
+                    productName = item.Specification;
+                    price = item.Price;
                     purchaseRecord.Remark = string.Format("数量{0}*指导零售价{1}*兑换比例{2}=积分{3}", item.Num, item.Price, config[DeployCodeEnum.商品购买], purchaseRecord.Integral);
                     await _purchaserecordRepository.InsertAsync(purchaseRecord);
                     await CurrentUnitOfWork.SaveChangesAsync();
-
                     refIds += purchaseRecord.Id.ToString() + ",";
                     xintegral += purchaseRecord.Integral;
                     rintegral += ((int)(item.Price * item.Num * config[DeployCodeEnum.店铺扫码兑换]));
@@ -422,7 +426,7 @@ namespace HC.WeChat.PurchaseRecords
                 APIResultDto result = new APIResultDto();
                 result.Code = 0;
                 result.Msg = "积分兑换成功";
-                result.Data = new { RetailerIntegral = rintegral, UserIntegral = xintegral };
+                result.Data = new { RetailerIntegral = rintegral, UserIntegral = xintegral,Price = price, ProductName = productName };
                 return result;
             }
         }

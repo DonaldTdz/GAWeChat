@@ -71,20 +71,39 @@
     }
 }
 
-.textFir {
-    text-align: center;
+.logoCss {
+    width: 100%;
 }
 
-.textSec {
-    text-align: center;
+.logoCssDiv {
+    margin-top: 10px;
 }
 
-.test {
-    font-size: 18px;
-    background-image: url(assets/images/shop/ScanActivity.png);
-    font-weight: bold;
-    // background-color: #D8BFD8;
-    p {
-        color: red;
-    }
+.divFull {
+    height: 100px;
+}
+
+.divLeft {
+    width: 20%;
+    float: left;
+    padding-top: 10%;
+}
+
+.divRight {
+    width: 75%;
+    float: right;
+}
+
+.textUp {
+    height: 25%;
+    text-align: left;
+    color: #0BB20C;
+    font-size: 20px;
+}
+
+.textDown {
+    height: 25%;
+    text-align: left;
+    color: #0BB20C;
+    font-size: 17px;
 }
