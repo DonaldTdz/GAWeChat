@@ -1008,5 +1008,26 @@ namespace HC.WeChat.PurchaseRecords
             return "/files/downloadtemp/" + fileName;
         }
         #endregion
+
+        /// <summary>
+        /// 限制时间内次数统计
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<int> GetPurchaseRecordCountByHourAsync(GetPurchaseRecordsInput input)
+        {
+            var limitTime = await _memberConfigRepository.GetAll().Where(v => v.Type == DeployTypeEnum.扫码限制配置 && v.Code == DeployCodeEnum.时间限制).Select(v => v.Value).FirstOrDefaultAsync();
+            var curTime = DateTime.Now;
+            var beforeHour = curTime.AddHours(-Convert.ToInt32(limitTime));
+            var count = await _purchaserecordRepository.GetAll().Where(v => v.OpenId == input.OpenId 
+            && v.ProductId == input.ProductId 
+            && v.ShopId ==input.ShopId
+            && v.CreationTime <= curTime && v.CreationTime>=beforeHour
+            ).CountAsync();
+            return count;
+        }
+
     }
 }

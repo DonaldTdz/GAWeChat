@@ -416,6 +416,25 @@ namespace HC.WeChat.MemberConfigs
                 return entity;
             }
         }
+
+        /// <summary>
+        /// 获取限制次数
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<int> GetLimitFrequencyAsync()
+        {
+            var limitFrequency = await _memberconfigRepository.GetAll().Where(v => v.Type == DeployTypeEnum.扫码限制配置 && v.Code == DeployCodeEnum.次数限制).Select(v=>v.Value).FirstOrDefaultAsync();
+            if (limitFrequency ==null)
+            {
+                return 5;
+            }
+            else
+            {
+                return Convert.ToInt32(limitFrequency);
+            }
+        }
     }
 }
 

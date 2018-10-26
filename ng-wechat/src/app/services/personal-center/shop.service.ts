@@ -170,4 +170,22 @@ export class ShopService {
       return data.result;
     });
   }
+
+  GetPurchaseRecordCountByHour(params: any): Observable<number> {
+    return this.http.get('/api/services/app/PurchaseRecord/GetPurchaseRecordCountByHourAsync', params).map(data => {
+      return data.result;
+    });
+  }
+
+  getLimitFrequency(): Observable<number> {
+    return this.http.get('/api/services/app/MemberConfig/GetLimitFrequencyAsync').map(data => {
+      return data.result;
+    });
+  }
+
+  getIsCurShopKeeper(params: any): Observable<boolean> {
+    return this.http.get('/api/services/app/Shop/GetIsCurShopKeeper', params).map(data => {
+      return data.result;
+    });
+  }
 }

@@ -83,6 +83,10 @@
     height: 100px;
 }
 
+.divLimit {
+    height: 80px;
+}
+
 .divLeft {
     width: 20%;
     float: left;
@@ -106,4 +110,11 @@
     text-align: left;
     color: #0BB20C;
     font-size: 17px;
+}
+
+.textDesc {
+    height: 25%;
+    text-align: left;
+    color: red;
+    font-size: 14px;
 }
