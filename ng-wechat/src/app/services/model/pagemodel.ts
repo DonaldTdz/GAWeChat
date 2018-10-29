@@ -1,6 +1,6 @@
 export class PageModel implements IPageModel {
     pageIndex: number = 1;
-    pageSize: number = 20;
+    pageSize: number = 10;
     isLast: boolean = false;
 
     constructor(data?: IPageModel) {

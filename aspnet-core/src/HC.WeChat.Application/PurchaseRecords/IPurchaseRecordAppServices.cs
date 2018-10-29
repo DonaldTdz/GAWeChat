@@ -63,8 +63,8 @@ namespace HC.WeChat.PurchaseRecords
         /// </summary>
         Task<APIResultDto> ExchangeIntegralAsync(ExchangeIntegralDto input);
 
-        //Task<List<PurchaseRecordListDto>> GetWXPagedPurchaseRecordAsync(int? tenantId, string openId, int pageIndex, int pageSize);
-        Task<List<PurchaseRecordListDto>> GetWXPagedPurchaseRecordAsync(int? tenantId, string openId);
+        Task<List<PurchaseRecordListDto>> GetWXPagedPurchaseRecordAsync(int? tenantId, string openId, int pageIndex, int pageSize);
+        //Task<List<PurchaseRecordListDto>> GetWXPagedPurchaseRecordAsync(int? tenantId, string openId);
         /// <summary>
         /// 获取指定用户购买记录的分页列表信息
         /// </summary>
