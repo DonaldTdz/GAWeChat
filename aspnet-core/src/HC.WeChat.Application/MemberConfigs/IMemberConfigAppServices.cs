@@ -72,5 +72,6 @@ namespace HC.WeChat.MemberConfigs
 
         Task CreateOrUpdatePreProductConfig(MemberConfigEditDto input);
         Task<string> GetWXPreProductConfigAsync(int? tenantId);
+        Task<int> GetLimitFrequencyAsync();
     }
 }

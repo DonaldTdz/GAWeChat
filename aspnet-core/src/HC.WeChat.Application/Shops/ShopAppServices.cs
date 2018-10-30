@@ -1448,6 +1448,27 @@ namespace HC.WeChat.Shops
             }
             return Task.FromResult(new APIResultDto() { Code = 0, Msg = "生成成功" });
         }
+
+        /// <summary>
+        /// 判断用户是否是当前店铺店主or管理员
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<bool> GetIsCurShopKeeper(GetShopsInput input)
+        {
+            var sRId = await _shopRepository.GetAll().Where(v => v.Id == input.ShopId).Select(v => v.RetailerId).FirstOrDefaultAsync();
+            var uRId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == input.OpenId).Select(v => v.UserId).FirstOrDefaultAsync();
+            if (sRId == uRId)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
 

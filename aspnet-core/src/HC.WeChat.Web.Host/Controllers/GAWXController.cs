@@ -19,10 +19,10 @@ namespace HC.WeChat.Web.Host.Controllers
         IShopAppService _shopAppService;
         //private readonly IConfigurationRoot _appConfiguration;
         //private WeChatTenantSetting _settings;
-        //private string host = "http://ga.intcov.com";
+        private string host = "http://ga.intcov.com";
         //private string host = "http://localhost:21021";
         //private string host = "http://wx.photostory.top";
-        private string host = "http://hcwx.sayequ.me";
+        //private string host = "http://hcwx.sayequ.me";
         private int? tenantId;
 
         private string UserOpenId
@@ -101,6 +101,8 @@ namespace HC.WeChat.Web.Host.Controllers
             //UserOpenId = "o4l6swGJKxy4aEpUy3Hqm2DEeo_s";
             //UserOpenId = "o4l6swJ2RNer4X1OfB6yCvZorszs";
             //UserOpenId = "oWusewCseG_DDxU965N3UV2Dd8SM";
+            //UserOpenId = "o4l6swFHo1Ch-6yRGysgPhf6XIA8"; //202积分最多的人
+            //UserOpenId = "o4l6swKvnim2fhmLzY_Lbm2wC2gQ";//没有购买记录
             if (string.IsNullOrEmpty(UserOpenId))
             {
                 result.Code = 901;
@@ -169,16 +171,16 @@ namespace HC.WeChat.Web.Host.Controllers
                         //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
                     }
                     break;
-                case GAAuthorizationPageEnum.ScanIntegral:
-                    {
-                        if (!string.IsNullOrEmpty(UserOpenId))
-                        {
-                            return Redirect(GAAuthorizationPageUrl.ScanIntegralUrl);
-                        }
-                        url = host + "/GAWX/ScanIntegral";
-                        //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
-                    }
-                    break;
+                //case GAAuthorizationPageEnum.ScanIntegral:
+                //    {
+                //        if (!string.IsNullOrEmpty(UserOpenId))
+                //        {
+                //            return Redirect(GAAuthorizationPageUrl.ScanIntegralUrl);
+                //        }
+                //        url = host + "/GAWX/ScanIntegral";
+                //        //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
+                //    }
+                //    break;
                 case GAAuthorizationPageEnum.NearbyShop:
                     {
                         if (!string.IsNullOrEmpty(UserOpenId))
@@ -323,13 +325,13 @@ namespace HC.WeChat.Web.Host.Controllers
         /// <summary>
         /// 扫码积分
         /// </summary>
-        public IActionResult ScanIntegral(string code, string state)
-        {
-            //存储openId 避免重复提交
-            SetUserOpenId(code);
+        //public IActionResult ScanIntegral(string code, string state)
+        //{
+        //    //存储openId 避免重复提交
+        //    SetUserOpenId(code);
 
-            return Redirect(GAAuthorizationPageUrl.ScanIntegralUrl);
-        }
+        //    return Redirect(GAAuthorizationPageUrl.ScanIntegralUrl);
+        //}
 
         /// <summary>
         /// 附近店铺
@@ -444,9 +446,9 @@ namespace HC.WeChat.Web.Host.Controllers
         /// <summary>
         /// 推广码
         /// </summary>
-        public IActionResult ShopAuth(string code, string state,string isShowWindows)
+        public IActionResult ShopAuth(string code, string state, string isShowWindows,bool curIsShopKeeper)
+        //public IActionResult ShopAuth(string code, string state)
         {
-            Logger.Info("微信" + UserOpenId);
             //如果code为null 跳转获取code, 注：state需要传入 shopId
             if (string.IsNullOrEmpty(UserOpenId) && string.IsNullOrEmpty(code))
             {
@@ -462,7 +464,14 @@ namespace HC.WeChat.Web.Host.Controllers
                 if (isExist)
                 {
                     //店铺页面
-                    return Redirect(string.Format(GAAuthorizationPageUrl.ShopUrl, state, isShowWindows));
+                    if (curIsShopKeeper == true)
+                    {
+                        return Redirect(string.Format(GAAuthorizationPageUrl.ShopUrl, state));
+                    }
+                    else
+                    {
+                        return Redirect(string.Format(GAAuthorizationPageUrl.ShopUrlNotOpen, state, isShowWindows));
+                    }
                 }
                 else
                 {
@@ -494,7 +503,7 @@ namespace HC.WeChat.Web.Host.Controllers
     {
         PersonalCenter = 1,
         MemberCard = 2,
-        ScanIntegral = 3,
+        //ScanIntegral = 3,
         MyShop = 4,
         NearbyShop = 201,
         Goods = 202,
@@ -512,7 +521,7 @@ namespace HC.WeChat.Web.Host.Controllers
         public static string PersonalCenterUrl = "/gawechat/index.html#/personals/personal";
         public static string MemberCardUrl = "/gawechat/index.html#/members/member-card";
         public static string MyShopUrl = "/gawechat/index.html#/shops/shop;isShowWindows=false";
-        public static string ScanIntegralUrl = "/gawechat/index.html#/scans/scan";
+        //public static string ScanIntegralUrl = "/gawechat/index.html#/scans/scan";
 
         public static string NearbyShopUrl = "/gawechat/index.html#/nearbies/nearby";
         public static string GoodsUrl = "/gawechat/index.html#/goodses/goods";
@@ -523,7 +532,8 @@ namespace HC.WeChat.Web.Host.Controllers
         public static string CustBindInfoUrl = "/gawechat/index.html#/shop-employees/shop-employee";
         public static string ShopReviewUrl = "/gawechat/index.html#/shops/shop;shopId={0};isAudit=true";
         public static string ExhibitionUrl = "/gawechat/index.html#/exhibitions/exhibition";
-        public static string ShopUrl = "/gawechat/index.html#/shops/shop;shopId={0};isShowWindows={1}";
+        public static string ShopUrlNotOpen = "/gawechat/index.html#/shops/shop;shopId={0};isShowWindows={1}";
+        public static string ShopUrl = "/gawechat/index.html#/shops/shop;shopId={0}";
         public static string ShopQrCodeUrl = "/gawechat/index.html#/qrcodes/qrcode;shopId={0}";
         public static string ExhibitionDetailUrl = "/gawechat/index.html#/exhibitions/exhibition-detail;shopId={0}";
     }

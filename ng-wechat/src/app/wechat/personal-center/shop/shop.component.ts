@@ -56,6 +56,8 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     host = AppConsts.remoteServiceBaseUrl;
     goods = [];
     isShowWindows: string = 'false';
+    curCount: number = 0;
+    limitFrequency: number = 0;
 
     constructor(injector: Injector,
         private router: Router,
@@ -118,14 +120,16 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 this.shop = res;
             });
             this.IsCancelShop();
-            // this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
-            //     this.qrCodeUrl = data;
-            //     console.log("data")
-            //     console.log(data)
-            //     //生成微信二维码
-            //     //this.generateQRcode('wechat_qrcode', data);
-            // });
-
+            let params: any =
+            {
+                shopId: this.shopId,
+                openId: this.settingsService.openId,
+            };
+            this.shopService.getIsCurShopKeeper(params).subscribe(data => {
+                if (data == true) {
+                    this.isShowWindows = 'false';
+                }
+            });
         }
         else {
             this.settingsService.getUser().subscribe(result => {
@@ -171,7 +175,10 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 // this.goPurchaserecord('ios', true, data);
             }
         }, 500);
+
+        this.getLimitFrequency();
     }
+
     goEditShop() {
         this.router.navigate(['/shopadds/shop-add', { id: '1' }]);
     }
@@ -207,7 +214,6 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     save() {
-        console.table(this.shopProductIds);
         if (this.shopProductIds.length <= 0) {
             this.srv['warn']('请选择特色产品');
         } else {
@@ -416,8 +422,10 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 param.host = this.host;
                 this.shopService.ExchangeIntegral(param).subscribe(res => {
                     if (res && res.code == 0) {
+                        this.curCount++;
                         this.goPurchaserecord('ios', true, res.data);
                     } else {
+                        this.curCount--;
                         this.srv['warn']('兑换失败，请重试');
                     }
                 });
@@ -447,12 +455,55 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             this.shopService.GetShopProductByCode(param).subscribe(result => {
                 if (result) {
                     this.goods.push(result);
-                    this.getCustMemberCode();
+                    let params: any =
+                    {
+                        shopId: this.shopId,
+                        openId: this.settingsService.openId,
+                        productId: result.id
+                    };
+                    this.shopService.GetPurchaseRecordCountByHour(params).subscribe(res => {
+                        this.curCount = res;
+                        if (this.curCount >= this.limitFrequency) {
+                            this.productInfoDialog('ios', true, result);
+                        } else {
+                            this.getCustMemberCode();
+                        }
+                    });
                 } else {
                     this.srv['warn']('没找到匹配商品');
                 }
             });
         }
+    }
+
+    productInfoDialog(type: SkinType, backdrop: boolean = true, data: any) {
+        this.DEFCONFIG = {
+            confirm: '确认',
+            cancel: null,
+            btns: null
+        };
+
+        let content: string = `<div class="divLimit">
+        <div class="divLeft">
+        <img src="assets/images/shop/ScanOk.png" alt="">
+        </div>
+        <div class="divRight">
+            <div class="textUp">扫码成功</div>
+            <div class="textDown">${data.specification}</div>
+            <div class="textDown">建议零售价(包):￥${data.price}</div>
+            </div>
+        </div>`
+        this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            skin: type,
+            backdrop: backdrop,
+            content: content
+        });
+
+        this.dia.show(this.config).subscribe((res: any) => {
+            if (res.value == true) {
+            }
+        });
+        return false;
     }
 
     onShowBySrv(type: SkinType, backdrop: boolean = true) {
@@ -478,10 +529,18 @@ export class ShopComponent extends AppComponentBase implements OnInit {
      *兑换成功弹出框
      */
     goPurchaserecord(type: SkinType, backdrop: boolean = true, data: any) {
-        this.DEFCONFIG = {
-            confirm: '立即评价',
-            cancel: '扫一扫'
-        };
+        if (this.curCount == this.limitFrequency) {
+            this.DEFCONFIG = {
+                confirm: '立即评价',
+                cancel: '确定'
+            };
+        } else {
+            this.DEFCONFIG = {
+                confirm: '立即评价',
+                cancel: '扫一扫'
+            };
+        }
+
         let content: string = `<div class="divFull">
         <div class="divLeft">
         <img src="assets/images/shop/ScanOk.png" alt="">
@@ -502,9 +561,12 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             if (res.value == true) {
                 this.router.navigate(['/purchaserecords/purchaserecord']);
             } else {
-                this.wxScanQRCode().then((res) => {
-                    this.setGoodsBarCode(res);
-                });
+                if (this.curCount == this.limitFrequency) {
+                } else {
+                    this.wxScanQRCode().then((res) => {
+                        this.setGoodsBarCode(res);
+                    });
+                }
             }
         });
         return false;
@@ -522,5 +584,11 @@ export class ShopComponent extends AppComponentBase implements OnInit {
 
     goGoodDetail(id: string) {
         this.router.navigate(['/shops/shop-good-detail', { id: id }]);
+    }
+
+    getLimitFrequency() {
+        this.shopService.getLimitFrequency().subscribe(res => {
+            this.limitFrequency = res;
+        });
     }
 }

@@ -210,7 +210,8 @@ namespace HC.WeChat.WechatEnums
         积分配置 = 1,
         通知配置 = 2,
         job配置 = 3,
-        预设商品配置 =4
+        预设商品配置 = 4,
+        扫码限制配置 =5
     }
     /// <summary>
     /// 配置代码
@@ -223,7 +224,9 @@ namespace HC.WeChat.WechatEnums
         通知配置 = 4,
         首次注册 = 5,
         jo启动状态 = 6,
-        预设商品搜索 = 7
+        预设商品搜索 = 7,
+        次数限制 = 8,
+        时间限制 = 9
     }
     /// <summary>
     /// 文章发布状态

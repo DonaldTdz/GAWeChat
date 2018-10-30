@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { IntegralDetailService } from '../../../services';
 import { InfiniteLoaderComponent } from 'ngx-weui';
 import { ActivatedRoute } from '@angular/router';
+import { timer } from 'rxjs/observable/timer';
 
 @Component({
     moduleId: module.id,
@@ -40,8 +41,12 @@ export class IntegralComponent extends AppComponentBase implements OnInit {
             comp.setFinished();
             return;
         }
-        this.GetPagedIntegralDetail();
-        comp.resolveLoading();
+
+        timer(1500).subscribe(() => {
+            this.pageModel.pageIndex++;
+            this.GetPagedIntegralDetail();
+            comp.resolveLoading();
+        });
     }
 
     getMemberConfigsByTenantId() {
