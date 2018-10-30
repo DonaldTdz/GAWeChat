@@ -2,7 +2,7 @@
 <Page [ngClass]="'panel'" [title]="'Panel'" [showTitle]="false" [spacing]="false">
     <div class="weui-cells__title" *ngIf="!tittleType">购买记录</div>
     <div class="weui-cells__title" *ngIf="tittleType">店铺评价</div>
-    <div *ngIf="!tittleType">
+    <div *ngIf="!tittleType && purchaseRecordList.length != 0">
         <weui-infiniteloader (loadmore)="onLoadMore($event)" #comp>
             <div class="weui-panel weui-panel_access" *ngFor="let item of purchaseRecordList">
                 <div class="weui-panel__bd">
@@ -31,7 +31,7 @@
             </div>
         </weui-infiniteloader>
     </div>
-    <div *ngIf="tittleType">
+    <div *ngIf="tittleType && purchaseRecordList.length != 0">
         <weui-infiniteloader (loadmore)="onLoadMore($event)" #comp>
             <div class="weui-panel weui-panel_access" *ngFor="let item of purchaseRecordList">
                 <div class="weui-panel__bd">

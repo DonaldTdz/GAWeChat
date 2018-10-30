@@ -22,6 +22,7 @@ export class ShopQrcodeComponent extends AppComponentBase implements OnInit {
     qrCodeUrl = '';
     _shown = false;
     isExist = false;
+    curIsShopKeeper = true;
     constructor(injector: Injector, private shopService: ShopService, private activeRoute: ActivatedRoute,
         private load: LoaderService, private toastServ: ToastService) {
         super(injector);
@@ -29,6 +30,21 @@ export class ShopQrcodeComponent extends AppComponentBase implements OnInit {
     ngOnInit(): void {
         this.isExist = false;
     }
+
+    getIsCurShopKeeper() {
+        let params: any =
+        {
+            shopId: this.shop.id,
+            openId: this.settingsService.openId,
+        };
+        this.shopService.getIsCurShopKeeper(params).subscribe(data => {
+            if (data == false) {
+                this.curIsShopKeeper = false;
+            }
+            this.getQrCode();
+        });
+    }
+
     show(shop: Shop) {
         //if (this.config.skin === 'auto') {
         //    this.config.skin = isAndroid() ? 'android' : 'ios';
@@ -37,7 +53,7 @@ export class ShopQrcodeComponent extends AppComponentBase implements OnInit {
         this.shop = shop;
         //console.log(this.shop);
         if (!this.isExist) {
-            this.getQrCode();
+            this.getIsCurShopKeeper();
         }
         this._shown = true;
     }
@@ -66,10 +82,14 @@ export class ShopQrcodeComponent extends AppComponentBase implements OnInit {
         //console.log(this.shop.id)
         this.toastServ.show(null, 10000, null, 'loading');
         this.load.loadScript('assets/libs/qrcode.min.js').then((res) => {
-            let isShowWindows: string = 'false';
+            let url = '';
+            if (this.curIsShopKeeper == true) {
+                url = AppConsts.remoteServiceBaseUrl + '/GAWX/ShopAuth?state=' + this.shop.id + '&curIsShopKeeper=' + this.curIsShopKeeper;
+            } else {
+                let isShowWindows = 'false';
+                url = AppConsts.remoteServiceBaseUrl + '/GAWX/ShopAuth?state=' + this.shop.id + '&isShowWindows=' + isShowWindows + '&curIsShopKeeper=' + this.curIsShopKeeper;
+            }
             //this.shopService.GetQrCodeUrl({shopId:this.shop.id,host:AppConsts.remoteServiceBaseUrl}).subscribe(data => {
-            // let url = AppConsts.remoteServiceBaseUrl + '/GAWX/ShopAuth?state=' + this.shop.id + '&isShowWindows=' + isShowWindows;
-            let url = AppConsts.remoteServiceBaseUrl + '/GAWX/ShopAuth?state=' + this.shop.id;
             //生成微信二维码
             this.generateQRcode('wechat_qrcode', url);
             this.isExist = true;
@@ -77,6 +97,4 @@ export class ShopQrcodeComponent extends AppComponentBase implements OnInit {
             //});
         })
     }
-
-
 }
