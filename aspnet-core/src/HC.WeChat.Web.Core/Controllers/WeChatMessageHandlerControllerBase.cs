@@ -36,7 +36,7 @@ namespace HC.WeChat.Controllers
         {
             TenantId = GetTenantId();
             WechatAppConfig = _wechatAppConfigAppService.GetWechatAppConfig(TenantId).Result;
-            WeChatRegister();
+            //WeChatRegister();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace HC.WeChat.Controllers
         protected virtual void WeChatRegister()
         {
             //注册公众号
-            AccessTokenContainer.Register(WechatAppConfig.AppId, WechatAppConfig.AppSecret);
+            //AccessTokenContainer.Register(WechatAppConfig.AppId, WechatAppConfig.AppSecret);
         }
     }
 
