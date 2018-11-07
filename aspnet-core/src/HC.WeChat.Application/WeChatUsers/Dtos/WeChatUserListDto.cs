@@ -35,18 +35,19 @@ namespace HC.WeChat.WeChatUsers.Dtos
         public DateTime? UnfollowTime { get; set; }
         public string HeadImgUrl
         {
-            get
-            {
-                if (string.IsNullOrEmpty(_headImgUrl))
-                {
-                    return @"./assets/images/timg-4.jpeg";
-                }
-                return _headImgUrl;
-            }
-            set
-            {
-                _headImgUrl = value;
-            }
+            get;set;
+            //get
+            //{
+            //    if (string.IsNullOrEmpty(_headImgUrl))
+            //    {
+            //        return @"./assets/images/timg-4.jpeg";
+            //    }
+            //    return _headImgUrl;
+            //}
+            //set
+            //{
+            //    _headImgUrl = value;
+            //}
         }
 
         public string UserTypeName

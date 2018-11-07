@@ -6,8 +6,9 @@ import { ComponentsModule } from '../../components/components.module';
 import { ShopComponent } from './shop.component';
 import { WaitAuditComponent } from './wait-audit/wait-audit.component';
 
-import { ShopService, FavoriteService } from '../../../services';
+import { ShopService, FavoriteService, WechatUserService } from '../../../services';
 import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
+import { ShopGoodDetailComponent } from './shop-good-detail/shop-good-detail.component';
 
 
 
@@ -15,11 +16,14 @@ import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
 
 const COMPONENTS = [ShopComponent,
     WaitAuditComponent,
-    ShopQrcodeComponent];
+    ShopQrcodeComponent,
+    ShopGoodDetailComponent
+];
 
 const routes: Routes = [
     { path: 'shop', component: ShopComponent },
-    { path: 'wait-audit', component: WaitAuditComponent }
+    { path: 'wait-audit', component: WaitAuditComponent },
+    { path: 'shop-good-detail', component: ShopGoodDetailComponent }
 ];
 // endregion
 
@@ -35,7 +39,8 @@ const routes: Routes = [
     ],
     providers: [
         ShopService,
-        FavoriteService
+        FavoriteService,
+        WechatUserService
     ]
 })
 export class ShopModule {

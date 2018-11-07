@@ -176,10 +176,10 @@ import { AlainACLModule } from '@delon/acl';
 import { DelonCacheModule } from '@delon/cache';
 // mock
 import { DelonMockModule } from '@delon/mock';
-import * as MOCKDATA from '../../_mock';
+// import * as MOCKDATA from '../../_mock';
 import { environment } from '@env/environment';
-const MOCKMODULE = !environment.production || environment.chore === true ?
-                    [ DelonMockModule.forRoot({ data: MOCKDATA }) ] : [];
+// const MOCKMODULE = !environment.production || environment.chore === true ?
+//                     [ DelonMockModule.forRoot({ data: MOCKDATA }) ] : [];
 
 @NgModule({
     imports: [
@@ -200,11 +200,11 @@ const MOCKMODULE = !environment.production || environment.chore === true ?
         // cache
         DelonCacheModule.forRoot(),
         // mock
-        ...MOCKMODULE
+        // ...MOCKMODULE
     ]
 })
 export class DelonModule {
-  constructor( @Optional() @SkipSelf() parentModule: DelonModule) {
-    throwIfAlreadyLoaded(parentModule, 'DelonModule');
-  }
+    constructor(@Optional() @SkipSelf() parentModule: DelonModule) {
+        throwIfAlreadyLoaded(parentModule, 'DelonModule');
+    }
 }

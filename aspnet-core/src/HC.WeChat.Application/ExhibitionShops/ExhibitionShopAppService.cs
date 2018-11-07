@@ -27,6 +27,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using HC.WeChat.Authorization.WeChatOAuth;
 using HC.WeChat.WechatAppConfigs;
+using Abp.Auditing;
 
 namespace HC.WeChat.ExhibitionShops
 {
@@ -515,6 +516,7 @@ namespace HC.WeChat.ExhibitionShops
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<ExhibitionViewDto>> GetWXPagedExhibitionShopsAsync(string type)
         {
             var config = await GetExhibitionByIdAsync();
@@ -573,6 +575,7 @@ namespace HC.WeChat.ExhibitionShops
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<int> GetWXExhibitionShopsCountAsync()
         {
             int total = await _exhibitionshopRepository.GetAll().CountAsync();
@@ -580,6 +583,7 @@ namespace HC.WeChat.ExhibitionShops
         }
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<ExhibitionShopListDto>> GetExhibitionShopByKeyAsync(string key)
         {
             var exhibitons = _exhibitionshopRepository.GetAll().Where(p => p.ShopName.Contains(key)||p.NoId.ToString().Equals(key));
@@ -602,6 +606,7 @@ namespace HC.WeChat.ExhibitionShops
         /// <param name="id"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ExhibitionShopListDto> GetWXExhibitionShopsByIdAsync(Guid shopId)
         {
             var exhibitons = _exhibitionshopRepository.GetAll().Where(v => v.ShopId == shopId);
@@ -629,6 +634,7 @@ namespace HC.WeChat.ExhibitionShops
         }
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public Task<string> GetAuthorizationUrl(string shopId, string host)
         {
             string url = host + "/GAWX/ExhibitionDetailUrl";

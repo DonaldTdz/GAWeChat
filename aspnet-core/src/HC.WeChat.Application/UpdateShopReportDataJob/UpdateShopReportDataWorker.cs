@@ -18,8 +18,8 @@ namespace HC.WeChat.UpdateShopReportDataJob
             , IRetailerRepository retailerRepository
             ) : base(timer)
         {
-            Timer.Period = 10000;
-            //Timer.Period = 1800000;
+            //Timer.Period = 10000;
+            Timer.Period = 1800000;
             _retailerRepository = retailerRepository;
             //启动日志
             //Logger.InfoFormat("启动job时间：{0}", DateTime.Now);

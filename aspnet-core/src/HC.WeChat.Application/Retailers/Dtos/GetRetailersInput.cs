@@ -2,6 +2,7 @@
 using HC.WeChat.Dto;
 using HC.WeChat.Retailers;
 using HC.WeChat.WechatEnums;
+using System;
 
 namespace HC.WeChat.Retailers.Dtos
 {
@@ -67,6 +68,9 @@ namespace HC.WeChat.Retailers.Dtos
         public string sortshopIntegralTotal { get; set; }
         public string sortregisteredShopTotal { get; set; }
 
+        public int TimeType { get; set; }
+        public DateTime BeginTime { get; set; }
+        public DateTime EndTime { get; set; }
         public void Normalize()
         {
             if (string.IsNullOrEmpty(Sorting))

@@ -32,6 +32,7 @@ using HC.WeChat.Dto;
 using Abp.Domain.Uow;
 using System.Text.RegularExpressions;
 using HC.WeChat.LevelLogs;
+using Abp.Auditing;
 //using System.Linq;
 
 namespace HC.WeChat.Products
@@ -376,6 +377,25 @@ namespace HC.WeChat.Products
 
             }
         }
+
+        /// <summary>
+        /// 更新商品标签
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<ProductListDto> CreateOrUpdateProductTags(ProductEditDto input)
+        {
+            var entity = await _productRepository.GetAll().Where(v => v.Id == input.Id).FirstOrDefaultAsync();
+            entity.Tags = input.Tags;
+            if (input.Tags.Length<=0)
+            {
+                entity.Tags = null;
+            }
+            //var result = entity.MapTo<ProductEditDto>();
+            var result = await _productRepository.UpdateAsync(entity);
+            return result.MapTo<ProductListDto>();
+        }
+
         /// <summary>
         /// base64转换
         /// </summary>
@@ -417,6 +437,7 @@ namespace HC.WeChat.Products
         /// 获取特色商品
         /// </summary>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RareProductDto> GetRareProduct(int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -431,6 +452,7 @@ namespace HC.WeChat.Products
         }
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<ShopProductDto> GetShopProductByCode(string code, int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -494,11 +516,12 @@ namespace HC.WeChat.Products
         }
 
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<RareProductSearchDto>> GetRareProductByKeyAsync(int? tenantId, string key)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
-                var query = await _productRepository.GetAll().Where(p => p.IsRare == true && p.IsAction == true && p.Specification.Contains(key)).ToListAsync();
+                var query = await _productRepository.GetAll().Where(p => p.IsRare == true && p.IsAction == true && p.Specification.Contains(key) || p.Tags.Contains(key)).ToListAsync();
                 return query.MapTo<List<RareProductSearchDto>>();
             }
         }
@@ -509,6 +532,7 @@ namespace HC.WeChat.Products
         /// <param name="userId">专卖证号</param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailAllInfoDe> GetCustAndAccountInfoAsync(int? tenantId, Guid userId, int span)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -725,6 +749,7 @@ namespace HC.WeChat.Products
         /// <param name="userId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailInfoDto> GetRetailBasicInfoAsync(int? tenantId, Guid userId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))
@@ -949,7 +974,7 @@ namespace HC.WeChat.Products
                 var result = UpdateRetail().Result;
                 if (result)
                 {
-                   _levelLogAppService.CreateSingleLevelLog();
+                    _levelLogAppService.CreateSingleLevelLog();
                 }
                 Logger.InfoFormat("当前更新档级时间：{0}", DateTime.Now);
             }
@@ -958,10 +983,10 @@ namespace HC.WeChat.Products
         public Task<bool> UpdateRetail()
         {
             var pmonth = GetDate(1, false, "");
-            var retails =  _retailerRepository.GetAll().Where(r => r.IsAction).ToList();
+            var retails = _retailerRepository.GetAll().Where(r => r.IsAction).ToList();
             var gradeList = _gagradeRepository.GetAll().ToList();
             var gacustpoint = _gacustpointRepository.GetAll().Where(c => c.Pmonth == pmonth).ToList();
-           
+
             foreach (var item in retails)
             {
                 var mothPointdates = gacustpoint.SingleOrDefault(c => c.CustId == item.CustId);
@@ -971,7 +996,22 @@ namespace HC.WeChat.Products
             }
             return Task.FromResult(true);
         }
+
+        /// <summary>
+        /// 微信获取商品详情
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<ProductListDto> GetWXProductByIdAsync(Guid id)
+        {
+            var entity = await _productRepository.GetAsync(id);
+            return entity.MapTo<ProductListDto>();
+        }
         #endregion
+
+
     }
 }
 

@@ -17,6 +17,7 @@ using System;
 using HC.WeChat.Products;
 using HC.WeChat.Authorization;
 using HC.WeChat.Dto;
+using Abp.Auditing;
 
 namespace HC.WeChat.ShopProducts
 {
@@ -257,6 +258,7 @@ namespace HC.WeChat.ShopProducts
         /// 根据店铺Id 获取特色商品
         /// </summary>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<ShopProductListDto>> GetShopProductsByShopId(Guid shopId, int? tenantId)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

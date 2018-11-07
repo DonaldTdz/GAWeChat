@@ -31,13 +31,13 @@ namespace HC.WeChat.MessageHandler
         private int? _tenantId;
 
 
-        public HCMessageHandler(IRepository<WechatMessage, Guid> wechatmessageRepository, 
+        public HCMessageHandler(IRepository<WechatMessage, Guid> wechatmessageRepository,
             IRepository<WechatSubscribe, Guid> wechatsubscribeRepository,
             //IWeChatUserManager wechatUserManager,
             IRepository<WechatAppConfig, int> wechatappconfigRepository,
             IWeChatUserAppService wChatUserAppService,
-            int? tenantId, Stream inputStream, 
-            PostModel postModel, 
+            int? tenantId, Stream inputStream,
+            PostModel postModel,
             int maxRecordCount = 0) : base(inputStream, postModel, maxRecordCount)
         {
             _wechatmessageRepository = wechatmessageRepository;
@@ -85,7 +85,7 @@ namespace HC.WeChat.MessageHandler
             if (keyWordList.Count > 0)
             {
                 MessageInfo.KeyWords = keyWordList.ToDictionary(key => key.KeyWord, value => value.Content);
-                MessageInfo.KeyWordsPic = keyPicList.ToDictionary(key => key.KeyWord, value =>new Article(){ Title =value.Title,Description =value.Desc,PicUrl=value.PicLink,Url=value.Content});
+                MessageInfo.KeyWordsPic = keyPicList.ToDictionary(key => key.KeyWord, value => new Article() { Title = value.Title, Description = value.Desc, PicUrl = value.PicLink, Url = value.Content });
             }
 
             var sinfo = GetWechatSubscribe();
@@ -123,7 +123,7 @@ namespace HC.WeChat.MessageHandler
 
             //关注公众号
             //_wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId, requestMessage.EventKey, requestMessage.Ticket);
-            AsyncHelper.RunSync(() => _wChatUserAppService.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, requestMessage.EventKey, requestMessage.Ticket) );
+            AsyncHelper.RunSync(() => _wChatUserAppService.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, requestMessage.EventKey, requestMessage.Ticket));
             //_wechatUserManager.SubscribeAsync(requestMessage.FromUserName, wechatUser.nickname, wechatUser.headimgurl, _tenantId);
         }
 
@@ -134,6 +134,7 @@ namespace HC.WeChat.MessageHandler
         {
             try
             {
+                Subscribe(requestMessage);
                 if (MessageInfo == null)
                 {
                     return new SuccessResponseMessage();
@@ -145,7 +146,7 @@ namespace HC.WeChat.MessageHandler
                     {
                         var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageText>(requestMessage);
                         responseMessage.Content = MessageInfo.SubscribeMsg;
-                        Subscribe(requestMessage);
+                        //Subscribe(requestMessage);
                         return responseMessage;
                     }
                     //else if (sinfo.MsgType == WechatEnums.MsgTypeEnum.纯图片)
@@ -166,7 +167,7 @@ namespace HC.WeChat.MessageHandler
                         var responseMessagePic = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
                         responseMessagePic.ArticleCount = 1;
                         responseMessagePic.Articles.Add(GetPicSubscribe());
-                        Subscribe(requestMessage);
+                        //Subscribe(requestMessage);
                         return responseMessagePic;
                     }
                 }
@@ -198,14 +199,16 @@ namespace HC.WeChat.MessageHandler
                 responseMessage.Content = this.MessageInfo.KeyWords["默认"];
                 return responseMessage;
             }
-            else
+
+            var picSubscribe = GetPicSubscribe();
+            if (picSubscribe != null)
             {
                 var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageNews>(requestMessage);
                 responseMessage.ArticleCount = 1;
-                responseMessage.Articles.Add(GetPicSubscribe());
+                responseMessage.Articles.Add(picSubscribe);
                 return responseMessage;
             }
-            //return new SuccessResponseMessage();
+            return new SuccessResponseMessage();
         }
 
         public override IResponseMessageBase OnTextRequest(RequestMessageText requestMessage)
@@ -297,13 +300,20 @@ namespace HC.WeChat.MessageHandler
         {
             //var subscribe = _wechatsubscribeRepository.GetAll().FirstOrDefault();
             var subscribe = GetWechatSubscribe();
-            return new Article()
+            if (subscribe != null)
             {
-                Title = subscribe.Title,
-                Description = subscribe.Desc,
-                PicUrl = subscribe.PicLink,
-                Url = subscribe.Content
-            };
+                return new Article()
+                {
+                    Title = subscribe.Title,
+                    Description = subscribe.Desc,
+                    PicUrl = subscribe.PicLink,
+                    Url = subscribe.Content
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

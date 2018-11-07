@@ -19,6 +19,7 @@ using HC.WeChat.Exhibitions;
 using HC.WeChat.Dto;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.ExhibitionShops;
+using Abp.Auditing;
 
 namespace HC.WeChat.VoteLogs
 {
@@ -220,6 +221,7 @@ namespace HC.WeChat.VoteLogs
         /// <param name="tenantId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<int> GetWXVotesCountAsync()
         {
                 int total = await _votelogRepository.GetAll().CountAsync();
@@ -275,6 +277,7 @@ namespace HC.WeChat.VoteLogs
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<int?> GetCurrentDayVoteByIdAsync(string openId)
         {
             Exhibition config = await _exhibitionRepository.GetAll().FirstOrDefaultAsync();

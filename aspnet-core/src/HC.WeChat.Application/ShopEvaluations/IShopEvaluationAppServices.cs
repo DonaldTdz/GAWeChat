@@ -64,7 +64,8 @@ namespace HC.WeChat.ShopEvaluations
         /// <param name="input"></param>
         /// <returns></returns>
         Task<PagedResultDto<ShopEvaluationListDto>> GetPagedShopEvaluationsByPurchaseRecord(GetShopEvaluationsInput input);
-        Task<List<PurchaseRecordListDto>> GetWXNotEvaluationByIdAsync(int? tenantId, string openId);
+        //Task<List<PurchaseRecordListDto>> GetWXNotEvaluationByIdAsync(int? tenantId, string openId);
+        Task<List<PurchaseRecordListDto>> GetWXNotEvaluationByIdAsync(int? tenantId, string openId, int pageIndex, int pageSize);
         Task<int> GetWXCountNotEvaluationByIdAsync(int? tenantId, string openId);
         Task<PurchaseRecordListDto> GetWXProductsDetailsByIdAsync(int? tenantId, string openId, Guid? productId, Guid? id);
         Task<APIResultDto> SubmitShopEvaluationAsync(ShopEvaluation input);

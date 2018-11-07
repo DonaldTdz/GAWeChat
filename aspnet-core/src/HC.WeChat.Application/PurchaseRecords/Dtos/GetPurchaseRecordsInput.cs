@@ -19,6 +19,7 @@ namespace HC.WeChat.PurchaseRecords.Dtos
         public string SortQuantityTotal { get; set; }
         public string SortPriceTotal { get; set; }
         public string SortIntegralTotal { get; set; }
+        public Guid ProductId { get; set; }
 
 
         /// <summary>

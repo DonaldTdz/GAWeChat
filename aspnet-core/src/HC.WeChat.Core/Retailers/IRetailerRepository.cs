@@ -9,7 +9,7 @@ namespace HC.WeChat.Retailers
     public interface IRetailerRepository : IRepository<Retailer, Guid>
     {
         Task<List<ShopReportData>> GetShopReportAsync();
-
+        Task<List<ShopReportData>> GetShopReportByRangeAsync(DateTime BeginTime, DateTime EndTime);
         /// <summary>
         /// 每日定时执行报表存储过程
         /// </summary>

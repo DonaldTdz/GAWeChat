@@ -37,7 +37,7 @@ export class FavoriteComponent extends AppComponentBase implements OnInit {
         this.router.navigate(['/nearbies/nearby']);
     }
     goDetailShop(id: string) {
-        this.router.navigate(['/shops/shop', { shopId: id }]);
+        this.router.navigate(['/shops/shop', { shopId: id, isShowWindows: false }]);
     }
 }
 

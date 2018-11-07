@@ -57,7 +57,7 @@ export class BindRetailerComponent extends AppComponentBase {
             if (result.code == 0) {//成功
                 this.srv['success']('绑定成功');
                 this.settingsService.setUser(result.data);
-                this.router.navigate(["/shops/shop"]);
+                this.router.navigate(["/shops/shop", { isShowWindows: false }]);
             } else {//失败
                 this.srv['warn'](result.msg);
             }

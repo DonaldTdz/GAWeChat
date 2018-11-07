@@ -2,6 +2,7 @@
 using HC.WeChat.Dto;
 using HC.WeChat.Shops;
 using HC.WeChat.WechatEnums;
+using System;
 
 namespace HC.WeChat.Shops.Dtos
 {
@@ -23,6 +24,10 @@ namespace HC.WeChat.Shops.Dtos
         public string RetailCode { get; set; }
         public string Url { get; set; }
         public string FileName { get; set; }
+
+        public Guid ShopId { get; set; }
+        public string OpenId { get; set; }
+
         /// <summary>
         /// 正常化排序使用
         /// </summary>

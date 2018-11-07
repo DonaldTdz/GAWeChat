@@ -24,6 +24,8 @@ using HC.WeChat.WechatAppConfigs.Dtos;
 using HC.WeChat.WechatAppConfigs;
 using HC.WeChat.Retailers;
 using HC.WeChat.Employees;
+using Microsoft.AspNetCore.Hosting;
+using Abp.Auditing;
 
 namespace HC.WeChat.IntegralDetails
 {
@@ -348,7 +350,7 @@ namespace HC.WeChat.IntegralDetails
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
-        public async Task<WeChatUserListDto> GetUserInfoAsync(string openId)
+        public async Task<WeChatUserListDto> GetUserInfoAsync(string openId,string host)
         {
             //var entity = await (from u in _wechatusersRepository.GetAll().Where(v => v.OpenId == openId)
             //             select new WeChatUserListDto()
@@ -380,7 +382,8 @@ namespace HC.WeChat.IntegralDetails
                                    UnBindTime = u.UnBindTime,
                                    UnfollowTime = u.UnfollowTime,
                                    Code = table.Code ?? null,
-                                   OpenId = u.OpenId
+                                   OpenId = u.OpenId,
+                                   HeadImgUrl = string.IsNullOrEmpty(u.HeadImgUrl)? host + "/assets/images/timg-4.jpeg" : u.HeadImgUrl
                                }).FirstOrDefaultAsync();
             //return user.MapTo<WeChatUserListDto>();
             return query;
@@ -395,6 +398,7 @@ namespace HC.WeChat.IntegralDetails
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<IntegralDetailListDto>> GetWXPagedIntegralDetailAsync(int? tenantId, string openId, int pageIndex, int pageSize)
         {
             using (CurrentUnitOfWork.SetTenantId(tenantId))

@@ -136,6 +136,6 @@ export class NearbyShopComponent extends AppComponentBase implements OnInit {
     }
 
     goShop(id) {
-        this.router.navigate(['/shops/shop', { shopId: id }]);
+        this.router.navigate(['/shops/shop', { shopId: id, isShowWindows: false }]);
     }
 } 

@@ -27,8 +27,8 @@ namespace HC.WeChat.LevelJob
         public UpdateLevelWorker(AbpTimer timer,
           IProductAppService productAppService, IMemberConfigAppService memberConfigAppService) : base(timer)
         {
-            //Timer.Period = 3600000;
-            Timer.Period = 10000;
+            Timer.Period = 3600000;
+            //Timer.Period = 10000;
             _productAppService = productAppService;
             //启动日志
             //Logger.InfoFormat("启动job时间：{0}", DateTime.Now);

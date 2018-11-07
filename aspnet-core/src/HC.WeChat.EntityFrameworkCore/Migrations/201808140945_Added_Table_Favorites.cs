@@ -25,11 +25,21 @@ namespace HC.WeChat.Migrations
                 {
                     table.PrimaryKey("PK_Favorites", x => x.Id);
                 });
+
+            migrationBuilder.AddColumn<string>(
+                    name: "Tags",
+                    table: "Products",
+                    maxLength: 500,
+                    nullable: true);
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Favorites");
+
+            migrationBuilder.DropColumn(
+                 name: "Tags",
+                 table: "Products");
         }
     }
 }

@@ -98,7 +98,7 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
     }
 
     goShop(id) {
-        this.router.navigate(['/shops/shop', { shopId: id }]);
+        this.router.navigate(['/shops/shop', { shopId: id, isShowWindows: false }]);
     }
 
     getPreProduct() {
@@ -116,6 +116,6 @@ export class GoodsComponent extends AppComponentBase implements OnInit {
         this.onCancel();
         this.value = text;
         this.searchbar._doFocus();
-        this.onSearch(text)
+        this.onSearch(text);
     }
 } 

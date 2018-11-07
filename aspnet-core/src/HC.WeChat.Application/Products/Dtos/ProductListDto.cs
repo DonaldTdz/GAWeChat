@@ -56,6 +56,11 @@ namespace HC.WeChat.Products.Dtos
         /// 产品介绍
         /// </summary>
         public string Desc { get; set; }
+
+        /// <summary>
+        /// 产品标签
+        /// </summary>
+        public string Tags { get; set; }
     }
 
     public class RareProductDto

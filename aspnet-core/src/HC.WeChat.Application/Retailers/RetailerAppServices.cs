@@ -32,6 +32,7 @@ using HC.WeChat.IntegralDetails;
 using HC.WeChat.Products;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.WechatEnums;
+using Abp.Auditing;
 
 namespace HC.WeChat.Retailers
 {
@@ -115,6 +116,7 @@ namespace HC.WeChat.Retailers
         /// 通过指定id获取RetailerListDto信息
         /// </summary>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailerListDto> GetRetailerByIdAsync(EntityDto<Guid> input)
         {
             var entity = await _retailerRepository.GetAsync(input.Id);
@@ -528,6 +530,7 @@ namespace HC.WeChat.Retailers
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<RetailerListDto>> GetAllRetailByPageAsync(GetRetailersWeChatInput input)
         {
             using (CurrentUnitOfWork.SetTenantId(input.tenantId))
@@ -555,6 +558,7 @@ namespace HC.WeChat.Retailers
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailerListDto> GetRetailerByIdDtoForWeChatAsync(Guid id)
         {
             var entity = await _retailerRepository.GetAll().Where(r => r.Id == id).FirstOrDefaultAsync();
@@ -566,6 +570,7 @@ namespace HC.WeChat.Retailers
         /// <param name="input"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<RetailerListDto> GetRetailerByIdDtoByLKeyForWeChatAsync(Guid userId)
         {
             var entity = await _retailerRepository.GetAll().Where(r => r.Id == userId).FirstOrDefaultAsync();
@@ -576,9 +581,22 @@ namespace HC.WeChat.Retailers
 
         #region 数据报表
 
+        /// <summary>
+        /// 查询店铺消费报表
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public async Task<PagedResultDto<ShopReportData>> GetDataStatisticsAsync(GetShopReportDataInput input)
         {
-            var entity = await _retailerRepository.GetShopReportAsync();
+            List<ShopReportData> entity = null;
+            if (input.TimeType == 2)
+            {
+                entity = await _retailerRepository.GetShopReportByRangeAsync(input.BeginTime, input.EndTime);
+            }
+            else
+            {
+                entity = await _retailerRepository.GetShopReportAsync();
+            }
             var shopReportDataCount = entity.Count();
 
             var statisticsListDto = entity.MapTo<List<ShopReportData>>();
@@ -727,11 +745,11 @@ namespace HC.WeChat.Retailers
 
         #region 机构报表Excel
         [UnitOfWork(isTransactional: false)]
-        public async Task<APIResultDto> ExportShopReportDataExcel()
+        public async Task<APIResultDto> ExportShopReportDataExcel(GetShopReportDataInput input)
         {
             try
             {
-                var exportData = await GetShopReportData();
+                var exportData = await GetShopReportData(input);
                 var result = new APIResultDto();
                 result.Code = 0;
                 result.Data = SaveShopReportDataExcel("机构报表统计.xlsx", exportData);
@@ -744,9 +762,17 @@ namespace HC.WeChat.Retailers
             }
         }
 
-        private async Task<List<ShopReportData>> GetShopReportData()
+        private async Task<List<ShopReportData>> GetShopReportData(GetShopReportDataInput input)
         {
-            var entity = await _retailerRepository.GetShopReportAsync();
+            List<ShopReportData> entity = null;
+            if (input.TimeType == 2)
+            {
+                entity = await _retailerRepository.GetShopReportByRangeAsync(input.BeginTime, input.EndTime);
+            }
+            else
+            {
+                entity = await _retailerRepository.GetShopReportAsync();
+            }
             var statisticsListDto = entity.MapTo<List<ShopReportData>>();
             return statisticsListDto;
         }
@@ -918,9 +944,9 @@ namespace HC.WeChat.Retailers
                     rowIndex++;
                     IRow row = sheet.CreateRow(rowIndex);
                     ExcelHelper.SetCell(row.CreateCell(0), font, item.Specification);
-                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ScanQuantity.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(3), font, item.ScanFrequency.ToString());
-                    ExcelHelper.SetCell(row.CreateCell(4), font, item.PriceTotal.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(1), font, item.ScanQuantity.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(2), font, item.ScanFrequency.ToString());
+                    ExcelHelper.SetCell(row.CreateCell(3), font, item.PriceTotal.ToString());
                 }
                 workbook.Write(fs);
             }

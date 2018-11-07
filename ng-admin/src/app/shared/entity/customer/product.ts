@@ -23,6 +23,7 @@ export class Products implements IProducts {
     fileName: string;
     img64: string;
     desc: string;
+    tags: string;
     constructor(data?: IProducts) {
         if (data) {
             for (var property in data) {
@@ -54,6 +55,7 @@ export class Products implements IProducts {
             this.fileName = data["fileName"];
             this.img64 = data["img64"];
             this.desc = data["desc"];
+            this.tags = data["tags"];
         }
     }
 
@@ -85,6 +87,7 @@ export class Products implements IProducts {
         data["fileName"] = this.fileName;
         data["img64"] = this.img64;
         data["desc"] = this.desc;
+        data["tags"] = this.tags;
         return data;
     }
 
@@ -116,4 +119,5 @@ export interface IProducts {
     fileName: string;
     img64: string;
     desc: string;
+    tags: string;
 }

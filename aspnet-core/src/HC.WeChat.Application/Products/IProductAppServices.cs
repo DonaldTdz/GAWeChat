@@ -112,5 +112,8 @@ namespace HC.WeChat.Products
         /// </summary>
         /// <returns></returns>
         void UpdateLevel();
+
+        Task<ProductListDto> GetWXProductByIdAsync(Guid id);
+        Task<ProductListDto> CreateOrUpdateProductTags(ProductEditDto input);
     }
 }

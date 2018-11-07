@@ -137,7 +137,7 @@
                 <div class="weui-panel__hd">商品列表</div>
                 <weui-loadmore type="line" *ngIf="!shopProducts || shopProducts.length == 0"></weui-loadmore>
                 <div class="weui-panel__bd" *ngIf="shopProducts">
-                    <div class="weui-media-box weui-media-box_appmsg" *ngFor="let sp of shopProducts">
+                    <div class="weui-media-box weui-media-box_appmsg" *ngFor="let sp of shopProducts" (click)="goGoodDetail(sp.id)">
                         <div class="weui-media-box__hd">
                             <img class="weui-media-box__thumb" src="{{sp.photoUrl | hostUrl}}" alt="">
                         </div>

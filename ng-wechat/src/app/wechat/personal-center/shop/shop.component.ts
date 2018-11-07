@@ -4,7 +4,7 @@ import 'rxjs/add/observable/timer';
 import { AppComponentBase } from '../../components/app-component-base';
 import { WechatUser, UserType, Shop, ShopProduct } from '../../../services/model';
 import { Router, Params } from '@angular/router';
-import { ShopService, AppConsts, FavoriteService } from '../../../services';
+import { ShopService, AppConsts, FavoriteService, WechatUserService } from '../../../services';
 
 import { PopupComponent } from "ngx-weui/popup";
 import { ToptipsService } from "ngx-weui/toptips";
@@ -15,7 +15,7 @@ import 'jsbarcode';
 import { LoaderService } from 'ngx-weui/utils/loader.service';
 import { ShopQrcodeComponent } from './shop-qrcode/shop-qrcode.component';
 import { ToastService, ToastComponent } from 'ngx-weui/toast';
-import { ToastModule } from 'ngx-weui';
+import { ToastModule, SkinType } from 'ngx-weui';
 
 @Component({
     selector: 'wechat-shop',
@@ -43,8 +43,6 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     isAudit: boolean = false;
     qrCodeUrl = '';
     public DEFCONFIG: DialogConfig = <DialogConfig>{
-        // title: '弹窗标题',
-        // content: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
         skin: 'ios',
         backdrop: true,
         cancel: null,
@@ -53,6 +51,13 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     config2: DialogConfig = {};
     //content = '';
     isCancel: boolean = false;
+    goodsBarCode: string;// 商品码
+    shopKeeperCode: string;
+    host = AppConsts.remoteServiceBaseUrl;
+    goods = [];
+    isShowWindows: string = 'false';
+    curCount: number = 0;
+    limitFrequency: number = 0;
 
     constructor(injector: Injector,
         private router: Router,
@@ -62,12 +67,15 @@ export class ShopComponent extends AppComponentBase implements OnInit {
         private ds: DialogService,
         private load: LoaderService,
         private favoriteService: FavoriteService,
-        private srvt: ToastService
+        private srvt: ToastService,
+        private dia: DialogService,
+        private wechatService: WechatUserService
     ) {
         super(injector);
         this.activatedRoute.params.subscribe((params: Params) => {
             this.shopId = params['shopId'];
             this.isAudit = params['isAudit'];
+            this.isShowWindows = params['isShowWindows'];
         });
     }
 
@@ -85,7 +93,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             let url = this.CurrentUrl;//encodeURIComponent(location.href.split('#')[0]);
             this.settingsService.getJsApiConfig(url).subscribe(result => {
                 if (result) {
-                    result.jsApiList = ['openLocation'];//指定调用的接口名
+                    result.jsApiList = ['openLocation', 'scanQRCode'];//指定调用的接口名                   
                     // 1、通过config接口注入权限验证配置
                     wx.config(result.toJSON());
                     // 2、通过ready接口处理成功验证
@@ -111,13 +119,17 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             this.shopService.AddSingleTotalAsync({ articleId: this.shopId, openId: this.settingsService.openId, type: 3, tenantId: this.settingsService.tenantId }).subscribe(res => {
                 this.shop = res;
             });
-            // this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
-            //     this.qrCodeUrl = data;
-            //     console.log("data")
-            //     console.log(data)
-            //     //生成微信二维码
-            //     //this.generateQRcode('wechat_qrcode', data);
-            // });
+            this.IsCancelShop();
+            let params: any =
+            {
+                shopId: this.shopId,
+                openId: this.settingsService.openId,
+            };
+            this.shopService.getIsCurShopKeeper(params).subscribe(data => {
+                if (data == true) {
+                    this.isShowWindows = 'false';
+                }
+            });
         }
         else {
             this.settingsService.getUser().subscribe(result => {
@@ -138,6 +150,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                                         this.router.navigate(['/shopadds/shop-add']);
                                     }
                                     this.shopId = this.shop.id;
+                                    this.IsCancelShop();
                                     //  else {
                                     //     this.shopService.GetQrCodeUrl(this.shopId).subscribe(data => {
                                     //         this.qrCodeUrl = data;
@@ -151,7 +164,19 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 }
             });
         }
-        this.IsCancelShop();
+        // this.IsCancelShop();
+        setTimeout(() => {
+            if (this.isShowWindows != 'false') {
+                this.onShowBySrv('ios', true);
+                // let data: any = {};
+                // data.productName = '黄金叶';
+                // data.price = 20;
+                // data.userIntegral = 200;
+                // this.goPurchaserecord('ios', true, data);
+            }
+        }, 500);
+
+        this.getLimitFrequency();
     }
 
     goEditShop() {
@@ -189,7 +214,6 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     save() {
-        console.table(this.shopProductIds);
         if (this.shopProductIds.length <= 0) {
             this.srv['warn']('请选择特色产品');
         } else {
@@ -294,21 +318,31 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     IsCancelShop() {
+        // setTimeout(() => {
+        //     let params: any =
+        //     {
+        //         shopId: this.shopId,
+        //         openId: this.settingsService.openId,
+        //     };
+        //     // this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => setTimeout(() => {
+        //     //     {
+        //     //         this.isCancel = data;
+        //     //     }
+        //     // }, 500));
+        //     this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => {
+        //         this.isCancel = data;
+        //     });
+        // }, 1);
         setTimeout(() => {
             let params: any =
             {
                 shopId: this.shopId,
                 openId: this.settingsService.openId,
             };
-            // this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => setTimeout(() => {
-            //     {
-            //         this.isCancel = data;
-            //     }
-            // }, 500));
             this.favoriteService.GetUserIsCancelShopAsycn(params).subscribe(data => {
                 this.isCancel = data;
             });
-        }, 1);
+        }, 500);
     }
 
     favorite(type: string) {
@@ -352,5 +386,209 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 });
             }
         }
+    }
+
+    //调用微信扫一扫
+    wxScanQRCode(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            wx.scanQRCode({
+                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                //scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                scanType: ['barCode'],
+                success: ((res) => {
+                    resolve(res.resultStr);
+                })
+            });
+        });
+    }
+
+    scanOk(memberCode: string) {
+        if (!memberCode) {
+            this.srv['warn']('请先绑定手机号');
+            this.router.navigate(["/personals/bind-member"]);
+        } else {
+            if (!this.goods || this.goods.length == 0) {
+                this.srv['warn']('没有商品信息');
+            } else {
+                let param: any = {};
+                param.shopProductList = this.goods;
+                param.shopId = this.shop.id;
+                param.shopName = this.shop.name;
+                param.openId = this.settingsService.openId;//消费者id
+                param.tenantId = this.settingsService.tenantId;
+                param.operatorOpenId = this.settingsService.openId;//消费者自己操作
+                param.operatorName = this.user.nickName;
+                param.retailerId = this.shop.retailerId;
+                param.host = this.host;
+                this.shopService.ExchangeIntegral(param).subscribe(res => {
+                    if (res && res.code == 0) {
+                        this.curCount++;
+                        this.goPurchaserecord('ios', true, res.data);
+                    } else {
+                        this.curCount--;
+                        this.srv['warn']('兑换失败，请重试');
+                    }
+                });
+                //扫码后清空列表
+                this.goods = [];
+            }
+        }
+    }
+
+    /**
+     * 商品扫码
+     */
+    setGoodsBarCode(res: string) {
+        let resarry = res.split(',');
+        if (resarry.length == 2) {
+            if (resarry[0] != 'EAN_13') {
+                this.srv['warn']('条码格式不匹配');
+                return;
+            }
+            this.goodsBarCode = resarry[1];
+            //获取卷烟数据
+            let param: any = {};
+            param.code = this.goodsBarCode;
+            if (this.settingsService.tenantId) {
+                param.tenantId = this.settingsService.tenantId;
+            }
+            this.shopService.GetShopProductByCode(param).subscribe(result => {
+                if (result) {
+                    this.goods.push(result);
+                    let params: any =
+                    {
+                        shopId: this.shopId,
+                        openId: this.settingsService.openId,
+                        productId: result.id
+                    };
+                    this.shopService.GetPurchaseRecordCountByHour(params).subscribe(res => {
+                        this.curCount = res;
+                        if (this.curCount >= this.limitFrequency) {
+                            this.productInfoDialog('ios', true, result);
+                        } else {
+                            this.getCustMemberCode();
+                        }
+                    });
+                } else {
+                    this.srv['warn']('没找到匹配商品');
+                }
+            });
+        }
+    }
+
+    productInfoDialog(type: SkinType, backdrop: boolean = true, data: any) {
+        this.DEFCONFIG = {
+            confirm: '确认',
+            cancel: null,
+            btns: null
+        };
+
+        let content: string = `<div class="divLimit">
+        <div class="divLeft">
+        <img src="assets/images/shop/ScanOk.png" alt="">
+        </div>
+        <div class="divRight">
+            <div class="textUp">扫码成功</div>
+            <div class="textDown">${data.specification}</div>
+            <div class="textDown">建议零售价(包):￥${data.price}</div>
+            </div>
+        </div>`
+        this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            skin: type,
+            backdrop: backdrop,
+            content: content
+        });
+
+        this.dia.show(this.config).subscribe((res: any) => {
+            if (res.value == true) {
+            }
+        });
+        return false;
+    }
+
+    onShowBySrv(type: SkinType, backdrop: boolean = true) {
+        this.DEFCONFIG = {
+            confirm: '扫一扫',
+        };
+        this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            skin: type,
+            backdrop: backdrop,
+            content: '<div class="logoCssDiv"><img class="logoCss" src="assets/images/shop/ScanLogo.png" alt=""> </div>'
+        });
+        this.dia.show(this.config).subscribe((res: any) => {
+            if (res.value == true) {
+                this.wxScanQRCode().then((res) => {
+                    this.setGoodsBarCode(res);
+                });
+            }
+        });
+        return false;
+    }
+
+    /**
+     *兑换成功弹出框
+     */
+    goPurchaserecord(type: SkinType, backdrop: boolean = true, data: any) {
+        if (this.curCount == this.limitFrequency) {
+            this.DEFCONFIG = {
+                confirm: '立即评价',
+                cancel: '确定'
+            };
+        } else {
+            this.DEFCONFIG = {
+                confirm: '立即评价',
+                cancel: '扫一扫'
+            };
+        }
+
+        let content: string = `<div class="divFull">
+        <div class="divLeft">
+        <img src="assets/images/shop/ScanOk.png" alt="">
+        </div>
+        <div class="divRight">
+            <div class="textUp">兑换成功</div>
+            <div class="textDown">${data.productName}</div>
+            <div class="textDown">建议零售价(包):￥${data.price}</div>
+            <div class="textDown">获得积分:${data.userIntegral}</div>
+        </div>
+    </div>`
+        this.config = Object.assign({}, this.DEFCONFIG, <DialogConfig>{
+            skin: type,
+            backdrop: backdrop,
+            content: content
+        });
+        this.dia.show(this.config).subscribe((res: any) => {
+            if (res.value == true) {
+                this.router.navigate(['/purchaserecords/purchaserecord']);
+            } else {
+                if (this.curCount == this.limitFrequency) {
+                } else {
+                    this.wxScanQRCode().then((res) => {
+                        this.setGoodsBarCode(res);
+                    });
+                }
+            }
+        });
+        return false;
+    }
+
+    /**
+     *获取消费者会员卡
+     */
+    getCustMemberCode() {
+        this.wechatService.getCustMemberCode(this.settingsService.openId).subscribe(data => {
+            this.user = data;
+            this.scanOk(this.user.memberBarCode);
+        });
+    }
+
+    goGoodDetail(id: string) {
+        this.router.navigate(['/shops/shop-good-detail', { id: id }]);
+    }
+
+    getLimitFrequency() {
+        this.shopService.getLimitFrequency().subscribe(res => {
+            this.limitFrequency = res;
+        });
     }
 }
