@@ -1382,8 +1382,6 @@ namespace HC.WeChat.Shops
         /// <summary>
         /// 获取进入店铺二维码url
         /// </summary>
-        /// <param name="shopId"></param>
-        /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
         public string GetQrCodeUrl(Guid shopId, string host)
@@ -1392,11 +1390,10 @@ namespace HC.WeChat.Shops
             var qrUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, shopId.ToString(), OAuthScope.snsapi_base);
             return qrUrl;
         }
+
         /// <summary>
         /// 获取店铺推广码（关注公众号二维码）
         /// </summary>
-        /// <param name="shopId">店铺id</param>
-        /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
         public async Task<string> GetShopQrCodeURL(Guid shopId)
