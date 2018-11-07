@@ -15,12 +15,15 @@ using HC.WeChat.Authentication.JwtBearer;
 using HC.WeChat.Configuration;
 using HC.WeChat.Identity;
 using Senparc.Weixin.Entities;
-using Senparc.Weixin.Threads;
 using Microsoft.Extensions.Options;
 using Senparc.Weixin.MP.Containers;
 using HC.WeChat.Models.WeChat;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
+using Senparc.CO2NET.Cache.Memcached;
+using Senparc.CO2NET.Cache;
+using System.Collections.Generic;
+using Senparc.CO2NET.Threads;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -162,7 +165,7 @@ namespace HC.WeChat.Web.Host.Startup
 
             //Senparc.Weixin SDK 配置
             Senparc.Weixin.Config.IsDebug = true;
-            Senparc.Weixin.Config.DefaultSenparcWeixinSetting = senparcWeixinSetting.Value;
+            Senparc.Weixin.Config.SenparcWeixinSetting = senparcWeixinSetting.Value;
 
             //提供网站根目录
             if (env.ContentRootPath != null)
@@ -177,8 +180,8 @@ namespace HC.WeChat.Web.Host.Startup
              * 建议按照以下顺序进行注册，尤其须将缓存放在第一位！
              */
 
-            //RegisterWeixinCache(app);       //注册分布式缓存（按需，如果需要，必须放在第一个）
-            ConfigWeixinTraceLog();         //配置微信跟踪日志（按需）
+            RegisterWeixinCache(app);       //注册分布式缓存（按需，如果需要，必须放在第一个）
+            //ConfigWeixinTraceLog();         //配置微信跟踪日志（按需）
             RegisterWeixinThreads();        //激活微信缓存及队列线程（必须）
             RegisterSenparcWeixin();        //注册Demo所用微信公众号的账号信息（按需）
             //RegisterSenparcWorkWeixin();    //注册Demo所用企业微信的账号信息（按需）
@@ -236,7 +239,7 @@ namespace HC.WeChat.Web.Host.Startup
         private void ConfigWeixinTraceLog()
         {
             //这里设为Debug状态时，/App_Data/WeixinTraceLog/目录下会生成日志文件记录所有的API请求日志，正式发布版本建议关闭
-            Senparc.Weixin.Config.IsDebug = true;
+            Senparc.Weixin.Config.IsDebug = false;
             Senparc.Weixin.WeixinTrace.SendCustomLog("系统日志", "系统启动");//只在Senparc.Weixin.Config.IsDebug = true的情况下生效
 
             //自定义日志记录回调
@@ -269,7 +272,7 @@ namespace HC.WeChat.Web.Host.Startup
         /// </summary>
         private void RegisterSenparcWeixin()
         {
-            var senparcWeixinSetting = Senparc.Weixin.Config.DefaultSenparcWeixinSetting;
+            var senparcWeixinSetting = Senparc.Weixin.Config.SenparcWeixinSetting;
 
             //注册公众号
             AccessTokenContainer.Register(
@@ -282,6 +285,43 @@ namespace HC.WeChat.Web.Host.Startup
             //    senparcWeixinSetting.WxOpenAppId,
             //    senparcWeixinSetting.WxOpenAppSecret,
             //    "【盛派互动】小程序");
+        }
+
+        /// <summary>
+        /// 自定义缓存策略
+        /// </summary>
+        private void RegisterWeixinCache(IApplicationBuilder app)
+        {
+            //var senparcWeixinSetting = Senparc.Weixin.Config.DefaultSenparcWeixinSetting;
+
+            //如果留空，默认为localhost（默认端口）
+
+            #region  Redis配置
+            //var redisConfiguration = senparcWeixinSetting.Cache_Redis_Configuration;
+            //RedisManager.ConfigurationOption = redisConfiguration;
+
+            //如果不执行下面的注册过程，则默认使用本地缓存
+
+            //if (!string.IsNullOrEmpty(redisConfiguration) && redisConfiguration != "Redis配置")
+            //{
+            //    CacheStrategyFactory.RegisterObjectCacheStrategy(() => RedisObjectCacheStrategy.Instance);//Redis
+            //}
+
+            #endregion
+
+            #region Memcached 配置
+
+            app.UseEnyimMemcached();
+
+            var memcachedConfig = new Dictionary<string, int>()
+            {
+                { "localhost",9101 }
+            };
+            MemcachedObjectCacheStrategy.RegisterServerList(memcachedConfig);
+
+            #endregion
+
+            //CacheStrategyFactory.RegisterContainerCacheStrategy(() => MemcachedContainerStrategy.Instance);//Memcached
         }
     }
 }
