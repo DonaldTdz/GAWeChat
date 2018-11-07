@@ -226,7 +226,8 @@ namespace HC.WeChat.WechatEnums
         jo启动状态 = 6,
         预设商品搜索 = 7,
         次数限制 = 8,
-        时间限制 = 9
+        时间限制 = 9,
+        店铺距离 = 10
     }
     /// <summary>
     /// 文章发布状态
