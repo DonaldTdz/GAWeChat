@@ -188,4 +188,10 @@ export class ShopService {
       return data.result;
     });
   }
+
+  GetShopWithRangeAsync(params: any): Observable<boolean> {
+    return this.http.get('/api/services/app/Shop/GetShopWithRangeAsync', params).map(data => {
+      return data.result;
+    });
+  }
 }

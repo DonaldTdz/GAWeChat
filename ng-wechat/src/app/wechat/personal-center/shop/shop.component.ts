@@ -58,6 +58,11 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     isShowWindows: string = 'false';
     curCount: number = 0;
     limitFrequency: number = 0;
+    gpslat: number;//当前纬度gps
+    gpslong: number;//当前经度gps
+    latitude: number;//当前纬度
+    longitude: number;//当前经度
+    citylocation: any;
 
     constructor(injector: Injector,
         private router: Router,
@@ -80,7 +85,6 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
-
         //this.load.loadScript('assets/libs/qrcode.min.js').then((res) => {
         //this.generateQRcode('wechat_qrcode', '11112');
         //});
@@ -93,12 +97,19 @@ export class ShopComponent extends AppComponentBase implements OnInit {
             let url = this.CurrentUrl;//encodeURIComponent(location.href.split('#')[0]);
             this.settingsService.getJsApiConfig(url).subscribe(result => {
                 if (result) {
-                    result.jsApiList = ['openLocation', 'scanQRCode'];//指定调用的接口名                   
+                    result.jsApiList = ['openLocation', 'getLocation', 'scanQRCode'];//指定调用的接口名                   
                     // 1、通过config接口注入权限验证配置
                     wx.config(result.toJSON());
                     // 2、通过ready接口处理成功验证
-                    wx.ready(() => {
-                        // 注册各种onMenuShareTimeline & onMenuShareAppMessage
+                    // wx.ready(() => {
+                    //     // 注册各种onMenuShareTimeline & onMenuShareAppMessage
+                    // });
+                    this.wxReady().then((res) => {
+                        if (res) {
+                            if (this.shopId) {
+                                this.wxGetLocation();
+                            }
+                        }
                     });
                     // 2、通过error接口处理失败验证
                     wx.error(() => {
@@ -164,17 +175,18 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                 }
             });
         }
+
         // this.IsCancelShop();
-        setTimeout(() => {
-            if (this.isShowWindows != 'false') {
-                this.onShowBySrv('ios', true);
-                // let data: any = {};
-                // data.productName = '黄金叶';
-                // data.price = 20;
-                // data.userIntegral = 200;
-                // this.goPurchaserecord('ios', true, data);
-            }
-        }, 500);
+        // setTimeout(() => {
+        //     if (this.isShowWindows != 'false') {
+        //         this.onShowBySrv('ios', true);
+        //         // let data: any = {};
+        //         // data.productName = '黄金叶';
+        //         // data.price = 20;
+        //         // data.userIntegral = 200;
+        //         // this.goPurchaserecord('ios', true, data);
+        //     }
+        // }, 500);
 
         this.getLimitFrequency();
     }
@@ -589,6 +601,62 @@ export class ShopComponent extends AppComponentBase implements OnInit {
     getLimitFrequency() {
         this.shopService.getLimitFrequency().subscribe(res => {
             this.limitFrequency = res;
+        });
+    }
+
+    wxReady(): Promise<boolean> {
+        return (new Promise<any>((resolve, reject) => {
+            wx.ready(() => {
+                resolve(true);
+            });
+        }));
+    }
+
+    getWXLocation(): Promise<any> {
+        return (new Promise<any>((resolve, reject) => {
+            this.wxService.getLocation().then((res) => {
+                this.gpslat = res.latitude;
+                this.gpslong = res.longitude;
+                //this.wxService.translate(res.latitude, res.longitude).then((result) => {
+                //    resolve(result);
+                //})
+                resolve(res);
+            });
+        }));
+    }
+
+    //调用微信获取当前位置
+    wxGetLocation() {
+        this.getWXLocation().then((res) => {
+            if (res) {
+                this.latitude = res.latitude; //res[0].lat;
+                this.longitude = res.longitude; //res[0].lng;
+                //获取地址信息
+                this.getShopWithRange();
+            }
+        });
+    }
+
+    getShopWithRange() {
+        let param: any = {
+            latitude: this.gpslat,
+            longitude: this.gpslong,
+            shopId: this.shopId,
+        };
+        this.shopService.GetShopWithRangeAsync(param).subscribe(res => {
+            if (res == false) {
+                this.isShowWindows = 'false';
+            }
+            // setTimeout(() => {
+            if (this.isShowWindows != 'false') {
+                this.onShowBySrv('ios', true);
+                // let data: any = {};
+                // data.productName = '黄金叶';
+                // data.price = 20;
+                // data.userIntegral = 200;
+                // this.goPurchaserecord('ios', true, data);
+            }
+            // }, 500);
         });
     }
 }

@@ -239,7 +239,7 @@ export class ShopAddComponent extends AppComponentBase implements OnInit {
         }).subscribe(data => {
             if (data) {
                 this.srv['success']('保存成功');
-                this.router.navigate(["/shops/shop"]);
+                this.router.navigate(["/shops/shop", { isShowWindows: false }]);
             } else {
                 this.srv['warn']('保存失败');
             }
@@ -295,7 +295,7 @@ export class ShopAddComponent extends AppComponentBase implements OnInit {
     //裁剪图片后上传 2018-06-07
     goUploadImg() {
         this.imgData.image = this.shopCropper.cropper.getCroppedImage(true).src;
-        if(!this.imgData.image){
+        if (!this.imgData.image) {
             this.srv['info']('请重新选择图片');
             this.imgCropperPopup.close();
             return;
@@ -313,10 +313,10 @@ export class ShopAddComponent extends AppComponentBase implements OnInit {
             }
         });
     }
-    cancelUploadImg(){
+    cancelUploadImg() {
         this.imgCropperPopup.close();
     }
-    showCropperPopup(){
+    showCropperPopup() {
         this.imgCropperPopup.show();
     }
     //选择图片
@@ -325,15 +325,15 @@ export class ShopAddComponent extends AppComponentBase implements OnInit {
         this.srvToast.show(null, 10000, null, 'loading');
         //const image: any = new Image();
         //const file: File = $event.target.files[0];
-        var image:any = new Image();
-        var file:File = $event.target.files[0];
-        var myReader:FileReader = new FileReader();
+        var image: any = new Image();
+        var file: File = $event.target.files[0];
+        var myReader: FileReader = new FileReader();
         var that = this;
         //alert(file.size);
         this.setCompressRatio(file.size);
         this.fileName = file.name;
         //const myReader: FileReader = new FileReader();
-        myReader.onloadend = function (loadEvent:any) { //(loadEvent: any) => {
+        myReader.onloadend = function (loadEvent: any) { //(loadEvent: any) => {
             image.src = loadEvent.target.result;
             //this.shopCropper.setImage(image);
             that.shopCropper.setImage(image);
@@ -343,15 +343,15 @@ export class ShopAddComponent extends AppComponentBase implements OnInit {
     }
 
     //根据图片大小设置压缩率
-    setCompressRatio(size: number){
+    setCompressRatio(size: number) {
         //如果小于500kb 不压缩
-        let msize = 1024*500;
+        let msize = 1024 * 500;
         //alert(size)
-        if(size <= msize){
+        if (size <= msize) {
             this.shopCropper.settings.compressRatio = 1;
         } else {
-            let ratio = msize/size; 
-            if(ratio > 0.02){
+            let ratio = msize / size;
+            if (ratio > 0.02) {
                 this.shopCropper.settings.compressRatio = ratio;
             } else {
                 this.shopCropper.settings.compressRatio = 0.02;

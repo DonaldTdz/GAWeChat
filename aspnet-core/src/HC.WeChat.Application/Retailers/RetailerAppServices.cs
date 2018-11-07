@@ -613,132 +613,127 @@ namespace HC.WeChat.Retailers
         /// <returns></returns>
         public async Task<PagedResultDto<ShopReportData>> GetShopReportDataDetailAsync(GetShopReportDataInput input)
         {
-            var retailer = _retailerRepository.GetAll();
-            var shop = _shopRepository.GetAll().Where(v => v.Status == ShopAuditStatus.已审核);
-            var products = _productRepository.GetAll();
-            var purchaserecord = _purchaserecordRepository.GetAll();
-            List<ShopReportData> entity = null;
-            int shopReportDataCount = 0;
+            var retailer = _retailerRepository.GetAll().AsNoTracking();
+            var shop = _shopRepository.GetAll().Where(v => v.Status == ShopAuditStatus.已审核).AsNoTracking();
+            var products = _productRepository.GetAll().AsNoTracking();
+            var purchaserecord = _purchaserecordRepository.GetAll().AsNoTracking();
             if (input.OrganizatType == 1)
             {
-                entity = await (from pur in purchaserecord
-                                join p in products on pur.ProductId equals p.Id
-                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                select new ShopReportData()
-                                {
-                                    Specification = g.Key.Specification,
-                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                    ScanQuantity = g.Sum(v => v.Quantity),
-                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
-
-                shopReportDataCount = await (from pur in purchaserecord
-                                             join p in products on pur.ProductId equals p.Id
-                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                             select new ShopReportData()
-                                             {
-                                                 Specification = g.Key.Specification,
-                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                                 ScanQuantity = g.Sum(v => v.Quantity),
-                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+                var query = from pur in purchaserecord
+                            join p in products on pur.ProductId equals p.Id
+                            select new
+                            {
+                                pur.Specification,
+                                pur.Quantity,
+                                p.Price,
+                                pur.Id
+                            };
+                var result = (from q in query
+                              group q by q.Specification into g
+                              select new ShopReportData()
+                              {
+                                  Specification = g.Key,
+                                  PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                  ScanQuantity = g.Sum(v => v.Quantity),
+                                  ScanFrequency = g.GroupBy(v => v.Id).Count()
+                              }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).AsNoTracking();
+                var statisticsListDto = await result.AsNoTracking().OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
+                int shopReportDataCount = await result.CountAsync();
+                return new PagedResultDto<ShopReportData>(
+                    shopReportDataCount,
+                    statisticsListDto
+                    );
             }
             else if (input.OrganizatType == 2)
             {
-                entity = await (from pur in purchaserecord
-                                join p in products on pur.ProductId equals p.Id
-                                join s in shop on pur.ShopId equals s.Id
-                                join r in retailer on s.RetailerId equals r.Id
-                                where r.BranchCompany == input.Organization
-                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                select new ShopReportData()
-                                {
-                                    Specification = g.Key.Specification,
-                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                    ScanQuantity = g.Sum(v => v.Quantity),
-                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
-
-                shopReportDataCount = await (from pur in purchaserecord
-                                             join p in products on pur.ProductId equals p.Id
-                                             join s in shop on pur.ShopId equals s.Id
-                                             join r in retailer on s.RetailerId equals r.Id
-                                             where r.BranchCompany == input.Organization
-                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                             select new ShopReportData()
-                                             {
-                                                 Specification = g.Key.Specification,
-                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                                 ScanQuantity = g.Sum(v => v.Quantity),
-                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+                var query = from pur in purchaserecord
+                            join p in products on pur.ProductId equals p.Id
+                            join s in shop on pur.ShopId equals s.Id
+                            join r in retailer on s.RetailerId equals r.Id
+                            where r.BranchCompany == input.Organization
+                            select new
+                            {
+                                pur.Specification,
+                                pur.Quantity,
+                                p.Price,
+                                pur.Id
+                            };
+                var result = (from q in query
+                              group q by q.Specification into g
+                              select new ShopReportData()
+                              {
+                                  Specification = g.Key,
+                                  PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                  ScanQuantity = g.Sum(v => v.Quantity),
+                                  ScanFrequency = g.GroupBy(v => v.Id).Count()
+                              }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).AsNoTracking();
+                var statisticsListDto = await result.AsNoTracking().OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
+                int shopReportDataCount = await result.CountAsync();
+                return new PagedResultDto<ShopReportData>(
+                    shopReportDataCount,
+                    statisticsListDto
+                    );
             }
             else if (input.OrganizatType == 3)
             {
-                entity = await (from pur in purchaserecord
-                                join p in products on pur.ProductId equals p.Id
-                                join s in shop on pur.ShopId equals s.Id
-                                join r in retailer on s.RetailerId equals r.Id
-                                where r.Area == input.Organization
-                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                select new ShopReportData()
-                                {
-                                    Specification = g.Key.Specification,
-                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                    ScanQuantity = g.Sum(v => v.Quantity),
-                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
-
-                shopReportDataCount = await (from pur in purchaserecord
-                                             join p in products on pur.ProductId equals p.Id
-                                             join s in shop on pur.ShopId equals s.Id
-                                             join r in retailer on s.RetailerId equals r.Id
-                                             where r.Area == input.Organization
-                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                             select new ShopReportData()
-                                             {
-                                                 Specification = g.Key.Specification,
-                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                                 ScanQuantity = g.Sum(v => v.Quantity),
-                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+                var query = from pur in purchaserecord
+                            join p in products on pur.ProductId equals p.Id
+                            join s in shop on pur.ShopId equals s.Id
+                            join r in retailer on s.RetailerId equals r.Id
+                            where r.Area == input.Organization
+                            select new
+                            {
+                                pur.Specification,
+                                pur.Quantity,
+                                p.Price,
+                                pur.Id
+                            };
+                var result = (from q in query
+                              group q by q.Specification into g
+                              select new ShopReportData()
+                              {
+                                  Specification = g.Key,
+                                  PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                  ScanQuantity = g.Sum(v => v.Quantity),
+                                  ScanFrequency = g.GroupBy(v => v.Id).Count()
+                              }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).AsNoTracking();
+                var statisticsListDto = await result.AsNoTracking().OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
+                int shopReportDataCount = await result.CountAsync();
+                return new PagedResultDto<ShopReportData>(
+                    shopReportDataCount,
+                    statisticsListDto
+                    );
             }
             else
             {
-                entity = await (from pur in purchaserecord
-                                join p in products on pur.ProductId equals p.Id
-                                join s in shop on pur.ShopId equals s.Id
-                                join r in retailer on s.RetailerId equals r.Id
-                                where r.SlsmanName == input.Organization
-                                group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                select new ShopReportData()
-                                {
-                                    Specification = g.Key.Specification,
-                                    PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                    ScanQuantity = g.Sum(v => v.Quantity),
-                                    ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
-
-                shopReportDataCount = await (from pur in purchaserecord
-                                             join p in products on pur.ProductId equals p.Id
-                                             join s in shop on pur.ShopId equals s.Id
-                                             join r in retailer on s.RetailerId equals r.Id
-                                             where r.SlsmanName == input.Organization
-                                             group new { pur.Specification, pur.Quantity, pur.Id, p.Price } by new { pur.Specification } into g
-                                             select new ShopReportData()
-                                             {
-                                                 Specification = g.Key.Specification,
-                                                 PriceTotal = g.Sum(v => v.Quantity * v.Price),
-                                                 ScanQuantity = g.Sum(v => v.Quantity),
-                                                 ScanFrequency = g.GroupBy(v => v.Id).Count()
-                                             }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).CountAsync();
+                var query = from pur in purchaserecord
+                            join p in products on pur.ProductId equals p.Id
+                            join s in shop on pur.ShopId equals s.Id
+                            join r in retailer on s.RetailerId equals r.Id
+                            where r.SlsmanName == input.Organization
+                            select new
+                            {
+                                pur.Specification,
+                                pur.Quantity,
+                                p.Price,
+                                pur.Id
+                            };
+                var result = (from q in query
+                              group q by q.Specification into g
+                              select new ShopReportData()
+                              {
+                                  Specification = g.Key,
+                                  PriceTotal = g.Sum(v => v.Quantity * v.Price),
+                                  ScanQuantity = g.Sum(v => v.Quantity),
+                                  ScanFrequency = g.GroupBy(v => v.Id).Count()
+                              }).WhereIf(!string.IsNullOrEmpty(input.Specification), r => r.Specification.Contains(input.Specification)).AsNoTracking();
+                var statisticsListDto = await result.AsNoTracking().OrderByDescending(v => v.ScanQuantity).PageBy(input).ToListAsync();
+                int shopReportDataCount = await result.CountAsync();
+                return new PagedResultDto<ShopReportData>(
+                    shopReportDataCount,
+                    statisticsListDto
+                    );
             }
-
-            var statisticsListDto = entity.MapTo<List<ShopReportData>>();
-            return new PagedResultDto<ShopReportData>(
-                shopReportDataCount,
-                statisticsListDto
-                );
         }
 
         #endregion
