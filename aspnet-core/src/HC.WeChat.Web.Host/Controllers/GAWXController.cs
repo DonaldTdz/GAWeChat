@@ -20,9 +20,9 @@ namespace HC.WeChat.Web.Host.Controllers
         //private readonly IConfigurationRoot _appConfiguration;
         //private WeChatTenantSetting _settings;
         //private string host = "http://ga.intcov.com";
-        private string host = "http://localhost:21021";
+        //private string host = "http://localhost:21021";
         //private string host = "http://wx.photostory.top";
-        //private string host = "http://hcwx.sayequ.me";
+        private string host = "http://hcwx.sayequ.me";
         private int? tenantId;
 
         private string UserOpenId
@@ -98,7 +98,7 @@ namespace HC.WeChat.Web.Host.Controllers
             //UserOpenId = "oWusewEMAQ_9km_ME19diwMrEop4"; // 199
             //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU1"; //杨帆专用
             //UserOpenId = "oWusewPRxWuP4wMz3UmHR0y7CJME"; //回家测试用
-            UserOpenId = "o4l6swGJKxy4aEpUy3Hqm2DEeo_s";
+            //UserOpenId = "o4l6swGJKxy4aEpUy3Hqm2DEeo_s";
             //UserOpenId = "o4l6swJ2RNer4X1OfB6yCvZorszs";
             //UserOpenId = "oWusewCseG_DDxU965N3UV2Dd8SM";
             //UserOpenId = "o4l6swFHo1Ch-6yRGysgPhf6XIA8"; //202积分最多的人

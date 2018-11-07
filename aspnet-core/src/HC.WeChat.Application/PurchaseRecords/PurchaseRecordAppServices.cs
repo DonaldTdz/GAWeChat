@@ -385,7 +385,7 @@ namespace HC.WeChat.PurchaseRecords
                     user.IntegralTotal = intDetail.FinalIntegral.Value;
                     await _weChatUserRepository.UpdateAsync(user);
                     //发送微信模板通知-消费者
-                    await PurchaseSendWXMesssageToCust(user.OpenId, input.host, user.MemberBarCode, intDetail.FinalIntegral, intDetail.Integral);
+                    //await PurchaseSendWXMesssageToCust(user.OpenId, input.host, user.MemberBarCode, intDetail.FinalIntegral, intDetail.Integral);
                 }
 
                 //更新店铺管理员总积分 和 积分明细
@@ -409,7 +409,7 @@ namespace HC.WeChat.PurchaseRecords
                         shopKeeper.IntegralTotal = intDetail.FinalIntegral.Value;
                         await _weChatUserRepository.UpdateAsync(shopKeeper);
                         //发送微信模板通知-店铺管理员
-                        await PurchaseSendWXMesssageToShopKeeper(shopKeeper.OpenId, input.host, shopKeeper.MemberBarCode, intDetail.FinalIntegral, intDetail.Integral);
+                        //await PurchaseSendWXMesssageToShopKeeper(shopKeeper.OpenId, input.host, shopKeeper.MemberBarCode, intDetail.FinalIntegral, intDetail.Integral);
                     }
                 }
 
@@ -420,8 +420,6 @@ namespace HC.WeChat.PurchaseRecords
                 await AddSingleTotalAsync(input.OpenId, input.ShopId); // 店铺人气查重改写
                 shop.SaleTotal++;//销量增加
                 await _shopRepository.UpdateAsync(shop);
-
-                //发送积分微信通知
 
                 APIResultDto result = new APIResultDto();
                 result.Code = 0;

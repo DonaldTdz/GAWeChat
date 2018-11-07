@@ -20,10 +20,10 @@ using Senparc.Weixin.MP.Containers;
 using HC.WeChat.Models.WeChat;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
-using Senparc.CO2NET.Cache.Memcached;
-using Senparc.CO2NET.Cache;
+//using Senparc.CO2NET.Cache.Memcached;
+//using Senparc.CO2NET.Cache;
 using System.Collections.Generic;
-using Senparc.CO2NET.Threads;
+//using Senparc.CO2NET.Threads;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -164,7 +164,7 @@ namespace HC.WeChat.Web.Host.Startup
             //AccessTokenContainer.Register(senparcWeixinSetting.Value.WeixinAppId, senparcWeixinSetting.Value.WeixinAppSecret);
 
             //Senparc.Weixin SDK 配置
-            Senparc.Weixin.Config.IsDebug = true;
+            Senparc.Weixin.Config.IsDebug = false;
             Senparc.Weixin.Config.SenparcWeixinSetting = senparcWeixinSetting.Value;
 
             //提供网站根目录
@@ -180,7 +180,7 @@ namespace HC.WeChat.Web.Host.Startup
              * 建议按照以下顺序进行注册，尤其须将缓存放在第一位！
              */
 
-            RegisterWeixinCache(app);       //注册分布式缓存（按需，如果需要，必须放在第一个）
+            //RegisterWeixinCache(app);       //注册分布式缓存（按需，如果需要，必须放在第一个）
             //ConfigWeixinTraceLog();         //配置微信跟踪日志（按需）
             RegisterWeixinThreads();        //激活微信缓存及队列线程（必须）
             RegisterSenparcWeixin();        //注册Demo所用微信公众号的账号信息（按需）
@@ -264,7 +264,7 @@ namespace HC.WeChat.Web.Host.Startup
         /// </summary>
         private void RegisterWeixinThreads()
         {
-            ThreadUtility.Register();//如果不注册此线程，则AccessToken、JsTicket等都无法使用SDK自动储存和管理。
+            Senparc.CO2NET.Threads.ThreadUtility.Register();//如果不注册此线程，则AccessToken、JsTicket等都无法使用SDK自动储存和管理。
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace HC.WeChat.Web.Host.Startup
             {
                 { "localhost",9101 }
             };
-            MemcachedObjectCacheStrategy.RegisterServerList(memcachedConfig);
+            //MemcachedObjectCacheStrategy.RegisterServerList(memcachedConfig);
 
             #endregion
 
