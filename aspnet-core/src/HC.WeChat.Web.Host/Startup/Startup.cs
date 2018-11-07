@@ -20,10 +20,10 @@ using Senparc.Weixin.MP.Containers;
 using HC.WeChat.Models.WeChat;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
-using Senparc.CO2NET.Cache.Memcached;
-using Senparc.CO2NET.Cache;
 using System.Collections.Generic;
-using Senparc.CO2NET.Threads;
+using Senparc.Weixin.Threads;
+using Senparc.Weixin.Cache;
+using Senparc.Weixin.Cache.Redis;
 
 #if FEATURE_SIGNALR
 using Microsoft.AspNet.SignalR;
@@ -164,8 +164,8 @@ namespace HC.WeChat.Web.Host.Startup
             //AccessTokenContainer.Register(senparcWeixinSetting.Value.WeixinAppId, senparcWeixinSetting.Value.WeixinAppSecret);
 
             //Senparc.Weixin SDK 配置
-            Senparc.Weixin.Config.IsDebug = true;
-            Senparc.Weixin.Config.SenparcWeixinSetting = senparcWeixinSetting.Value;
+            Senparc.Weixin.Config.IsDebug = false;
+            Senparc.Weixin.Config.DefaultSenparcWeixinSetting = senparcWeixinSetting.Value;
 
             //提供网站根目录
             if (env.ContentRootPath != null)
@@ -272,7 +272,7 @@ namespace HC.WeChat.Web.Host.Startup
         /// </summary>
         private void RegisterSenparcWeixin()
         {
-            var senparcWeixinSetting = Senparc.Weixin.Config.SenparcWeixinSetting;
+            var senparcWeixinSetting = Senparc.Weixin.Config.DefaultSenparcWeixinSetting;
 
             //注册公众号
             AccessTokenContainer.Register(
@@ -292,20 +292,20 @@ namespace HC.WeChat.Web.Host.Startup
         /// </summary>
         private void RegisterWeixinCache(IApplicationBuilder app)
         {
-            //var senparcWeixinSetting = Senparc.Weixin.Config.DefaultSenparcWeixinSetting;
+            var senparcWeixinSetting = Senparc.Weixin.Config.DefaultSenparcWeixinSetting;
 
             //如果留空，默认为localhost（默认端口）
 
             #region  Redis配置
-            //var redisConfiguration = senparcWeixinSetting.Cache_Redis_Configuration;
-            //RedisManager.ConfigurationOption = redisConfiguration;
+            var redisConfiguration = senparcWeixinSetting.Cache_Redis_Configuration;
+            RedisManager.ConfigurationOption = redisConfiguration;
 
             //如果不执行下面的注册过程，则默认使用本地缓存
 
-            //if (!string.IsNullOrEmpty(redisConfiguration) && redisConfiguration != "Redis配置")
-            //{
-            //    CacheStrategyFactory.RegisterObjectCacheStrategy(() => RedisObjectCacheStrategy.Instance);//Redis
-            //}
+            if (!string.IsNullOrEmpty(redisConfiguration) && redisConfiguration != "Redis配置")
+            {
+                CacheStrategyFactory.RegisterObjectCacheStrategy(() => RedisObjectCacheStrategy.Instance);//Redis
+            }
 
             #endregion
 
@@ -313,11 +313,11 @@ namespace HC.WeChat.Web.Host.Startup
 
             app.UseEnyimMemcached();
 
-            var memcachedConfig = new Dictionary<string, int>()
-            {
-                { "localhost",9101 }
-            };
-            MemcachedObjectCacheStrategy.RegisterServerList(memcachedConfig);
+            //var memcachedConfig = new Dictionary<string, int>()
+           // {
+           //     { "localhost",9101 }
+           // };
+           // MemcachedObjectCacheStrategy.RegisterServerList(memcachedConfig);
 
             #endregion
 
