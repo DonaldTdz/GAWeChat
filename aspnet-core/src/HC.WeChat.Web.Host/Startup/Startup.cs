@@ -264,7 +264,7 @@ namespace HC.WeChat.Web.Host.Startup
         /// </summary>
         private void RegisterWeixinThreads()
         {
-            Senparc.CO2NET.Threads.ThreadUtility.Register();//如果不注册此线程，则AccessToken、JsTicket等都无法使用SDK自动储存和管理。
+            ThreadUtility.Register();//如果不注册此线程，则AccessToken、JsTicket等都无法使用SDK自动储存和管理。
         }
 
         /// <summary>
