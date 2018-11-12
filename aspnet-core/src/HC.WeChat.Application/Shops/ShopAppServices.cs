@@ -1382,8 +1382,6 @@ namespace HC.WeChat.Shops
         /// <summary>
         /// 获取进入店铺二维码url
         /// </summary>
-        /// <param name="shopId"></param>
-        /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
         public string GetQrCodeUrl(Guid shopId, string host)
@@ -1392,11 +1390,10 @@ namespace HC.WeChat.Shops
             var qrUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, shopId.ToString(), OAuthScope.snsapi_base);
             return qrUrl;
         }
+
         /// <summary>
         /// 获取店铺推广码（关注公众号二维码）
         /// </summary>
-        /// <param name="shopId">店铺id</param>
-        /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
         public async Task<string> GetShopQrCodeURL(Guid shopId)
@@ -1468,6 +1465,40 @@ namespace HC.WeChat.Shops
             {
                 return false;
             }
+        }
+
+
+        /// <summary>
+        /// 判断用户是否在扫码范围
+        /// </summary>
+        /// <param name="shopId"></param>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<bool> GetShopWithRangeAsync(double latitude, double longitude, Guid shopId)
+        {
+            var config = await _memberconfigRepository.GetAll().Where(v => v.Type == DeployTypeEnum.扫码限制配置 && v.Code == DeployCodeEnum.店铺距离).Select(v => v.Value).FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(config))
+            {
+                config = "200";
+            }
+            var entity = await _shopRepository.GetAll().Where(s => s.Id == shopId).FirstOrDefaultAsync();
+            var result = entity.MapTo<NearbyShopDto>();
+            //Logger.Info($"店铺位置信息{result}");
+            if (result.Latitude.HasValue && result.Longitude.HasValue)
+            {
+                result.Distance = Math.Round(AbpMapByGoogle.GetDistance(latitude, longitude, result.Latitude.Value, result.Longitude.Value), 0);//不保留小数
+                //Logger.Info($"店铺位置信息{result.Distance}");
+
+                if (result.Distance <= Convert.ToDouble(config))
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
         }
     }
 }

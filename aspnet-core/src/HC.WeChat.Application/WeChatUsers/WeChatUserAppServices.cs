@@ -505,8 +505,8 @@ namespace HC.WeChat.WeChatUsers
                     user.IntegralTotal = intDetail.FinalIntegral.Value;
                     await _wechatuserRepository.UpdateAsync(user);
                     await CurrentUnitOfWork.SaveChangesAsync(); // 先更新用户总积分
-                    int finalIntegral = user.IntegralTotal; // 再传出最终积分
-                    await GivenIntegralSendMessage(host, openId, user.MemberBarCode, config, finalIntegral);
+                    //int finalIntegral = user.IntegralTotal; // 再传出最终积分
+                    //await GivenIntegralSendMessage(host, openId, user.MemberBarCode, config, finalIntegral);
                 }
             }
             catch (Exception ex)
