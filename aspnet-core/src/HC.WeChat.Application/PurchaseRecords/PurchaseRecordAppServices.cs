@@ -1018,7 +1018,7 @@ namespace HC.WeChat.PurchaseRecords
             var curTime = DateTime.Now;
             var beforeHour = curTime.AddHours(-Convert.ToInt32(limitTime));
             var count = await _purchaserecordRepository.GetAll().Where(v => v.OpenId == input.OpenId 
-            && v.ProductId == input.ProductId 
+            //&& v.ProductId == input.ProductId 
             && v.ShopId ==input.ShopId
             && v.CreationTime <= curTime && v.CreationTime>=beforeHour
             ).CountAsync();
