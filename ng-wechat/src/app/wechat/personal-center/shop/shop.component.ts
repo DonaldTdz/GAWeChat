@@ -471,7 +471,7 @@ export class ShopComponent extends AppComponentBase implements OnInit {
                     {
                         shopId: this.shopId,
                         openId: this.settingsService.openId,
-                        productId: result.id
+                        // productId: result.id
                     };
                     this.shopService.GetPurchaseRecordCountByHour(params).subscribe(res => {
                         this.curCount = res;
