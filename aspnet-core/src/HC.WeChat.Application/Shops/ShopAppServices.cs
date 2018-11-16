@@ -527,8 +527,8 @@ namespace HC.WeChat.Shops
             else
             {
                 var shops = await query
-                .OrderByDescending(s => s.CreationTime)
-                .ThenBy(input.Sorting)
+                .OrderBy(s => s.Status)
+               .ThenByDescending(s => s.CreationTime)
                 .PageBy(input)
                 .ToListAsync();
 
