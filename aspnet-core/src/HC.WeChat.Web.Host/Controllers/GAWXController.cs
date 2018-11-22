@@ -530,7 +530,7 @@ namespace HC.WeChat.Web.Host.Controllers
         public static string ShareUrl = "/gawechat/index.html#/shares/share";
         public static string IntegralDetailUrl = "/gawechat/index.html#/integrals/integral";
         public static string CustBindInfoUrl = "/gawechat/index.html#/shop-employees/shop-employee";
-        public static string ShopReviewUrl = "/gawechat/index.html#/shops/shop;shopId={0};isAudit=true";
+        public static string ShopReviewUrl = "/gawechat/index.html#/shops/shop;shopId={0};isAudit=true;isShowWindows=false";
         public static string ExhibitionUrl = "/gawechat/index.html#/exhibitions/exhibition";
         public static string ShopUrlNotOpen = "/gawechat/index.html#/shops/shop;shopId={0};isShowWindows={1}";
         public static string ShopUrl = "/gawechat/index.html#/shops/shop;shopId={0}";
