@@ -18,6 +18,8 @@ import { ExhibitionComponent } from "./exhibition/exhibition.component";
 import { ExhibitionDetailComponent } from "./exhibition/exhibition-detail/exhibition-detail.component";
 import { DataStatisticsComponent } from "./data-statistics/data-statistics.component";
 import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics-detail/data-statistics-detail.component";
+import { DemandForecastComponent } from "./demand-forecast/demand-forecast.component";
+import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
 
 @NgModule({
     imports: [
@@ -42,7 +44,9 @@ import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics
         ExhibitionComponent,
         ExhibitionDetailComponent,
         DataStatisticsComponent,
-        DataStatisticsDetailComponent
+        DataStatisticsDetailComponent,
+        DemandForecastComponent,
+        QuestionnaireComponent
     ],
     providers: [
         AppRouteGuard
