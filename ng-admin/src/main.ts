@@ -5,10 +5,11 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
 import { hmrBootstrap } from './hmr';
-
+import zh from '@angular/common/locales/zh';
 import { preloaderFinished } from '@delon/theme';
+import { registerLocaleData } from '@angular/common';
 preloaderFinished();
-
+registerLocaleData(zh);
 if (environment.production) {
   enableProdMode();
 }
@@ -17,18 +18,18 @@ else {
 }
 
 const bootstrap = () => {
-    return platformBrowserDynamic().bootstrapModule(AppModule, {
-        defaultEncapsulation: ViewEncapsulation.Emulated,
-        preserveWhitespaces: false
-    });
+  return platformBrowserDynamic().bootstrapModule(AppModule, {
+    defaultEncapsulation: ViewEncapsulation.Emulated,
+    preserveWhitespaces: false
+  });
 };
 
 if (environment.hmr) {
   if (module['hot']) {
-      hmrBootstrap(module, bootstrap);
+    hmrBootstrap(module, bootstrap);
   } else {
-      console.error('HMR is not enabled for webpack-dev-server!');
-      console.log('Are you using the --hmr flag for ng serve?');
+    console.error('HMR is not enabled for webpack-dev-server!');
+    console.log('Are you using the --hmr flag for ng serve?');
   }
 } else {
   bootstrap().then(() => {

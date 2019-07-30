@@ -43,7 +43,15 @@ namespace  HC.WeChat.DemandForecasts.Dtos
 		public long? CreatorUserId { get; set; }
 
 
+        /// <summary>
+        /// 是否发布
+        /// </summary>
+        [Required]
+        public bool IsPublish { get; set; }
 
-
+        /// <summary>
+        /// 发布时间
+        /// </summary>
+        public DateTime? PublishTime { get; set; }
     }
 }

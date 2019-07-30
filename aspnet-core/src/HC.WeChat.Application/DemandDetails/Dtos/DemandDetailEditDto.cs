@@ -80,7 +80,18 @@ namespace  HC.WeChat.DemandDetails.Dtos
 		public DateTime CreationTime { get; set; }
 
 
+        /// <summary>
+        /// 零售户姓名
+        /// </summary>
+        [Required]
+        [StringLength(50)]
+        public string RetailerName { get; set; }
 
-
+        /// <summary>
+        /// 零售户编码
+        /// </summary>
+        [Required]
+        [StringLength(50)]
+        public string RetailerCode { get; set; }
     }
 }

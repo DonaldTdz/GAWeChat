@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.DemandDetails.Dtos;
 using HC.WeChat.DemandDetails;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.DemandDetails
 {
@@ -71,12 +72,6 @@ namespace HC.WeChat.DemandDetails
         /// </summary>
         Task BatchDelete(List<Guid> input);
 
-
-		/// <summary>
-        /// 导出DemandDetail为excel表
-        /// </summary>
-        /// <returns></returns>
-		//Task<FileDto> GetToExcel();
-
+        Task<APIResultDto> ImportDemandDetailExcelAsync(ImportDto input);
     }
 }
