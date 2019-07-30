@@ -5,9 +5,12 @@ using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations;
 using HC.WeChat.Questionnaires;
+using HC.WeChat.WechatEnums;
+using Abp.AutoMapper;
 
 namespace HC.WeChat.Questionnaires.Dtos
 {
+    [AutoMapFrom(typeof(Questionnaire))]
     public class QuestionnaireListDto : FullAuditedEntityDto<Guid> 
     {
 
@@ -16,7 +19,7 @@ namespace HC.WeChat.Questionnaires.Dtos
 		/// Type
 		/// </summary>
 		[Required(ErrorMessage="Type不能为空")]
-		public int Type { get; set; }
+		public QuestionType Type { get; set; }
 
 
 
@@ -43,7 +46,15 @@ namespace HC.WeChat.Questionnaires.Dtos
 		public string Question { get; set; }
 
 
+        /// <summary>
+        /// 分类名称
+        /// </summary>
+        public virtual string TypeName { get; set; }
 
-
+       
+        //public QuestionnaireListDto()
+        //{
+        //    TypeName = Type.ToString();
+        //}
     }
 }

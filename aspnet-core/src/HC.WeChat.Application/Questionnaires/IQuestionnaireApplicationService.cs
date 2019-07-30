@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.Questionnaires.Dtos;
 using HC.WeChat.Questionnaires;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.Questionnaires
 {
@@ -63,7 +64,7 @@ namespace HC.WeChat.Questionnaires
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Delete(EntityDto<Guid> input);
+        Task<APIResultDto> Delete(EntityDto<Guid> input);
 
 
         /// <summary>
@@ -72,11 +73,13 @@ namespace HC.WeChat.Questionnaires
         Task BatchDelete(List<Guid> input);
 
 
-		/// <summary>
+        /// <summary>
         /// 导出Questionnaire为excel表
         /// </summary>
         /// <returns></returns>
-		//Task<FileDto> GetToExcel();
+        //Task<FileDto> GetToExcel();
+
+        Task<APIResultDto> CreateOrUpdateQuestionnaire(QuestionnaireEditDto input);
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using HC.WeChat.WechatEnums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,7 +18,7 @@ namespace HC.WeChat.Questionnaires
         /// 类型（客户服务评价、卷烟供应评价、市场管理评价、综合评价）
         /// </summary>
         [Required]
-        public virtual int Type { get; set; }
+        public virtual QuestionType Type { get; set; }
 
         /// <summary>
         /// 是否多选

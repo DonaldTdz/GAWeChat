@@ -21,15 +21,17 @@ using Abp.Linq.Extensions;
 using HC.WeChat.Questionnaires;
 using HC.WeChat.Questionnaires.Dtos;
 using HC.WeChat.Questionnaires.DomainService;
-
-
+using HC.WeChat.Authorization;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.Questionnaires
 {
     /// <summary>
     /// Questionnaire应用层服务的接口实现方法  
     ///</summary>
-    [AbpAuthorize]
+    //[AbpAuthorize]
+
+    [AbpAuthorize(AppPermissions.Pages)]
     public class QuestionnaireAppService : WeChatAppServiceBase, IQuestionnaireAppService
     {
         private readonly IRepository<Questionnaire, Guid> _entityRepository;
@@ -41,11 +43,11 @@ namespace HC.WeChat.Questionnaires
         ///</summary>
         public QuestionnaireAppService(
         IRepository<Questionnaire, Guid> entityRepository
-        ,IQuestionnaireManager entityManager
+        , IQuestionnaireManager entityManager
         )
         {
-            _entityRepository = entityRepository; 
-             _entityManager=entityManager;
+            _entityRepository = entityRepository;
+            _entityManager = entityManager;
         }
 
 
@@ -54,158 +56,234 @@ namespace HC.WeChat.Questionnaires
         ///</summary>
         /// <param name="input"></param>
         /// <returns></returns>
-		 
+
         public async Task<PagedResultDto<QuestionnaireListDto>> GetPaged(GetQuestionnairesInput input)
-		{
+        {
 
-		    var query = _entityRepository.GetAll();
-			// TODO:根据传入的参数添加过滤条件
-            
-
-			var count = await query.CountAsync();
-
-			var entityList = await query
-					.OrderBy(input.Sorting).AsNoTracking()
-					.PageBy(input)
-					.ToListAsync();
-
-			// var entityListDtos = ObjectMapper.Map<List<QuestionnaireListDto>>(entityList);
-			var entityListDtos =entityList.MapTo<List<QuestionnaireListDto>>();
-
-			return new PagedResultDto<QuestionnaireListDto>(count,entityListDtos);
-		}
+            var query = _entityRepository.GetAll().WhereIf(input.type.HasValue,q=>q.Type==input.type.Value);
+            // TODO:根据传入的参数添加过滤条件
 
 
-		/// <summary>
-		/// 通过指定id获取QuestionnaireListDto信息
-		/// </summary>
-		 
-		public async Task<QuestionnaireListDto> GetById(EntityDto<Guid> input)
-		{
-			var entity = await _entityRepository.GetAsync(input.Id);
+            var count = await query.CountAsync();
 
-		    return entity.MapTo<QuestionnaireListDto>();
-		}
+            var entityList = await (from q in query
+                              orderby input.Sorting
+                              select new QuestionnaireListDto
+                              {
+                                  Id = q.Id,
+                                  No = q.No,
+                                  Type = q.Type,
+                                  IsMultiple = q.IsMultiple,
+                                  Question = q.Question,
+                                  TypeName = q.Type.ToString()
+                              }).OrderBy(i=>i.No).PageBy(input).ToListAsync();
 
-		/// <summary>
-		/// 获取编辑 Questionnaire
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		
-		public async Task<GetQuestionnaireForEditOutput> GetForEdit(NullableIdDto<Guid> input)
-		{
-			var output = new GetQuestionnaireForEditOutput();
-QuestionnaireEditDto editDto;
+            // var entityListDtos = ObjectMapper.Map<List<QuestionnaireListDto>>(entityList);
+            //var entityListDtos = entityList.MapTo<List<QuestionnaireListDto>>();
 
-			if (input.Id.HasValue)
-			{
-				var entity = await _entityRepository.GetAsync(input.Id.Value);
-
-				editDto = entity.MapTo<QuestionnaireEditDto>();
-
-				//questionnaireEditDto = ObjectMapper.Map<List<questionnaireEditDto>>(entity);
-			}
-			else
-			{
-				editDto = new QuestionnaireEditDto();
-			}
-
-			output.Questionnaire = editDto;
-			return output;
-		}
+            return new PagedResultDto<QuestionnaireListDto>(count, entityList);
+        }
 
 
-		/// <summary>
-		/// 添加或者修改Questionnaire的公共方法
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		
-		public async Task CreateOrUpdate(CreateOrUpdateQuestionnaireInput input)
-		{
+        /// <summary>
+        /// 通过指定id获取QuestionnaireListDto信息
+        /// </summary>
 
-			if (input.Questionnaire.Id.HasValue)
-			{
-				await Update(input.Questionnaire);
-			}
-			else
-			{
-				await Create(input.Questionnaire);
-			}
-		}
+        public async Task<QuestionnaireListDto> GetById(EntityDto<Guid> input)
+        {
+            var entity = await _entityRepository.GetAsync(input.Id);
+
+            return entity.MapTo<QuestionnaireListDto>();
+        }
+
+        /// <summary>
+        /// 获取编辑 Questionnaire
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+
+        public async Task<GetQuestionnaireForEditOutput> GetForEdit(NullableIdDto<Guid> input)
+        {
+            var output = new GetQuestionnaireForEditOutput();
+            QuestionnaireEditDto editDto;
+
+            if (input.Id.HasValue)
+            {
+                var entity = await _entityRepository.GetAsync(input.Id.Value);
+
+                editDto = entity.MapTo<QuestionnaireEditDto>();
+
+                //questionnaireEditDto = ObjectMapper.Map<List<questionnaireEditDto>>(entity);
+            }
+            else
+            {
+                editDto = new QuestionnaireEditDto();
+            }
+
+            output.Questionnaire = editDto;
+            return output;
+        }
 
 
-		/// <summary>
-		/// 新增Questionnaire
-		/// </summary>
-		
-		protected virtual async Task<QuestionnaireEditDto> Create(QuestionnaireEditDto input)
-		{
-			//TODO:新增前的逻辑判断，是否允许新增
+        /// <summary>
+        /// 添加或者修改Questionnaire的公共方法
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+
+        public async Task CreateOrUpdate(CreateOrUpdateQuestionnaireInput input)
+        {
+
+            if (input.Questionnaire.Id.HasValue)
+            {
+                await Update(input.Questionnaire);
+            }
+            else
+            {
+                await Create(input.Questionnaire);
+            }
+        }
+
+
+        /// <summary>
+        /// 新增Questionnaire
+        /// </summary>
+
+        protected virtual async Task<QuestionnaireEditDto> Create(QuestionnaireEditDto input)
+        {
+            //TODO:新增前的逻辑判断，是否允许新增
 
             // var entity = ObjectMapper.Map <Questionnaire>(input);
-            var entity=input.MapTo<Questionnaire>();
-			
-
-			entity = await _entityRepository.InsertAsync(entity);
-			return entity.MapTo<QuestionnaireEditDto>();
-		}
-
-		/// <summary>
-		/// 编辑Questionnaire
-		/// </summary>
-		
-		protected virtual async Task Update(QuestionnaireEditDto input)
-		{
-			//TODO:更新前的逻辑判断，是否允许更新
-
-			var entity = await _entityRepository.GetAsync(input.Id.Value);
-			input.MapTo(entity);
-
-			// ObjectMapper.Map(input, entity);
-		    await _entityRepository.UpdateAsync(entity);
-		}
+            var entity = input.MapTo<Questionnaire>();
 
 
+            entity = await _entityRepository.InsertAsync(entity);
+            return entity.MapTo<QuestionnaireEditDto>();
+        }
 
-		/// <summary>
-		/// 删除Questionnaire信息的方法
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		
-		public async Task Delete(EntityDto<Guid> input)
-		{
-			//TODO:删除前的逻辑判断，是否允许删除
-			await _entityRepository.DeleteAsync(input.Id);
-		}
+        /// <summary>
+        /// 编辑Questionnaire
+        /// </summary>
+
+        protected virtual async Task Update(QuestionnaireEditDto input)
+        {
+            //TODO:更新前的逻辑判断，是否允许更新
+
+            var entity = await _entityRepository.GetAsync(input.Id.Value);
+            input.MapTo(entity);
+
+            // ObjectMapper.Map(input, entity);
+            await _entityRepository.UpdateAsync(entity);
+        }
 
 
 
-		/// <summary>
-		/// 批量删除Questionnaire的方法
-		/// </summary>
-		
-		public async Task BatchDelete(List<Guid> input)
-		{
-			// TODO:批量删除前的逻辑判断，是否允许删除
-			await _entityRepository.DeleteAsync(s => input.Contains(s.Id));
-		}
+        /// <summary>
+        /// 删除Questionnaire信息的方法
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+
+        public async Task<APIResultDto> Delete(EntityDto<Guid> input)
+        {
+            //TODO:删除前的逻辑判断，是否允许删除
+            try
+            {
+                await _entityRepository.DeleteAsync(input.Id);
+                return new APIResultDto
+                {
+                    Code = 0,
+                    Data = input.Id
+                };
+            }
+            catch (Exception ex)
+            {
+                return new APIResultDto
+                {
+                    Code = 999,
+                    Msg = "删除异常,请重试."
+                };
+            }
+        }
 
 
-		/// <summary>
-		/// 导出Questionnaire为excel表,等待开发。
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<FileDto> GetToExcel()
-		//{
-		//	var users = await UserManager.Users.ToListAsync();
-		//	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
-		//	await FillRoleNames(userListDtos);
-		//	return _userListExcelExporter.ExportToFile(userListDtos);
-		//}
 
+        /// <summary>
+        /// 批量删除Questionnaire的方法
+        /// </summary>
+
+        public async Task BatchDelete(List<Guid> input)
+        {
+            // TODO:批量删除前的逻辑判断，是否允许删除
+            await _entityRepository.DeleteAsync(s => input.Contains(s.Id));
+        }
+
+
+        /// <summary>
+        /// 导出Questionnaire为excel表,等待开发。
+        /// </summary>
+        /// <returns></returns>
+        //public async Task<FileDto> GetToExcel()
+        //{
+        //	var users = await UserManager.Users.ToListAsync();
+        //	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
+        //	await FillRoleNames(userListDtos);
+        //	return _userListExcelExporter.ExportToFile(userListDtos);
+        //}
+
+        /// <summary>
+        /// 添加或者修改Questionnaire的公共方法
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+
+        public async Task<APIResultDto> CreateOrUpdateQuestionnaire(QuestionnaireEditDto input)
+        {
+            if (await ValidNoExist(input))
+            {
+                return new APIResultDto
+                {
+                    Code = 999,
+                    Msg = "问题编号已存在"
+                };
+            }
+            Questionnaire entity = new Questionnaire();
+            if (input.Id.HasValue)
+            {
+                entity = await _entityRepository.GetAsync(input.Id.Value);
+            }
+            input.MapTo(entity);
+            entity = await _entityRepository.InsertOrUpdateAsync(entity);
+
+            return new APIResultDto
+            {
+                Code = 0,
+                Data = entity
+            };
+        }
+
+        /// <summary>
+        /// 验证编号是否重复
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> ValidNoExist(QuestionnaireEditDto input)
+        {
+            int count = await _entityRepository.GetAll().Where(i => i.No == input.No).CountAsync();
+            if (input.Id.HasValue)
+            {
+                count = await _entityRepository.GetAll().Where(i => i.No == input.No&&i.Id!=input.Id.Value).CountAsync();
+                //if (count > 1)
+                //{
+                //    return true;
+                //}
+                //return false;
+            }
+            if (count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
 
