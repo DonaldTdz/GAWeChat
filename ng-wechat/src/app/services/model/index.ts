@@ -22,3 +22,5 @@ export * from './exhibition-shop';
 export * from './exhibition-config';
 export * from './voteLog';
 export * from './favorite';
+export * from './questionnaire';
+export * from './question-option';

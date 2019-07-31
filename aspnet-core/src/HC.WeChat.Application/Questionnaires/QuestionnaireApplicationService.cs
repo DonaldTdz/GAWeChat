@@ -75,7 +75,14 @@ namespace HC.WeChat.Questionnaires
                                   Type = q.Type,
                                   IsMultiple = q.IsMultiple,
                                   Question = q.Question,
-                                  TypeName = q.Type.ToString()
+                                  TypeName = q.Type.ToString(),
+                                  CreationTime = q.CreationTime,
+                                  CreatorUserId = q.CreatorUserId,
+                                  DeleterUserId = q.DeleterUserId,
+                                  DeletionTime = q.DeletionTime,
+                                  IsDeleted = q.IsDeleted,
+                                  LastModificationTime = q.LastModificationTime,
+                                  LastModifierUserId = q.LastModifierUserId
                               }).OrderBy(i=>i.No).PageBy(input).ToListAsync();
 
             // var entityListDtos = ObjectMapper.Map<List<QuestionnaireListDto>>(entityList);
@@ -192,11 +199,10 @@ namespace HC.WeChat.Questionnaires
                 await _entityRepository.DeleteAsync(input.Id);
                 return new APIResultDto
                 {
-                    Code = 0,
-                    Data = input.Id
+                    Code = 0
                 };
             }
-            catch (Exception ex)
+            catch
             {
                 return new APIResultDto
                 {
@@ -254,7 +260,7 @@ namespace HC.WeChat.Questionnaires
             }
             input.MapTo(entity);
             entity = await _entityRepository.InsertOrUpdateAsync(entity);
-
+            await CurrentUnitOfWork.SaveChangesAsync();
             return new APIResultDto
             {
                 Code = 0,

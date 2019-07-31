@@ -12,3 +12,4 @@ export * from './personal-center/customer.service';
 export * from './personal-center/level-account.service';
 export * from './personal-center/shopevaluation.service';
 export * from './personal-center/favorite.service';
+export * from './questionnaire/questionnaire.service';
