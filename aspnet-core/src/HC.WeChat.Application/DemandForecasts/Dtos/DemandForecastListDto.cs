@@ -38,8 +38,31 @@ namespace HC.WeChat.DemandForecasts.Dtos
 		/// </summary>
 		public long? CreatorUserId { get; set; }
 
+        /// <summary>
+        /// 是否发布
+        /// </summary>
+        [Required]
+        public bool IsPublish { get; set; }
 
+        /// <summary>
+        /// 发布时间
+        /// </summary>
+        public DateTime? PublishTime { get; set; }
+    }
 
-
+    /// <summary>
+    /// 微信列表DTO
+    /// </summary>
+    public class DemandWXListDto : EntityDto<Guid>
+    {
+        /// <summary>
+        /// Title
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Month
+        /// </summary>
+        public DateTime? Month { get; set; }
+        public string Status { get; set; }
     }
 }

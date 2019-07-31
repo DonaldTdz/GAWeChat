@@ -20,6 +20,11 @@ namespace HC.WeChat.ForecastRecords
         public virtual Guid DemandDetailId { get; set; }
 
         /// <summary>
+        /// 预测主表Id
+        /// </summary>
+        [Required]
+        public virtual Guid DemandForecastId { get; set; }
+        /// <summary>
         /// 预测量
         /// </summary>
         [Required]

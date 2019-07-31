@@ -34,5 +34,16 @@ namespace HC.WeChat.DemandForecasts
         /// CreatorUserId
         /// </summary>
         public virtual long? CreatorUserId { get; set; }
+
+        /// <summary>
+        /// 是否发布
+        /// </summary>
+        [Required]
+        public virtual bool IsPublish { get; set; }
+
+        /// <summary>
+        /// 发布时间
+        /// </summary>
+        public virtual DateTime? PublishTime { get; set; }
     }
 }

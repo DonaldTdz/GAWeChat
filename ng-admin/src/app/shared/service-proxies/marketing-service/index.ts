@@ -10,3 +10,4 @@ export * from './article-service';
 export * from './manuscript-service';
 export * from './exhibition-shop-service';
 export * from './questionnaire-service';
+export * from './demand-forecast-service';

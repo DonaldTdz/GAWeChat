@@ -1,1 +1,53 @@
-<!--component html goes here -->
+<pro-header></pro-header>
+<nz-card [nzBordered]="false">
+    <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
+        <div nz-row [nzGutter]="24">
+            <ng-template #deleteContent>
+                <h2>是否删除零售户{{employeeName}}?</h2>
+            </ng-template>
+        </div>
+        <div nz-row [nzGutter]="24">
+            <div nz-col style="float:right;text-align: right; padding-left:0px" [nzSpan]="8" class="mb-md">
+                <!-- <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading"
+                    [nzSize]="'large'">查询</button>
+                <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button> -->
+                <button nz-button (click)="create()" [nzType]="'primary'" [nzSize]="'large'">
+                    <i class="anticon anticon-plus"></i>
+                    <span>新建</span>
+                </button>
+            </div>
+        </div>
+    </form>
+    <nz-table #nzTable [nzAjaxData]="demandForecastList" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex"
+        [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true"
+        (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+        <thead nz-thead>
+            <tr>
+                <th nz-th>
+                    <span>预测标题</span>
+                </th>
+                <th nz-th>
+                    <span>预测时间</span>
+                </th>
+                <th nz-th>
+                    <span>状态</span>
+                </th>
+                <th nz-th>
+                    <span>操作</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody nz-tbody>
+            <tr nz-tbody-tr *ngFor="let item of nzTable.data">
+                <td nz-td>{{item.title}}</td>
+                <td nz-td>{{item.month | date:'yyyy-MM'}}</td>
+                <td nz-td>{{item.isPublish?'已发布':'草稿'}}</td>
+                <td nz-td>
+                    <a (click)="detail(item.id)">详情</a>
+                    <!-- <span nz-table-divider></span>
+                    <a (click)="delete(item,deleteContent)">删除</a> -->
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-card>

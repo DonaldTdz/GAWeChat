@@ -21,19 +21,21 @@ using Abp.Linq.Extensions;
 using HC.WeChat.DemandForecasts;
 using HC.WeChat.DemandForecasts.Dtos;
 using HC.WeChat.DemandForecasts.DomainService;
-
-
+using HC.WeChat.Authorization;
+using HC.WeChat.Dto;
+using HC.WeChat.ForecastRecords;
 
 namespace HC.WeChat.DemandForecasts
 {
     /// <summary>
     /// DemandForecast应用层服务的接口实现方法  
     ///</summary>
-    [AbpAuthorize]
+    //[AbpAuthorize]
+    [AbpAuthorize(AppPermissions.Pages)]
     public class DemandForecastAppService : WeChatAppServiceBase, IDemandForecastAppService
     {
         private readonly IRepository<DemandForecast, Guid> _entityRepository;
-
+        private readonly IRepository<ForecastRecord, Guid> _forecastRecordRepository;
         private readonly IDemandForecastManager _entityManager;
 
         /// <summary>
@@ -41,11 +43,13 @@ namespace HC.WeChat.DemandForecasts
         ///</summary>
         public DemandForecastAppService(
         IRepository<DemandForecast, Guid> entityRepository
-        ,IDemandForecastManager entityManager
+        , IRepository<ForecastRecord, Guid> forecastRecordRepository
+        , IDemandForecastManager entityManager
         )
         {
-            _entityRepository = entityRepository; 
-             _entityManager=entityManager;
+            _entityRepository = entityRepository;
+            _forecastRecordRepository = forecastRecordRepository;
+            _entityManager = entityManager;
         }
 
 
@@ -65,7 +69,7 @@ namespace HC.WeChat.DemandForecasts
 			var count = await query.CountAsync();
 
 			var entityList = await query
-					.OrderBy(input.Sorting).AsNoTracking()
+					.OrderBy(v=>v.IsPublish).ThenByDescending(v=>v.Month).AsNoTracking()
 					.PageBy(input)
 					.ToListAsync();
 
@@ -80,10 +84,9 @@ namespace HC.WeChat.DemandForecasts
 		/// 通过指定id获取DemandForecastListDto信息
 		/// </summary>
 		 
-		public async Task<DemandForecastListDto> GetById(EntityDto<Guid> input)
+		public async Task<DemandForecastListDto> GetById(Guid id)
 		{
-			var entity = await _entityRepository.GetAsync(input.Id);
-
+			var entity = await _entityRepository.GetAsync(id);
 		    return entity.MapTo<DemandForecastListDto>();
 		}
 
@@ -122,18 +125,24 @@ DemandForecastEditDto editDto;
 		/// <param name="input"></param>
 		/// <returns></returns>
 		
-		public async Task CreateOrUpdate(CreateOrUpdateDemandForecastInput input)
+		public async Task<APIResultDto> CreateOrUpdate(DemandForecastEditDto input)
 		{
 
-			if (input.DemandForecast.Id.HasValue)
+			if (input.Id.HasValue)
 			{
-				await Update(input.DemandForecast);
-			}
-			else
+                if(input.IsPublish == true)
+                {
+                    input.PublishTime = DateTime.Now;
+                }
+				var entity = await Update(input);
+                return new APIResultDto() { Code = 0, Data = entity };
+            }
+            else
 			{
-				await Create(input.DemandForecast);
-			}
-		}
+				var entity = await Create(input);
+                return new APIResultDto() { Code = 0, Data = entity };
+            }
+        }
 
 
 		/// <summary>
@@ -149,6 +158,7 @@ DemandForecastEditDto editDto;
 			
 
 			entity = await _entityRepository.InsertAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
 			return entity.MapTo<DemandForecastEditDto>();
 		}
 
@@ -156,26 +166,28 @@ DemandForecastEditDto editDto;
 		/// 编辑DemandForecast
 		/// </summary>
 		
-		protected virtual async Task Update(DemandForecastEditDto input)
+		protected virtual async Task<DemandForecast> Update(DemandForecastEditDto input)
 		{
 			//TODO:更新前的逻辑判断，是否允许更新
 
 			var entity = await _entityRepository.GetAsync(input.Id.Value);
 			input.MapTo(entity);
 
-			// ObjectMapper.Map(input, entity);
-		    await _entityRepository.UpdateAsync(entity);
-		}
+            // ObjectMapper.Map(input, entity);
+            await _entityRepository.UpdateAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            return entity;
+        }
 
 
 
-		/// <summary>
-		/// 删除DemandForecast信息的方法
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		
-		public async Task Delete(EntityDto<Guid> input)
+        /// <summary>
+        /// 删除DemandForecast信息的方法
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+
+        public async Task Delete(EntityDto<Guid> input)
 		{
 			//TODO:删除前的逻辑判断，是否允许删除
 			await _entityRepository.DeleteAsync(input.Id);
@@ -194,17 +206,29 @@ DemandForecastEditDto editDto;
 		}
 
 
-		/// <summary>
-		/// 导出DemandForecast为excel表,等待开发。
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<FileDto> GetToExcel()
-		//{
-		//	var users = await UserManager.Users.ToListAsync();
-		//	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
-		//	await FillRoleNames(userListDtos);
-		//	return _userListExcelExporter.ExportToFile(userListDtos);
-		//}
+        /// <summary>
+        /// 微信获取需求预测记录
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<DemandWXListDto>> GetWXDemandListAsync()
+        {
+            var query = _entityRepository.GetAll().Where(v => v.IsPublish == true);
+            var list = await (from q in query
+                              select new DemandWXListDto()
+                              {
+                                  Id = q.Id,
+                                  Month = q.Month,
+                                  Title = q.Title,
+                                  //Status = count>0?(DateTime.Now.Month >= q.Month.Value.Month ? "进行中" : "已逾期"):"已填写"
+                              }).OrderByDescending(v => v.Month).ToListAsync();
+            foreach (var item in list)
+            {
+                int count = await _forecastRecordRepository.CountAsync(v => v.DemandForecastId == item.Id);
+                item.Status = count <= 0 ? (DateTime.Now.Month > item.Month.Value.Month ? "已逾期" : "进行中") : "查看记录";
+            }
+            return list;
+        }
 
     }
 }

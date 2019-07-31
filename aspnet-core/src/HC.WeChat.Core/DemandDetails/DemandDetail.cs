@@ -59,5 +59,19 @@ namespace HC.WeChat.DemandDetails
         /// CreationTime
         /// </summary>
         public virtual DateTime CreationTime { get; set; }
+
+        /// <summary>
+        /// 零售户姓名
+        /// </summary>
+        [Required]
+        [StringLength(50)]
+        public virtual string RetailerName{ get; set; }
+
+        /// <summary>
+        /// 零售户编码
+        /// </summary>
+        [Required]
+        [StringLength(50)]
+        public virtual string RetailerCode{ get; set; }
     }
 }

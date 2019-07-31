@@ -16,6 +16,7 @@ import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics
 import { DemandForecastComponent } from "./demand-forecast/demand-forecast.component";
 import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
 import { EditQuestionnaireComponent } from "./questionnaire/edit-questionnaire/edit-questionnaire.component";
+import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'index', pathMatch: 'full' },
@@ -33,6 +34,8 @@ const routes: Routes = [
   { path: 'data-statistics', component: DataStatisticsComponent, data: { translate: 'data-statistics', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'data-statistics-detail/:groupNum/:organization', component: DataStatisticsDetailComponent, data: { translate: 'data-statistics-detail', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'demand-forecast', component: DemandForecastComponent, data: { translate: 'demand-forecast', permission: 'Pages' }, canActivate: [AppRouteGuard] },
+  { path: 'demand-detai', component: DemandDetailsComponent, data: { translate: 'demand-forecast', permission: 'Pages' }, canActivate: [AppRouteGuard] },
+  { path: 'demand-detai/:id', component: DemandDetailsComponent, data: { translate: 'demand-forecast', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'questionnaire', component: QuestionnaireComponent, data: { translate: 'questionnaire', permission: 'Pages' }, canActivate: [AppRouteGuard] },
 ];
 @NgModule({

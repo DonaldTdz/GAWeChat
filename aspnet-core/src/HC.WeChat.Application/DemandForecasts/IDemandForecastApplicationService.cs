@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.DemandForecasts.Dtos;
 using HC.WeChat.DemandForecasts;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.DemandForecasts
 {
@@ -39,7 +40,7 @@ namespace HC.WeChat.DemandForecasts
 		/// <summary>
 		/// 通过指定id获取DemandForecastListDto信息
 		/// </summary>
-		Task<DemandForecastListDto> GetById(EntityDto<Guid> input);
+		Task<DemandForecastListDto> GetById(Guid id);
 
 
         /// <summary>
@@ -55,8 +56,7 @@ namespace HC.WeChat.DemandForecasts
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CreateOrUpdate(CreateOrUpdateDemandForecastInput input);
-
+        Task<APIResultDto> CreateOrUpdate(DemandForecastEditDto input);
 
         /// <summary>
         /// 删除DemandForecast信息的方法
@@ -71,12 +71,6 @@ namespace HC.WeChat.DemandForecasts
         /// </summary>
         Task BatchDelete(List<Guid> input);
 
-
-		/// <summary>
-        /// 导出DemandForecast为excel表
-        /// </summary>
-        /// <returns></returns>
-		//Task<FileDto> GetToExcel();
-
+        Task<List<DemandWXListDto>> GetWXDemandListAsync();
     }
 }

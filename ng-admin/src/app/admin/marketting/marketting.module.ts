@@ -21,6 +21,8 @@ import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics
 import { DemandForecastComponent } from "./demand-forecast/demand-forecast.component";
 import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
 import { EditQuestionnaireComponent } from "./questionnaire/edit-questionnaire/edit-questionnaire.component";
+import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
+import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.component";
 
 @NgModule({
     imports: [
@@ -48,7 +50,9 @@ import { EditQuestionnaireComponent } from "./questionnaire/edit-questionnaire/e
         DataStatisticsDetailComponent,
         DemandForecastComponent,
         QuestionnaireComponent,
-        EditQuestionnaireComponent
+        EditQuestionnaireComponent,
+        DemandDetailsComponent,
+        DemandListComponent,
     ],
     providers: [
         AppRouteGuard
