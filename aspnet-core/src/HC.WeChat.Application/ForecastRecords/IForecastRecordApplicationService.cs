@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.ForecastRecords.Dtos;
 using HC.WeChat.ForecastRecords;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.ForecastRecords
 {
@@ -70,13 +71,6 @@ namespace HC.WeChat.ForecastRecords
         /// 批量删除ForecastRecord
         /// </summary>
         Task BatchDelete(List<Guid> input);
-
-
-		/// <summary>
-        /// 导出ForecastRecord为excel表
-        /// </summary>
-        /// <returns></returns>
-		//Task<FileDto> GetToExcel();
-
+        Task<APIResultDto> CreateForecastRecordAsync(ForecastRecordWXEditDto input);
     }
 }

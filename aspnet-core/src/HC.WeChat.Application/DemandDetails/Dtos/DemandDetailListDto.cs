@@ -89,4 +89,12 @@ namespace HC.WeChat.DemandDetails.Dtos
         [StringLength(50)]
         public string RetailerCode { get; set; }
     }
+
+    public class DetailWXListDto : EntityDto<Guid>
+    {
+        [Required(ErrorMessage = "Name不能为空")]
+        public string Name { get; set; }
+        public int? LastMonthNum { get; set; }
+        public int PredictiveValue { get; set; }
+    }
 }

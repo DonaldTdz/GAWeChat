@@ -18,12 +18,16 @@ namespace HC.WeChat.ForecastRecords.Dtos
 		[Required(ErrorMessage="DemandDetailId不能为空")]
 		public Guid DemandDetailId { get; set; }
 
+        /// <summary>
+        /// 预测主表Id
+        /// </summary>
+        [Required]
+        public Guid DemandForecastId { get; set; }
 
-
-		/// <summary>
-		/// PredictiveValue
-		/// </summary>
-		[Required(ErrorMessage="PredictiveValue不能为空")]
+        /// <summary>
+        /// PredictiveValue
+        /// </summary>
+        [Required(ErrorMessage="PredictiveValue不能为空")]
 		public int PredictiveValue { get; set; }
 
 

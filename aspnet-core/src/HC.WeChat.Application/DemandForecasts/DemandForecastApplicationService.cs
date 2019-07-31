@@ -23,6 +23,7 @@ using HC.WeChat.DemandForecasts.Dtos;
 using HC.WeChat.DemandForecasts.DomainService;
 using HC.WeChat.Authorization;
 using HC.WeChat.Dto;
+using HC.WeChat.ForecastRecords;
 
 namespace HC.WeChat.DemandForecasts
 {
@@ -34,7 +35,7 @@ namespace HC.WeChat.DemandForecasts
     public class DemandForecastAppService : WeChatAppServiceBase, IDemandForecastAppService
     {
         private readonly IRepository<DemandForecast, Guid> _entityRepository;
-
+        private readonly IRepository<ForecastRecord, Guid> _forecastRecordRepository;
         private readonly IDemandForecastManager _entityManager;
 
         /// <summary>
@@ -42,11 +43,13 @@ namespace HC.WeChat.DemandForecasts
         ///</summary>
         public DemandForecastAppService(
         IRepository<DemandForecast, Guid> entityRepository
-        ,IDemandForecastManager entityManager
+        , IRepository<ForecastRecord, Guid> forecastRecordRepository
+        , IDemandForecastManager entityManager
         )
         {
-            _entityRepository = entityRepository; 
-             _entityManager=entityManager;
+            _entityRepository = entityRepository;
+            _forecastRecordRepository = forecastRecordRepository;
+            _entityManager = entityManager;
         }
 
 
@@ -217,8 +220,13 @@ DemandForecastEditDto editDto;
                                   Id = q.Id,
                                   Month = q.Month,
                                   Title = q.Title,
-                                  Status = DateTime.Now.Month == q.Month.Value.Month ? "进行中" : "已逾期"
+                                  //Status = count>0?(DateTime.Now.Month >= q.Month.Value.Month ? "进行中" : "已逾期"):"已填写"
                               }).OrderByDescending(v => v.Month).ToListAsync();
+            foreach (var item in list)
+            {
+                int count = await _forecastRecordRepository.CountAsync(v => v.DemandForecastId == item.Id);
+                item.Status = count <= 0 ? (DateTime.Now.Month > item.Month.Value.Month ? "已逾期" : "进行中") : "查看记录";
+            }
             return list;
         }
 

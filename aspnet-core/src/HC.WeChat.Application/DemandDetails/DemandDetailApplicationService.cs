@@ -16,9 +16,6 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Application.Services.Dto;
 using Abp.Linq.Extensions;
-
-
-using HC.WeChat.DemandDetails;
 using HC.WeChat.DemandDetails.Dtos;
 using HC.WeChat.DemandDetails.DomainService;
 using HC.WeChat.Authorization;
@@ -27,6 +24,9 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using HC.WeChat.WeChatUsers;
+using HC.WeChat.Retailers;
+using HC.WeChat.ForecastRecords;
 
 namespace HC.WeChat.DemandDetails
 {
@@ -38,6 +38,9 @@ namespace HC.WeChat.DemandDetails
     public class DemandDetailAppService : WeChatAppServiceBase, IDemandDetailAppService
     {
         private readonly IRepository<DemandDetail, Guid> _entityRepository;
+        private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
+        private readonly IRepository<ForecastRecord, Guid> _forecastRecordRepository;
+        private readonly IRetailerRepository _retailerRepository;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IDemandDetailManager _entityManager;
 
@@ -46,11 +49,17 @@ namespace HC.WeChat.DemandDetails
         ///</summary>
         public DemandDetailAppService(
         IRepository<DemandDetail, Guid> entityRepository
+        , IRepository<WeChatUser, Guid> wechatuserRepository
+        , IRepository<ForecastRecord, Guid> forecastRecordRepository
+        , IRetailerRepository retailerRepository
         , IDemandDetailManager entityManager
         , IHostingEnvironment hostingEnvironment
         )
         {
             _entityRepository = entityRepository;
+            _wechatuserRepository = wechatuserRepository;
+            _retailerRepository = retailerRepository;
+            _forecastRecordRepository = forecastRecordRepository;
             _entityManager = entityManager;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -277,6 +286,52 @@ namespace HC.WeChat.DemandDetails
                 //}
             }
             await CurrentUnitOfWork.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 微信获取当前用户需求列表
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<DetailWXListDto>> GetWXDetailListByIdAsync(GetWXDetailListDto input)
+        {
+            Guid? userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == input.OpenId).Select(v => v.UserId).FirstOrDefaultAsync();
+            string retailCode = await _retailerRepository.GetAll().Where(v => v.Id == userId).Select(v => v.Code).FirstOrDefaultAsync();
+            var query = _entityRepository.GetAll().Where(v => v.DemandForecastId == input.DemandForecastId && v.RetailerCode == retailCode);
+            var list = await (from q in query
+                              select new DetailWXListDto()
+                              {
+                                  Id = q.Id,
+                                  LastMonthNum = q.LastMonthNum,
+                                  Name = q.Name,
+                                  PredictiveValue = 0
+                              }).ToListAsync();
+            return list;
+        }
+
+        /// <summary>
+        /// 微信查看当前用户填写记录
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<DetailWXListDto>> GetWXDetailRecordByIdAsync(GetWXDetailListDto input)
+        {
+            Guid? userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == input.OpenId).Select(v => v.UserId).FirstOrDefaultAsync();
+            string retailCode = await _retailerRepository.GetAll().Where(v => v.Id == userId).Select(v => v.Code).FirstOrDefaultAsync();
+            var query = _entityRepository.GetAll().Where(v => v.DemandForecastId == input.DemandForecastId && v.RetailerCode == retailCode);
+            var record = _forecastRecordRepository.GetAll().Where(v => v.OpenId == input.OpenId && v.DemandForecastId == input.DemandForecastId);
+            var list = await (from q in query
+                              join r in record on q.Id equals r.DemandDetailId
+                              select new DetailWXListDto()
+                              {
+                                  Id = q.Id,
+                                  LastMonthNum = q.LastMonthNum,
+                                  Name = q.Name,
+                                  PredictiveValue = r.PredictiveValue
+                              }).ToListAsync();
+            return list;
         }
     }
 }

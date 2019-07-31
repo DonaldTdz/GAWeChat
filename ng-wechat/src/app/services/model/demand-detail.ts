@@ -1,15 +1,16 @@
 export class DemandDetail implements IDemandDetail {
     id: string;
-    demandForecastId: string;
+    // demandForecastId: string;
     name: string;
-    type: number;
-    wholesalePrice: number;
-    suggestPrice: number;
-    isAlien: boolean;
+    // type: number;
+    // wholesalePrice: number;
+    // suggestPrice: number;
+    // isAlien: boolean;
     lastMonthNum: number;
-    yearOnYear: number;
-    retailerName: string;
-    retailerCode: string;
+    // yearOnYear: number;
+    // retailerName: string;
+    // retailerCode: string;
+    predictiveValue: number;
 
     constructor(data?: IDemandDetail) {
         if (data) {
@@ -23,16 +24,17 @@ export class DemandDetail implements IDemandDetail {
     init(data?: any) {
         if (data) {
             this.id = data["id"];
-            this.demandForecastId = data["demandForecastId"];
+            // this.demandForecastId = data["demandForecastId"];
             this.name = data["name"];
-            this.type = data["type"];
-            this.wholesalePrice = data["wholesalePrice"];
-            this.suggestPrice = data["suggestPrice"];
-            this.isAlien = data["isAlien"];
+            // this.type = data["type"];
+            // this.wholesalePrice = data["wholesalePrice"];
+            // this.suggestPrice = data["suggestPrice"];
+            // this.isAlien = data["isAlien"];
             this.lastMonthNum = data["lastMonthNum"];
-            this.yearOnYear = data["yearOnYear"];
-            this.retailerName = data["retailerName"];
-            this.retailerCode = data["retailerCode"];
+            // this.yearOnYear = data["yearOnYear"];
+            // this.retailerName = data["retailerName"];
+            // this.retailerCode = data["retailerCode"];
+            this.predictiveValue = data["predictiveValue"];
         }
     }
 
@@ -55,14 +57,15 @@ export class DemandDetail implements IDemandDetail {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["demandForecastId"] = this.demandForecastId;
+        // data["demandForecastId"] = this.demandForecastId;
         data["name"] = this.name;
-        data["type"] = this.type;
-        data["wholesalePrice"] = this.wholesalePrice;
-        data["suggestPrice"] = this.suggestPrice;
-        data["isAlien"] = this.isAlien;
+        // data["type"] = this.type;
+        // data["wholesalePrice"] = this.wholesalePrice;
+        // data["suggestPrice"] = this.suggestPrice;
+        // data["isAlien"] = this.isAlien;
         data["lastMonthNum"] = this.lastMonthNum;
-        data["yearOnYear"] = this.yearOnYear;
+        // data["yearOnYear"] = this.yearOnYear;
+        data["predictiveValue"] = this.predictiveValue;
         return data;
     }
 
@@ -75,14 +78,15 @@ export class DemandDetail implements IDemandDetail {
 }
 export interface IDemandDetail {
     id: string;
-    demandForecastId: string;
+    // demandForecastId: string;
     name: string;
-    type: number;
-    wholesalePrice: number;
-    suggestPrice: number;
-    isAlien: boolean;
+    // type: number;
+    // wholesalePrice: number;
+    // suggestPrice: number;
+    // isAlien: boolean;
     lastMonthNum: number;
-    yearOnYear: number;
-    retailerName: string;
-    retailerCode: string;
+    // yearOnYear: number;
+    // retailerName: string;
+    // retailerCode: string;
+    predictiveValue: number;
 }

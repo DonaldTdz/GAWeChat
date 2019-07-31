@@ -20,8 +20,20 @@ namespace HC.WeChat.DemandDetails.Dtos
         }
     }
 
+    /// <summary>
+    /// 数据导入DTO
+    /// </summary>
     public class ImportDto
     {
+        public Guid DemandForecastId { get; set; }
+    }
+
+    /// <summary>
+    /// 微信获取列表DTO
+    /// </summary>
+    public class GetWXDetailListDto
+    {
+        public string OpenId { get; set; }
         public Guid DemandForecastId { get; set; }
     }
 }

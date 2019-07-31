@@ -73,5 +73,7 @@ namespace HC.WeChat.DemandDetails
         Task BatchDelete(List<Guid> input);
 
         Task<APIResultDto> ImportDemandDetailExcelAsync(ImportDto input);
+        Task<List<DetailWXListDto>> GetWXDetailListByIdAsync(GetWXDetailListDto input);
+        Task<List<DetailWXListDto>> GetWXDetailRecordByIdAsync(GetWXDetailListDto input);
     }
 }
