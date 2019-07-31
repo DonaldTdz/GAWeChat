@@ -49,4 +49,20 @@ namespace HC.WeChat.DemandForecasts.Dtos
         /// </summary>
         public DateTime? PublishTime { get; set; }
     }
+
+    /// <summary>
+    /// Œ¢–≈¡–±ÌDTO
+    /// </summary>
+    public class DemandWXListDto : EntityDto<Guid>
+    {
+        /// <summary>
+        /// Title
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Month
+        /// </summary>
+        public DateTime? Month { get; set; }
+        public string Status { get; set; }
+    }
 }

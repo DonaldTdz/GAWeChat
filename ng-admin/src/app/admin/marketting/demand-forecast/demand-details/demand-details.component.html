@@ -2,11 +2,19 @@
     <form nz-form [formGroup]="form" id="frm_create_role">
         <div nz-row>
             <div nz-col [nzSpan]="16">
+                <div nz-form-item nz-row style="margin-bottom: 0px;">
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label for="status" nz-form-item-required>状态</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" style="color: rgb(247, 98, 158);" nzHasFeedback>
+                        {{demandForecast.isPublish==true?"已发布":"草稿"}}
+                    </div>
+                </div>
                 <div nz-form-item nz-row>
-                    <div nz-form-label nz-col [nzSm]="5">
+                    <div nz-form-label nz-col [nzSm]="4">
                         <label for="title" nz-form-item-required>预测标题</label>
                     </div>
-                    <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('title')">
+                    <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('title')">
                         <nz-input formControlName="title" [(ngModel)]="demandForecast.title" [nzId]="'title'">
                         </nz-input>
                         <div nz-form-explain
@@ -18,7 +26,7 @@
                     </div>
                 </div>
                 <div nz-form-item nz-row>
-                    <div nz-form-label nz-col [nzSm]="5">
+                    <div nz-form-label nz-col [nzSm]="4">
                         <label for="month" nz-form-item-required>预测时间</label>
                     </div>
                     <div nz-form-control nz-col [nzValidateStatus]="getFormControl('month')">

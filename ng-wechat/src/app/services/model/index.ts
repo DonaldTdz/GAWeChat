@@ -1,3 +1,5 @@
+import { from } from 'rxjs/observable/from';
+
 export * from './api.result';
 export * from './ientity';
 export * from './wechat-user';
@@ -22,3 +24,5 @@ export * from './exhibition-shop';
 export * from './exhibition-config';
 export * from './voteLog';
 export * from './favorite';
+export * from './demand-forecast';
+export * from './demand-detail';

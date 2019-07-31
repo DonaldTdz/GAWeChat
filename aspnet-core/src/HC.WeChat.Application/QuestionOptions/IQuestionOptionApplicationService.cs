@@ -18,29 +18,28 @@ using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 
 
-using HC.WeChat.DemandForecasts.Dtos;
-using HC.WeChat.DemandForecasts;
-using HC.WeChat.Dto;
+using HC.WeChat.QuestionOptions.Dtos;
+using HC.WeChat.QuestionOptions;
 
-namespace HC.WeChat.DemandForecasts
+namespace HC.WeChat.QuestionOptions
 {
     /// <summary>
-    /// DemandForecast应用层服务的接口方法
+    /// QuestionOption应用层服务的接口方法
     ///</summary>
-    public interface IDemandForecastAppService : IApplicationService
+    public interface IQuestionOptionAppService : IApplicationService
     {
         /// <summary>
-		/// 获取DemandForecast的分页列表信息
+		/// 获取QuestionOption的分页列表信息
 		///</summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<PagedResultDto<DemandForecastListDto>> GetPaged(GetDemandForecastsInput input);
+        Task<PagedResultDto<QuestionOptionListDto>> GetPaged(GetQuestionOptionsInput input);
 
 
 		/// <summary>
-		/// 通过指定id获取DemandForecastListDto信息
+		/// 通过指定id获取QuestionOptionListDto信息
 		/// </summary>
-		Task<DemandForecastListDto> GetById(Guid id);
+		Task<QuestionOptionListDto> GetById(EntityDto<Guid> input);
 
 
         /// <summary>
@@ -48,18 +47,19 @@ namespace HC.WeChat.DemandForecasts
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<GetDemandForecastForEditOutput> GetForEdit(NullableIdDto<Guid> input);
+        Task<GetQuestionOptionForEditOutput> GetForEdit(NullableIdDto<Guid> input);
 
 
         /// <summary>
-        /// 添加或者修改DemandForecast的公共方法
+        /// 添加或者修改QuestionOption的公共方法
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<APIResultDto> CreateOrUpdate(DemandForecastEditDto input);
+        Task CreateOrUpdate(CreateOrUpdateQuestionOptionInput input);
+
 
         /// <summary>
-        /// 删除DemandForecast信息的方法
+        /// 删除QuestionOption信息的方法
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
@@ -67,10 +67,16 @@ namespace HC.WeChat.DemandForecasts
 
 
         /// <summary>
-        /// 批量删除DemandForecast
+        /// 批量删除QuestionOption
         /// </summary>
         Task BatchDelete(List<Guid> input);
 
-        Task<List<DemandWXListDto>> GetWXDemandListAsync();
+
+		/// <summary>
+        /// 导出QuestionOption为excel表
+        /// </summary>
+        /// <returns></returns>
+		//Task<FileDto> GetToExcel();
+
     }
 }

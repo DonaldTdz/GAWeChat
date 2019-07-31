@@ -50,6 +50,7 @@ using HC.WeChat.DemandDetails;
 using HC.WeChat.DemandForecasts;
 using HC.WeChat.ForecastRecords;
 using HC.WeChat.Questionnaires;
+using HC.WeChat.QuestionOptions;
 
 namespace HC.WeChat.EntityFrameworkCore
 {
@@ -157,6 +158,6 @@ namespace HC.WeChat.EntityFrameworkCore
         public virtual DbSet<ForecastRecord> ForecastRecords { get; set; }
 
         public virtual DbSet<Questionnaire> Questionnaires { get; set; }
-
+        public virtual DbSet<QuestionOption> QuestionOptions { get; set; }
     }
 }

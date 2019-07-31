@@ -1,0 +1,19 @@
+<Page [ngClass]="'DemandForecast'" [title]="'需求预测'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells__title">购买商品列表</div>
+    <div class="weui-cells">
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>中华</p>
+                <p style="color:#999999;font-size:12px;">批发价:￥381.6</p>
+            </div>
+            <div class="weui-cell__ft">
+                <weui-stepper [(ngModel)]="num" [min]="0" [max]="99999" name="num"></weui-stepper>
+            </div>
+        </div>
+        <!-- <weui-loadmore type="line" *ngIf="!goods || goods.length == 0"></weui-loadmore> -->
+    </div>
+    <div class="weui-btn-area">
+        <button class="weui-btn weui-btn_primary" [disabled]="!cardNum || !goodsBarCode" (click)="onSave()"
+            [ngClass]="{'weui-btn_disabled': !cardNum || !goodsBarCode}">提交</button>
+    </div>
+</Page>

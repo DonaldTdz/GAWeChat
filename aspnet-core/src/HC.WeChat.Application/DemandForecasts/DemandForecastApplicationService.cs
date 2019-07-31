@@ -203,17 +203,24 @@ DemandForecastEditDto editDto;
 		}
 
 
-		/// <summary>
-		/// 导出DemandForecast为excel表,等待开发。
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<FileDto> GetToExcel()
-		//{
-		//	var users = await UserManager.Users.ToListAsync();
-		//	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
-		//	await FillRoleNames(userListDtos);
-		//	return _userListExcelExporter.ExportToFile(userListDtos);
-		//}
+        /// <summary>
+        /// 微信获取需求预测记录
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<DemandWXListDto>> GetWXDemandListAsync()
+        {
+            var query = _entityRepository.GetAll().Where(v => v.IsPublish == true);
+            var list = await (from q in query
+                              select new DemandWXListDto()
+                              {
+                                  Id = q.Id,
+                                  Month = q.Month,
+                                  Title = q.Title,
+                                  Status = DateTime.Now.Month == q.Month.Value.Month ? "进行中" : "已逾期"
+                              }).OrderByDescending(v => v.Month).ToListAsync();
+            return list;
+        }
 
     }
 }
