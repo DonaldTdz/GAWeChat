@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.QuestionOptions.Dtos;
 using HC.WeChat.QuestionOptions;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.QuestionOptions
 {
@@ -55,7 +56,7 @@ namespace HC.WeChat.QuestionOptions
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CreateOrUpdate(CreateOrUpdateQuestionOptionInput input);
+        Task<APIResultDto> CreateOrUpdate(CreateOrUpdateQuestionOptionInput input);
 
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace HC.WeChat.QuestionOptions
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Delete(EntityDto<Guid> input);
+        Task<APIResultDto> Delete(EntityDto<Guid> input);
 
 
         /// <summary>

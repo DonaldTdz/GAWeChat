@@ -9,17 +9,21 @@ import 'rxjs/add/operator/catch';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '../httpclient';
 import { Observable } from 'rxjs/Observable';
-import { Questionnaire } from '../model/index';
+import { Questionnaire, QuestionOptions } from '../model/index';
 
 
 @Injectable()
 export class QuestionnaireService {
     constructor(private http: HttpClient) { }
 
-    GetPagedArticles(params: any): Observable<Questionnaire[]> {
-        return this.http.get('/api/services/app/Questionnaire/GetPaged', params).map(data => {
+    GetQuestionnaireList(): Observable<Questionnaire[]> {
+        return this.http.get('/api/services/app/Questionnaire/GetWXQuestionnaireList').map(data => {
             if (data.result) {
-                return Questionnaire.fromJSArray(data.result);
+                var result = Questionnaire.fromJSArray(data.result);
+                result.forEach(item => {
+                    QuestionOptions.fromJSArray(item.questionOptions);
+                });
+                return result;
             } else {
                 return null;
             }

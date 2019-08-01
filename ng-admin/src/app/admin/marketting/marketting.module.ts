@@ -21,8 +21,11 @@ import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics
 import { DemandForecastComponent } from "./demand-forecast/demand-forecast.component";
 import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
 import { EditQuestionnaireComponent } from "./questionnaire/edit-questionnaire/edit-questionnaire.component";
+import { DetailQuestionnaireComponent } from "./questionnaire/detail-questionnaire/detail-questionnaire/detail-questionnaire.component";
+import { CreateQuestionnaireComponent } from "./questionnaire/create-questionnaire/create-questionnaire/create-questionnaire.component";
 import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
 import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.component";
+import { QuestionOptionComponent } from "./questionnaire/question-option/question-option/question-option.component";
 
 @NgModule({
     imports: [
@@ -51,6 +54,9 @@ import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.c
         DemandForecastComponent,
         QuestionnaireComponent,
         EditQuestionnaireComponent,
+        DetailQuestionnaireComponent,
+        CreateQuestionnaireComponent,
+        QuestionOptionComponent,
         DemandDetailsComponent,
         DemandListComponent,
     ],

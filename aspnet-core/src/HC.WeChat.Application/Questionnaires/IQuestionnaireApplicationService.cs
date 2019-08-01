@@ -21,6 +21,7 @@ using Abp.Application.Services.Dto;
 using HC.WeChat.Questionnaires.Dtos;
 using HC.WeChat.Questionnaires;
 using HC.WeChat.Dto;
+using HC.WeChat.QuestionOptions;
 
 namespace HC.WeChat.Questionnaires
 {
@@ -80,6 +81,10 @@ namespace HC.WeChat.Questionnaires
         //Task<FileDto> GetToExcel();
 
         Task<APIResultDto> CreateOrUpdateQuestionnaire(QuestionnaireEditDto input);
+
+        Task<List<WXQuestionnaireListDto>> GetWXQuestionnaireList();
+
+        Task<List<QuestionOption>> GetOptions(Guid questionnaireId);
 
     }
 }

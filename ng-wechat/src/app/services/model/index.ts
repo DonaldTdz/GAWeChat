@@ -26,6 +26,8 @@ export * from './voteLog';
 export * from './favorite';
 export * from './questionnaire';
 export * from './question-option';
+export * from './answer-record';
 export * from './demand-forecast';
 export * from './demand-detail';
 export * from './forecast-record-dto';
+export * from './questionnaire-fill-record';

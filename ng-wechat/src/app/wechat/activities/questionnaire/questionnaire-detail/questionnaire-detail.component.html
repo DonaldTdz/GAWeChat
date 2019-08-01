@@ -1,4 +1,4 @@
-<Page [ngClass]="'preview'" [title]="'问卷调查'" [showTitle]="false" [spacing]="false">
+<Page [ngClass]="'QuestionnaireDetail'" [title]="'问卷调查详情'" [showTitle]="false" [spacing]="false">
     <form #f="ngForm" (ngSubmit)="onSave()">
         <div class="progress">
             <weui-progress [value]="progressBar.p1.value" (cancel)="onCancel('p1')" [canCancel]="false"></weui-progress>
@@ -10,24 +10,14 @@
                 <label>{{questionnaire.question}}</label>
                 <label class="weui-cell weui-check__label" *ngFor="let option of questionnaire.questionOptions">
                     <div class="weui-cell__bd">
-                        <p>{{option.value}}.{{option.desc}}</p>
+                        <p>{{option.desc}}</p>
                     </div>
                     <div class="weui-cell__ft">
-                        <input type="radio" class="weui-check" [(ngModel)]="option.value" name="radio1" [value]="option.value"
-                            id="radio-1" />
+                        <input type="radio" class="weui-check" (click)="onRadioClick(questionnaire.id,option.value)" [(ngModel)]="option.value" name="{{questionnaire.no}}" [value]="option.value"
+                            id="radio-{{questionnaire.no}}" />
                         <span class="weui-icon-checked"></span>
                     </div>
                 </label>
-                <!-- <label class="weui-cell weui-check__label">
-                    <div class="weui-cell__bd">
-                        <p>否</p>
-                    </div>
-                    <div class="weui-cell__ft">
-                        <input type="radio" class="weui-check" [(ngModel)]="res.radio" name="radio1" [value]="i"
-                            id="radio-1" />
-                        <span class="weui-icon-checked"></span>
-                    </div>
-                </label> -->
             </div>
         </div>
         <div class="weui-form-preview__ft">

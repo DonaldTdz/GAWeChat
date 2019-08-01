@@ -17,6 +17,9 @@ import { DemandForecastComponent } from "./demand-forecast/demand-forecast.compo
 import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
 import { EditQuestionnaireComponent } from "./questionnaire/edit-questionnaire/edit-questionnaire.component";
 import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
+import { CreateQuestionnaireComponent } from "./questionnaire/create-questionnaire/create-questionnaire/create-questionnaire.component";
+import { DetailQuestionnaireComponent } from "./questionnaire/detail-questionnaire/detail-questionnaire/detail-questionnaire.component";
+import { QuestionOptionComponent } from "./questionnaire/question-option/question-option/question-option.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'index', pathMatch: 'full' },
@@ -37,6 +40,9 @@ const routes: Routes = [
   { path: 'demand-detai', component: DemandDetailsComponent, data: { translate: 'demand-forecast', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'demand-detai/:id', component: DemandDetailsComponent, data: { translate: 'demand-forecast', permission: 'Pages' }, canActivate: [AppRouteGuard] },
   { path: 'questionnaire', component: QuestionnaireComponent, data: { translate: 'questionnaire', permission: 'Pages' }, canActivate: [AppRouteGuard] },
+  { path: 'detail-questionnaire/:id', component: DetailQuestionnaireComponent, data: { translate: 'questionnaire', permission: 'Pages' }, canActivate: [AppRouteGuard] },
+  { path: 'create-questionnaire', component: CreateQuestionnaireComponent, data: { translate: 'questionnaire', permission: 'Pages' }, canActivate: [AppRouteGuard] },
+  // { path: 'questionoption', component: QuestionOptionComponent, data: { translate: 'questionnaire', permission: 'Pages' }, canActivate: [AppRouteGuard] },
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

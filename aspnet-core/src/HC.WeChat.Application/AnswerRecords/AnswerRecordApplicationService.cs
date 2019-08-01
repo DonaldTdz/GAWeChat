@@ -211,7 +211,7 @@ AnswerRecordEditDto editDto;
         ///</summary>
         /// <param name="input"></param>
         /// <returns></returns>
-
+        [AbpAllowAnonymous]
         public async Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input)
         {
             // TODO:待实现

@@ -11,7 +11,7 @@ import { Inject, Optional, Injectable, InjectionToken } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { Http, Headers, ResponseContentType, Response } from "@angular/http";
 import { Parameter, ApiResult } from '@shared/service-proxies/entity';
-import { Questionnaire } from '@shared/entity/marketting';
+import { Questionnaire, QuestionOptions } from '@shared/entity/marketting';
 
 function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): Observable<any> {
     if (result !== null && result !== undefined)
@@ -79,18 +79,69 @@ export class QuestionnaireServiceProxy {
         }
         return Observable.of<ApiResult>(<any>null);
     }
-    
+
+    createQuestionOption(input: QuestionOptions): Observable<ApiResult> {
+        let url_ = this.baseUrl + "/api/services/app/QuestionOption/CreateOrUpdate";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify({QuestionOption:input});
+
+        let options_ = {
+            body: content_,
+            method: "post",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processCreateQuestionOption(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processCreateQuestionOption(response_);
+                } catch (e) {
+                    return <Observable<ApiResult>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<ApiResult>><any>Observable.throw(response_);
+        });
+    }
+    protected processCreateQuestionOption(response: Response): Observable<ApiResult> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? ApiResult.fromJS(resultData200) : new ApiResult();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<ApiResult>(<any>null);
+    }
+
     /**
      * 获取所有投稿信息
      */
-    getAll(skipCount: number, maxResultCount: number, type?:number): Observable<PagedResultDtoOfQuestionnaire> {
+    getAll(skipCount: number, maxResultCount: number, type?: number): Observable<PagedResultDtoOfQuestionnaire> {
         let url_ = this.baseUrl + "/api/services/app/Questionnaire/GetPaged?";
         if (skipCount !== undefined)
             url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
         if (maxResultCount !== undefined)
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         if (type !== null) {
-            url_ += "Type="+encodeURIComponent(""+type)+"&";
+            url_ += "Type=" + encodeURIComponent("" + type) + "&";
         }
         url_ = url_.replace(/[?&]$/, "");
 
@@ -189,6 +240,108 @@ export class QuestionnaireServiceProxy {
         return Observable.of<Questionnaire>(<any>null);
     }
 
+    getQuestionOptionById(id: string): Observable<QuestionOptions> {
+        let url_ = this.baseUrl + "/api/services/app/QuestionOption/GetById?";
+        if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processGetQuestionOptionById(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetQuestionOptionById(response_);
+                } catch (e) {
+                    return <Observable<QuestionOptions>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<QuestionOptions>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetQuestionOptionById(response: Response): Observable<QuestionOptions> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? QuestionOptions.fromJS(resultData200) : new QuestionOptions();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<QuestionOptions>(<any>null);
+    }
+
+    getQuestionOptionsListById(id: string): Observable<QuestionOptions[]> {
+        let url_ = this.baseUrl + "/api/services/app/Questionnaire/GetOptions?";
+        if (id !== undefined)
+            url_ += "questionnaireId=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processGetQuestionOptionsListById(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetQuestionOptionsListById(response_);
+                } catch (e) {
+                    return <Observable<QuestionOptions[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<QuestionOptions[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetQuestionOptionsListById(response: Response): Observable<QuestionOptions[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? QuestionOptions.fromJSArray(resultData200) : null;
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<QuestionOptions[]>(<any>null);
+    }
+
     update(input: Questionnaire): Observable<Questionnaire> {
         let url_ = this.baseUrl + "/api/services/app/Questionnaire/CreateOrUpdateQuestionnaire";
         url_ = url_.replace(/[?&]$/, "");
@@ -244,8 +397,61 @@ export class QuestionnaireServiceProxy {
     /**
     * @return Success
     */
-   delete(id: string): Observable<ApiResult> {
-    let url_ = this.baseUrl + "/api/services/app/Questionnaire/Delete?";
+    delete(id: string): Observable<ApiResult> {
+        let url_ = this.baseUrl + "/api/services/app/Questionnaire/Delete?";
+        if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "delete",
+            headers: new Headers({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processDelete(response_);
+        }).catch((response_: ApiResult) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processDelete(response_);
+                } catch (e) {
+                    return <Observable<ApiResult>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<ApiResult>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processDelete(response: Response): Observable<ApiResult> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? ApiResult.fromJS(resultData200) : new ApiResult();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<ApiResult>(<any>null);
+    }
+
+    /**
+    * @return Success
+    */
+   deleteQuestionOptionsById(id: string): Observable<ApiResult> {
+    let url_ = this.baseUrl + "/api/services/app/QuestionOption/Delete?";
     if (id !== undefined)
         url_ += "Id=" + encodeURIComponent("" + id) + "&";
     url_ = url_.replace(/[?&]$/, "");
@@ -271,16 +477,16 @@ export class QuestionnaireServiceProxy {
     });
 }
 
-protected processDelete(response: Response): Observable<ApiResult> {
+protected processDeleteQuestionOptionsById(response: Response): Observable<ApiResult> {
     const status = response.status;
 
     let _headers: any = response.headers ? response.headers.toJSON() : {};
     if (status === 200) {
         const _responseText = response.text();
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 ? ApiResult.fromJS(resultData200) : new ApiResult();
-            return Observable.of(result200);
+        let result200: any = null;
+        let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        result200 = resultData200 ? ApiResult.fromJS(resultData200) : new ApiResult();
+        return Observable.of(result200);
     } else if (status === 401) {
         const _responseText = response.text();
         return throwException("A server error occurred.", status, _responseText, _headers);

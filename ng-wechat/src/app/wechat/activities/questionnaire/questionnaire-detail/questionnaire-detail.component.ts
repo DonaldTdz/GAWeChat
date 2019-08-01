@@ -5,7 +5,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs/observable/timer';
 import { Subscription } from 'rxjs';
 import { ProgressModule } from 'ngx-weui';
-import { Questionnaire, QuestionOptions } from '../../../../services/model';
+import { Questionnaire, QuestionOptions, AnswerRecords } from '../../../../services/model';
+import { e } from '@angular/core/src/render3';
 
 @Component({
     moduleId: module.id,
@@ -20,6 +21,8 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     progressBar:any = { 
         p1:{ value: 0, doing: false }
      };
+    questionNum:number;
+    answerRecords:AnswerRecords[] = [];//回答列表
     questionnaireList : Questionnaire[] = [];//问题列表
     quarter: string = this.route.snapshot.params['quarter'];//季度
 
@@ -32,6 +35,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     }
 
     ngOnInit() {
+        this.getQuestionnaireList();
         // this.progressBar = {
         //     p1: { value: 0, doing: true },
         //   };
@@ -42,47 +46,48 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
               
         //       if (item.value >= 100) item.doing = false;
         //   });
-        this.questionnaireList.push(new Questionnaire({
-            id:"1",
-            type:1,
-            isMultiple:false,
-            question:"您是否在xx网站购买过数码家电类产品？",
-            no:"01",
-            typeName:"11",
-            questionOptions:[ QuestionOptions.fromJS({
-                value:'1',
-                desc:'满意',
-                id:'1',
-                questionnaireId:'123'
-            }),QuestionOptions.fromJS({
-                value:'2',
-                desc:'不满意',
-                id:'2',
-                questionnaireId:'123'
-            })]
-        }));
-        this.questionnaireList.push(new Questionnaire({
-            id:"2",
-            type:1,
-            isMultiple:false,
-            question:"您在xx网站购买数码家电类产品的次数是？",
-            no:"02",
-            typeName:"11",
-            questionOptions:[]
-        }));
-        this.questionnaireList.push(new Questionnaire({
-            id:"3",
-            type:1,
-            isMultiple:false,
-            question:"到目前为止，您在xx网站购买数码家电类产品有多久了？",
-            no:"03",
-            typeName:"11",
-            questionOptions:[]
-        }));
+    }
+
+    getAnswerRecords(){
+        this.questionnaireService.GetQuestionnaireList().subscribe(data=>{
+            this.questionnaireList = data;
+            this.questionNum = this.questionnaireList.length;
+            this.questionnaireList.forEach(element => {
+                this.answerRecords.push(new AnswerRecords({
+                    id:"",
+                    questionnaireId:element.id,
+                    values: "",
+                    remark: "",
+                    openId:""
+                }));
+            });
+        });
     }
 
     getQuestionnaireList(){
-        
+        this.questionnaireService.GetQuestionnaireList().subscribe(data=>{
+            this.questionnaireList = data;
+            this.questionNum = this.questionnaireList.length;
+            this.questionnaireList.forEach(element => {
+                this.answerRecords.push(new AnswerRecords({
+                    id:"",
+                    questionnaireId:element.id,
+                    values: "",
+                    remark: "",
+                    openId:""
+                }));
+            });
+        });
+    }
+
+    //单选框单击事件
+    onRadioClick(questionnaireId : string, value : string){
+        this.answerRecords.forEach(element => {
+            if(element.questionnaireId === questionnaireId){
+                element.values=value;
+            }
+        });
+        console.log(this.answerRecords);
     }
 
     //提交

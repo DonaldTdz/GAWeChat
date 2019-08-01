@@ -21,6 +21,10 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit{
         
     }
 
+    getQuestionnaireFillRecord(){
+
+    }
+
     goDetail(quarter: number) {
         this.router.navigate(['/questionnaires/questionnaire-detail', { quarter: quarter }]);
     }
