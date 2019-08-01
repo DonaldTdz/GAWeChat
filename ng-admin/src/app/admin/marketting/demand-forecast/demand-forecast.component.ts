@@ -16,7 +16,7 @@ export class DemandForecastComponent extends AppComponentBase implements OnInit 
     loading = false;
     exportExcelUrl: string;
     exportLoading = false;
-    search: any = { status: true };
+    keyWord: string;
     host: string = AppConsts.remoteServiceBaseUrl;
     uploadLoading = false;
 
@@ -26,14 +26,14 @@ export class DemandForecastComponent extends AppComponentBase implements OnInit 
         super(injector);
     }
     ngOnInit(): void {
-        this.search = { isAction: true }
+        this.keyWord = '';
         this.refreshData();
     }
 
     refreshData(reset = false, search?: boolean) {
         if (reset) {
             this.query.pageIndex = 1;
-            this.search = { isAction: 0 }
+            this.keyWord = '';
         }
         if (search) {
             this.query.pageIndex = 1;
@@ -47,7 +47,7 @@ export class DemandForecastComponent extends AppComponentBase implements OnInit 
     }
     getParameter(): Parameter[] {
         var arry = [];
-        // arry.push(Parameter.fromJS({ key: 'Name', value: this.search.name }));
+        arry.push(Parameter.fromJS({ key: 'filter', value: this.keyWord }));
         // arry.push(Parameter.fromJS({ key: 'Scale', value: this.search.scale }));
         // arry.push(Parameter.fromJS({ key: 'Markets', value: this.search.market }));
         // arry.push(Parameter.fromJS({ key: 'Status', value: this.search.isAction === 0 ? null : this.search.isAction }));

@@ -62,20 +62,13 @@ namespace HC.WeChat.DemandForecasts
         public async Task<PagedResultDto<DemandForecastListDto>> GetPaged(GetDemandForecastsInput input)
 		{
 
-		    var query = _entityRepository.GetAll();
-			// TODO:根据传入的参数添加过滤条件
-            
-
+		    var query = _entityRepository.GetAll().WhereIf(!string.IsNullOrEmpty(input.Filter),v=>v.Title.Contains(input.Filter));
 			var count = await query.CountAsync();
-
 			var entityList = await query
 					.OrderBy(v=>v.IsPublish).ThenByDescending(v=>v.Month).AsNoTracking()
 					.PageBy(input)
 					.ToListAsync();
-
-			// var entityListDtos = ObjectMapper.Map<List<DemandForecastListDto>>(entityList);
 			var entityListDtos =entityList.MapTo<List<DemandForecastListDto>>();
-
 			return new PagedResultDto<DemandForecastListDto>(count,entityListDtos);
 		}
 
