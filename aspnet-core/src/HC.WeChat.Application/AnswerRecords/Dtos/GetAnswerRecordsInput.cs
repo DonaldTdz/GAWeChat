@@ -18,6 +18,9 @@ namespace HC.WeChat.AnswerRecords.Dtos
                 Sorting = "Id";
             }
         }
+        public string OpenId { get; set; }
+
+        public int Quarter { get; set; }
 
     }
 }

@@ -51,4 +51,32 @@ namespace HC.WeChat.AnswerRecords.Dtos
 
 
     }
+
+    public class AnswerRecordWXListDto
+    {
+        /// <summary>
+		/// QuestionnaireId
+		/// </summary>
+        public Guid QuestionnaireId { get; set; }
+        
+        /// <summary>
+        /// Values
+        /// </summary>
+        public string Values { get; set; }
+        
+        /// <summary>
+        /// Remark
+        /// </summary>
+        public string Remark { get; set; }
+        
+        /// <summary>
+        /// OpenId
+        /// </summary>
+        public string OpenId { get; set; }
+        
+        /// <summary>
+        /// CreationTime
+        /// </summary>
+        public DateTime CreationTime { get; set; }
+    }
 }

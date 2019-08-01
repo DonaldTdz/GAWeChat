@@ -1,26 +1,29 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Abp.AutoMapper;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.Questionnaires;
+using HC.WeChat.WechatEnums;
 
 namespace  HC.WeChat.Questionnaires.Dtos
 {
-    public class QuestionnaireEditDto
+    [AutoMapTo(typeof(Questionnaire))]
+    public class QuestionnaireEditDto: FullAuditedEntity<Guid>
     {
 
         /// <summary>
         /// Id
         /// </summary>
-        public Guid? Id { get; set; }         
+        public Guid? Id { get; set; }
 
 
-        
-		/// <summary>
-		/// Type
-		/// </summary>
-		[Required(ErrorMessage="Type不能为空")]
-		public int Type { get; set; }
+
+        /// <summary>
+        /// Type
+        /// </summary>
+        [Required(ErrorMessage="Type不能为空")]
+		public QuestionType Type { get; set; }
 
 
 

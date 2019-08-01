@@ -72,11 +72,13 @@ namespace HC.WeChat.AnswerRecords
         Task BatchDelete(List<Guid> input);
 
 
-		/// <summary>
+        /// <summary>
         /// 导出AnswerRecord为excel表
         /// </summary>
         /// <returns></returns>
-		//Task<FileDto> GetToExcel();
+        //Task<FileDto> GetToExcel();
+
+        Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input);
 
     }
 }

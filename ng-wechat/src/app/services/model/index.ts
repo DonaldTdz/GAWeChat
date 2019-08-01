@@ -24,6 +24,8 @@ export * from './exhibition-shop';
 export * from './exhibition-config';
 export * from './voteLog';
 export * from './favorite';
+export * from './questionnaire';
+export * from './question-option';
 export * from './demand-forecast';
 export * from './demand-detail';
 export * from './forecast-record-dto';

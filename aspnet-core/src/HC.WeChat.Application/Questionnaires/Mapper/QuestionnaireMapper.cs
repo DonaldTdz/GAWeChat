@@ -13,7 +13,8 @@ namespace HC.WeChat.Questionnaires.Mapper
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
-            configuration.CreateMap <Questionnaire,QuestionnaireListDto>();
+            configuration.CreateMap<Questionnaire, QuestionnaireListDto>();
+                //.BeforeMap((src, dest) => dest.TypeName =src.Type.ToString());
             configuration.CreateMap <QuestionnaireListDto,Questionnaire>();
 
             configuration.CreateMap <QuestionnaireEditDto,Questionnaire>();

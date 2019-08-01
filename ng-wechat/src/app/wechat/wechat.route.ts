@@ -25,6 +25,7 @@ export const routes = [
     { path: 'lotteries', loadChildren: './activities/lottery/lottery.module#LotteryModule' },
     { path: 'exhibitions', loadChildren: './activities/exhibition/exhibition.module#ExhibitionModule' },
     { path: 'favorites', loadChildren: './personal-center/favorite/favorite.module#FavoriteModule' },
+    { path: 'questionnaires', loadChildren: './activities/questionnaire/questionnaire.module#QuestionnaireModule' },
     { path: 'demand-forecasts', loadChildren: './activities/demand-forecast/demand-forecast.module#DemandForecastModule' },
     { path: '**', redirectTo: '' }
 ];

@@ -194,17 +194,29 @@ AnswerRecordEditDto editDto;
 		}
 
 
-		/// <summary>
-		/// 导出AnswerRecord为excel表,等待开发。
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<FileDto> GetToExcel()
-		//{
-		//	var users = await UserManager.Users.ToListAsync();
-		//	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
-		//	await FillRoleNames(userListDtos);
-		//	return _userListExcelExporter.ExportToFile(userListDtos);
-		//}
+        /// <summary>
+        /// 导出AnswerRecord为excel表,等待开发。
+        /// </summary>
+        /// <returns></returns>
+        //public async Task<FileDto> GetToExcel()
+        //{
+        //	var users = await UserManager.Users.ToListAsync();
+        //	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
+        //	await FillRoleNames(userListDtos);
+        //	return _userListExcelExporter.ExportToFile(userListDtos);
+        //}
+
+        /// <summary>
+        /// 通过月份获取零售户调查问卷信息
+        ///</summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+
+        public async Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input)
+        {
+            // TODO:待实现
+            return new List<AnswerRecordWXListDto>();
+        }
 
     }
 }

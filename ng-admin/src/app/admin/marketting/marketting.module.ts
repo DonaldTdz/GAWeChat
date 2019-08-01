@@ -20,6 +20,7 @@ import { DataStatisticsComponent } from "./data-statistics/data-statistics.compo
 import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics-detail/data-statistics-detail.component";
 import { DemandForecastComponent } from "./demand-forecast/demand-forecast.component";
 import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
+import { EditQuestionnaireComponent } from "./questionnaire/edit-questionnaire/edit-questionnaire.component";
 import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
 import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.component";
 
@@ -49,6 +50,7 @@ import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.c
         DataStatisticsDetailComponent,
         DemandForecastComponent,
         QuestionnaireComponent,
+        EditQuestionnaireComponent,
         DemandDetailsComponent,
         DemandListComponent,
     ],
