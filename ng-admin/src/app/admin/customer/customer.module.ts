@@ -18,6 +18,8 @@ import { ColorPickerModule } from "ngx-color-picker";
 import { RefuseComponent } from "./store-management/store-detail/refuse/refuse.component";
 import { CommonModule } from "@angular/common";
 import { AlainABCModule } from "@delon/abc";
+import { RetailStatisticsComponent } from "./retail-customer/retail-statistics/retail-statistics.component";
+import { RetailDemandDetailComponent } from "./retail-customer/retail-statistics/retail-demand-detail/retail-demand-detail.component";
 
 @NgModule({
     imports: [
@@ -28,7 +30,7 @@ import { AlainABCModule } from "@delon/abc";
         ColorPickerModule,
         CommonModule,
         // AdQRModule ,
-        AlainABCModule 
+        AlainABCModule
     ],
     declarations: [
         RetailCustomerComponent,
@@ -41,10 +43,11 @@ import { AlainABCModule } from "@delon/abc";
         SourceGoodsLevelComponent,
         AccountManagementComponent,
         RefuseComponent,
-        
+        RetailStatisticsComponent,
+        RetailDemandDetailComponent,
     ],
     providers: [
-        AppRouteGuard  
+        AppRouteGuard
     ]
 
 })

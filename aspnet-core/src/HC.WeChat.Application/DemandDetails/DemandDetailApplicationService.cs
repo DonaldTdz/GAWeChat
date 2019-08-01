@@ -333,5 +333,32 @@ namespace HC.WeChat.DemandDetails
                               }).ToListAsync();
             return list;
         }
+
+        /// <summary>
+        /// 查询当前零售户预测需求记录
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<PagedResultDto<RetailDemandDetailListDto>> GetDetailRecordByIdAsync(GetDemandDetailsInput input)
+        {
+            string openId = await _wechatuserRepository.GetAll().Where(v => v.UserId == input.UserId).Select(v => v.OpenId).FirstOrDefaultAsync();
+            var query = _entityRepository.GetAll().Where(v => v.DemandForecastId == input.DemandForecastId);
+            var record = _forecastRecordRepository.GetAll().Where(v => v.DemandForecastId == input.DemandForecastId && v.OpenId == openId);
+            var list = await (from q in query
+                              join r in record on q.Id equals r.DemandDetailId
+                              select new RetailDemandDetailListDto()
+                              {
+                                  Id = r.Id,
+                                  LastMonthNum = q.LastMonthNum,
+                                  Name = q.Name,
+                                  SuggestPrice =q.SuggestPrice,
+                                  IsAlien = q.IsAlien,
+                                  WholesalePrice = q.WholesalePrice,
+                                  YearOnYear = q.YearOnYear,
+                                  PredictiveValue = r.PredictiveValue
+                              }).OrderByDescending(v=>v.PredictiveValue).PageBy(input).ToListAsync();
+            int count = record.Count();
+            return new PagedResultDto<RetailDemandDetailListDto>(count, list);
+        }
     }
 }

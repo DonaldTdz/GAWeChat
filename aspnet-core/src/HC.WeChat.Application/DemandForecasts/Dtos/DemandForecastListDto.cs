@@ -65,4 +65,25 @@ namespace HC.WeChat.DemandForecasts.Dtos
         public DateTime? Month { get; set; }
         public string Status { get; set; }
     }
+
+    /// <summary>
+    /// 零售户预测记录主表
+    /// </summary>
+    public class RetailDemandForecastListDto : EntityDto<Guid>
+    {
+        public string Title { get; set; }
+        public DateTime? Month { get; set; }
+        public DateTime? CompleteTime { get; set; }
+    }
+
+    /// <summary>
+    /// 零售户预测列表头部信息
+    /// </summary>
+    public class RetailDemandHeadDto : EntityDto<Guid>
+    {
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public DateTime? Month { get; set; }
+        public DateTime? CompleteTime { get; set; }
+    }
 }

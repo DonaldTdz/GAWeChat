@@ -11,7 +11,8 @@
                         <label>客户编码/名称</label>
                     </div>
                     <div nz-form-control class="flex-1">
-                        <nz-input [(ngModel)]="search.name" name="name" [nzSize]="'large'" [nzPlaceHolder]="'请输入客户编码或名称'" nzId="name"></nz-input>
+                        <nz-input [(ngModel)]="search.name" name="name" [nzSize]="'large'"
+                            [nzPlaceHolder]="'请输入客户编码或名称'" nzId="name"></nz-input>
                     </div>
                 </div>
             </div>
@@ -21,7 +22,8 @@
                         <label>经营规模</label>
                     </div>
                     <div nz-form-control class="flex-1">
-                        <nz-select name="scale" [nzPlaceHolder]="'请选择经营规模'" [(ngModel)]="search.scale" [nzShowSearch]="true" nzSize="large">
+                        <nz-select name="scale" [nzPlaceHolder]="'请选择经营规模'" [(ngModel)]="search.scale"
+                            [nzShowSearch]="true" nzSize="large">
                             <nz-option *ngFor="let i of scales" [nzLabel]="i.text" [nzValue]="i.value">
                             </nz-option>
                         </nz-select>
@@ -35,7 +37,8 @@
                         <label>市场类型</label>
                     </div>
                     <div nz-form-control class="flex-1">
-                        <nz-select name="market" [nzPlaceHolder]="'请选择市场类型'" [(ngModel)]="search.market" [nzShowSearch]="true" nzSize="large">
+                        <nz-select name="market" [nzPlaceHolder]="'请选择市场类型'" [(ngModel)]="search.market"
+                            [nzShowSearch]="true" nzSize="large">
                             <nz-option *ngFor="let i of markets" [nzLabel]="i.text" [nzValue]="i.value">
                             </nz-option>
                         </nz-select>
@@ -49,7 +52,8 @@
                         <label>状态</label>
                     </div>
                     <div nz-form-control class="flex-1">
-                        <nz-select name="status" [nzPlaceHolder]="'请选择状态'" [(ngModel)]="search.isAction" [nzShowSearch]="true" nzSize="large">
+                        <nz-select name="status" [nzPlaceHolder]="'请选择状态'" [(ngModel)]="search.isAction"
+                            [nzShowSearch]="true" nzSize="large">
                             <nz-option *ngFor="let i of status" [nzLabel]="i.text" [nzValue]="i.value">
                             </nz-option>
                         </nz-select>
@@ -67,7 +71,8 @@
                     <i class="anticon anticon-download"></i>
                     <span>下载档级</span>
                 </button>
-                <nz-upload nzAction="{{host + '/WeChatFile/MarketingExcelInfoPosts?fileName=CustomerUpload'}}" [nzBeforeUpload]="beforeExcelUpload" (nzChange)="handleChange($event)" [nzName]="'files'">
+                <nz-upload nzAction="{{host + '/WeChatFile/MarketingExcelInfoPosts?fileName=CustomerUpload'}}"
+                    [nzBeforeUpload]="beforeExcelUpload" (nzChange)="handleChange($event)" [nzName]="'files'">
                     <button nz-button [nzLoading]="uploadLoading">
                         <i class="anticon anticon-upload"></i>
                         <span>导入档级</span>
@@ -85,19 +90,23 @@
                 <a style="display: none;" id="aRetailAllExcelUrl" href="#">
                     <button type="button" id="btnRetailAllHref">隐藏下载</button>
                 </a>
-                <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading" [nzSize]="'large'">查询</button>
+                <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading"
+                    [nzSize]="'large'">查询</button>
                 <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'" class="mx-sm">重置</button>
                 <button nz-button (click)="createRetail()" [nzType]="'primary'" [nzSize]="'large'">
-                        <i class="anticon anticon-plus"></i>
-                        <span>新建</span>
-                    </button>
-                <button nz-button type="button" (click)="exportExcelAll()" [nzLoading]="exportLoading" [nzSize]="'large'">
-                        <i class="anticon anticon-download"></i>
-                        <span>导出</span></button>
+                    <i class="anticon anticon-plus"></i>
+                    <span>新建</span>
+                </button>
+                <button nz-button type="button" (click)="exportExcelAll()" [nzLoading]="exportLoading"
+                    [nzSize]="'large'">
+                    <i class="anticon anticon-download"></i>
+                    <span>导出</span></button>
             </div>
         </div>
     </form>
-    <nz-table #nzTable [nzAjaxData]="retailCustomer" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+    <nz-table #nzTable [nzAjaxData]="retailCustomer" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex"
+        [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true"
+        (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
         <thead nz-thead>
             <tr>
                 <th nz-th>
@@ -186,9 +195,11 @@
                     <nz-badge [nzStatus]="retail.activeType" [nzText]="retail.activeText"></nz-badge>
                 </td>
                 <td nz-td>
-                    <a (click)="editRetail(retail)">详情</a>
+                    <a (click)="editRetail(retail.id)">详情</a>
                     <span nz-table-divider></span>
-                    <a (click)="delete(retail,deleteContent)">删除</a>
+                    <a (click)="goStatistics(retail.id)">调查数据</a>
+                    <span nz-table-divider></span>
+                    <a (click)="delete(retail.id,deleteContent)">删除</a>
                 </td>
             </tr>
         </tbody>

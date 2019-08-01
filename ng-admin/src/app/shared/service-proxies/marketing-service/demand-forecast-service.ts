@@ -11,7 +11,7 @@ import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { Http, Headers, ResponseContentType, Response } from '@angular/http';
 // import * as moment from 'moment';
 import { API_BASE_URL, SwaggerException } from '@shared/service-proxies/service-proxies';
-import { DemandForecast, DemandDetail } from '@shared/entity/marketting';
+import { DemandForecast, DemandDetail, DemandForecastHead } from '@shared/entity/marketting';
 import { Parameter, ApiResult } from '../entity';
 
 function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): Observable<any> {
@@ -262,6 +262,66 @@ export class DemandForecastServiceProxy {
         return Observable.of<PagedResultDtoOfDemandDetail>(<any>null);
     }
 
+
+    getDetailRecordById(skipCount: number, maxResultCount: number, parameter: Parameter[]): Observable<PagedResultDtoOfDemandDetail> {
+        let url_ = this.baseUrl + "/api/services/app/DemandDetail/GetDetailRecordByIdAsync?";
+        if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        if (parameter.length > 0) {
+            parameter.forEach(element => {
+                if (element.value !== undefined && element.value !== null) {
+                    url_ += element.key + "=" + encodeURIComponent("" + element.value) + "&";
+                }
+            });
+        }
+        url_ = url_.replace(/[?&]$/, "");
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processGetDetailRecordById(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetDetailRecordById(response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfDemandDetail>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfDemandDetail>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetDetailRecordById(response: Response): Observable<PagedResultDtoOfDemandDetail> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfDemandDetail.fromJS(resultData200) : new PagedResultDtoOfDemandDetail();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<PagedResultDtoOfDemandDetail>(<any>null);
+    }
+
     importDemandDetailExcelAsync(input: any): Observable<ApiResult> {
         let url_ = this.baseUrl + "/api/services/app/DemandDetail/ImportDemandDetailExcelAsync";
         url_ = url_.replace(/[?&]$/, "");
@@ -311,6 +371,121 @@ export class DemandForecastServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Observable.of<ApiResult>(<any>null);
+    }
+
+    getRetailDemandListById(skipCount: number, maxResultCount: number, parameter: Parameter[]): Observable<PagedResultDtoOfDemandForecast> {
+        let url_ = this.baseUrl + "/api/services/app/DemandForecast/GetRetailDemandListByIdAsync?";
+        if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        if (parameter.length > 0) {
+            parameter.forEach(element => {
+                if (element.value !== undefined && element.value !== null) {
+                    url_ += element.key + "=" + encodeURIComponent("" + element.value) + "&";
+                }
+            });
+        }
+        url_ = url_.replace(/[?&]$/, "");
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processGetRetailDemandListById(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetRetailDemandListById(response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfDemandForecast>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfDemandForecast>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetRetailDemandListById(response: Response): Observable<PagedResultDtoOfDemandForecast> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? PagedResultDtoOfDemandForecast.fromJS(resultData200) : new PagedResultDtoOfDemandForecast();
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<PagedResultDtoOfDemandForecast>(<any>null);
+    }
+
+    getHeadInfoAsync(parameter: Parameter[]): Observable<DemandForecastHead> {
+        let url_ = this.baseUrl + "/api/services/app/DemandForecast/GetRetailDemandHeadByIdAsync?";
+        if (parameter.length > 0) {
+            parameter.forEach(element => {
+                if (element.value !== undefined && element.value !== null) {
+                    url_ += element.key + "=" + encodeURIComponent("" + element.value) + "&";
+                }
+            });
+        }
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_) => {
+            return this.processGetHeadInfoAsync(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetHeadInfoAsync(response_);
+                } catch (e) {
+                    return <Observable<DemandForecastHead>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<DemandForecastHead>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetHeadInfoAsync(response: Response): Observable<DemandForecastHead> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? DemandForecastHead.fromJS(resultData200) : Observable.of<DemandForecastHead>(<any>null);
+            return Observable.of(result200);
+        } else if (status === 401) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status === 403) {
+            const _responseText = response.text();
+            return throwException("A server error occurred.", status, _responseText, _headers);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<DemandForecastHead>(<any>null);
     }
 }
 export class PagedResultDtoOfDemandForecast implements IPagedResultDtoOfDemandForecast {

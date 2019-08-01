@@ -97,4 +97,43 @@ namespace HC.WeChat.DemandDetails.Dtos
         public int? LastMonthNum { get; set; }
         public int PredictiveValue { get; set; }
     }
+
+    public class RetailDemandDetailListDto : EntityDto<Guid>
+    {
+        /// <summary>
+        /// Name
+        /// </summary>
+        [Required(ErrorMessage = "Name不能为空")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Type
+        /// </summary>
+        public int? Type { get; set; }
+
+        /// <summary>
+        /// WholesalePrice
+        /// </summary>
+        public decimal? WholesalePrice { get; set; }
+
+        /// <summary>
+        /// SuggestPrice
+        /// </summary>
+        public decimal? SuggestPrice { get; set; }
+
+        /// <summary>
+        /// IsAlien
+        /// </summary>
+        public bool? IsAlien { get; set; }
+
+        /// <summary>
+        /// LastMonthNum
+        /// </summary>
+        public int? LastMonthNum { get; set; }
+        public int PredictiveValue { get; set; }
+        /// <summary>
+        /// YearOnYear
+        /// </summary>
+        public decimal? YearOnYear { get; set; }
+    }
 }

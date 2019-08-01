@@ -8,6 +8,7 @@ namespace HC.WeChat.DemandDetails.Dtos
     public class GetDemandDetailsInput : PagedSortedAndFilteredInputDto, IShouldNormalize
     {
         public Guid DemandForecastId { get; set; }
+        public Guid UserId { get; set; }
         /// <summary>
         /// 正常化排序使用
         /// </summary>
