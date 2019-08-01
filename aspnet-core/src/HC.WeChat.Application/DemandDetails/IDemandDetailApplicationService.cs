@@ -75,5 +75,6 @@ namespace HC.WeChat.DemandDetails
         Task<APIResultDto> ImportDemandDetailExcelAsync(ImportDto input);
         Task<List<DetailWXListDto>> GetWXDetailListByIdAsync(GetWXDetailListDto input);
         Task<List<DetailWXListDto>> GetWXDetailRecordByIdAsync(GetWXDetailListDto input);
+        Task<PagedResultDto<RetailDemandDetailListDto>> GetDetailRecordByIdAsync(GetDemandDetailsInput input);
     }
 }

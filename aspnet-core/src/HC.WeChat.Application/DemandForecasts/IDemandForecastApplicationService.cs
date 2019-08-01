@@ -72,5 +72,7 @@ namespace HC.WeChat.DemandForecasts
         Task BatchDelete(List<Guid> input);
 
         Task<List<DemandWXListDto>> GetWXDemandListAsync();
+        Task<PagedResultDto<RetailDemandForecastListDto>> GetRetailDemandListByIdAsync(GetDemandForecastsInput input);
+        Task<RetailDemandHeadDto> GetRetailDemandHeadByIdAsync(GetDemandForecastsInput input);
     }
 }

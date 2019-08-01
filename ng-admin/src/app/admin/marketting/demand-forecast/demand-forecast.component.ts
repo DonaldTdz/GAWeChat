@@ -48,9 +48,6 @@ export class DemandForecastComponent extends AppComponentBase implements OnInit 
     getParameter(): Parameter[] {
         var arry = [];
         arry.push(Parameter.fromJS({ key: 'filter', value: this.keyWord }));
-        // arry.push(Parameter.fromJS({ key: 'Scale', value: this.search.scale }));
-        // arry.push(Parameter.fromJS({ key: 'Markets', value: this.search.market }));
-        // arry.push(Parameter.fromJS({ key: 'Status', value: this.search.isAction === 0 ? null : this.search.isAction }));
         return arry;
     }
 

@@ -10,7 +10,7 @@ export class DemandDetail implements IDemandDetail {
     yearOnYear: number;
     retailerName: string;
     retailerCode: string;
-
+    predictiveValue: number;
     constructor(data?: IDemandDetail) {
         if (data) {
             for (var property in data) {
@@ -33,6 +33,7 @@ export class DemandDetail implements IDemandDetail {
             this.yearOnYear = data["yearOnYear"];
             this.retailerName = data["retailerName"];
             this.retailerCode = data["retailerCode"];
+            this.predictiveValue = data["predictiveValue"];
         }
     }
 
@@ -85,4 +86,5 @@ export interface IDemandDetail {
     yearOnYear: number;
     retailerName: string;
     retailerCode: string;
+    predictiveValue: number;
 }
