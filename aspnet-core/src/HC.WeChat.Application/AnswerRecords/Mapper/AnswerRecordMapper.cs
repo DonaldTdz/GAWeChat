@@ -2,6 +2,7 @@
 using AutoMapper;
 using HC.WeChat.AnswerRecords;
 using HC.WeChat.AnswerRecords.Dtos;
+using System.Collections.Generic;
 
 namespace HC.WeChat.AnswerRecords.Mapper
 {

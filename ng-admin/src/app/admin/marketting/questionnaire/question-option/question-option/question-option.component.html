@@ -1,0 +1,37 @@
+<form nz-form [formGroup]="form" (ngSubmit)="save()" id="frm_create_activity">
+    <nz-modal [nzVisible]="emodalVisible" [nzTitle]="cardTitle" [nzContent]="modalContent" [nzConfirmLoading]="cloading" [nzFooter]="modalFooter"
+    (nzOnCancel)="ehandleCancel($event)">
+    <ng-template #modalContent>
+<div nz-row>
+    <div nz-col [nzSpan]="26">
+        <div nz-form-item nz-row>
+            <div nz-form-label nz-col [nzSm]="5">
+                <label for="value" nz-form-item-required>选项值</label>
+            </div>
+            <div nz-form-control nz-col [nzSm]="18">
+                    <nz-input formControlName="value" [(ngModel)]="questionOptions.value" [nzId]="'value'"></nz-input>
+                <div nz-form-explain *ngIf="getFormControl('value').dirty&&getFormControl('value').hasError('required')">选项值不能为空</div>
+            </div>
+        </div>
+        <div nz-form-item nz-row>
+            <div nz-form-label nz-col [nzSm]="5">
+                <label for="desc" nz-form-item-required>选项描述</label>
+            </div>
+            <div nz-form-control nz-col [nzSm]="18">
+                    <nz-input formControlName="desc" [(ngModel)]="questionOptions.desc" [nzId]="'desc'"></nz-input>
+                <div nz-form-explain *ngIf="getFormControl('desc').dirty&&getFormControl('desc').hasError('required')">选项描述不能为空</div>
+            </div>
+        </div>
+    </div>
+</div>
+</ng-template>
+<ng-template #modalFooter>
+        <button nz-button [nzType]="'default'" [nzSize]="'large'" type="button" (click)="ehandleCancel($event)">
+            取消
+        </button>
+        <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit" [nzLoading]="isConfirmLoading">
+            保存
+        </button>
+    </ng-template>
+</nz-modal>
+</form>

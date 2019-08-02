@@ -1,37 +1,29 @@
-<Page [ngClass]="'preview'" [title]="'问卷调查'" [showTitle]="false" [spacing]="false">
+<Page [ngClass]="'QuestionnaireDetail'" [title]="'问卷调查详情'" [showTitle]="false" [spacing]="false">
     <form #f="ngForm" (ngSubmit)="onSave()">
         <div class="progress">
-            <weui-progress [value]="progressBar.p1.value" (cancel)="onCancel('p1')" [canCancel]="false"></weui-progress>
+            <weui-progress [value]="progressBar.p1.value"  [canCancel]="false"></weui-progress>
             <br />
         </div>
         <div class="questionList">
             <div class="weui-cells weui-cells_radio" *ngFor="let questionnaire of questionnaireList">
                 <strong><label>{{questionnaire.no}}</label></strong>
                 <label>{{questionnaire.question}}</label>
-                <label class="weui-cell weui-check__label" *ngFor="let option of questionnaire.questionOptions">
+                <label class="weui-cell weui-check__label"  *ngFor="let option of questionnaire.questionOptions"  for="radio-{{ option.id }}">
                     <div class="weui-cell__bd">
-                        <p>{{option.value}}.{{option.desc}}</p>
+                        <p>{{option.desc}}{{option.isChecked}}</p>
                     </div>
                     <div class="weui-cell__ft">
-                        <input type="radio" class="weui-check" [(ngModel)]="option.value" name="radio1" [value]="option.value"
-                            id="radio-1" />
+                        <input type="radio" class="weui-check" name="{{questionnaire.no}}"                    
+                        id="radio-{{ option.questionnaireId }}" (click)="onRadioClick(questionnaire.id,option.value)" [(ngModel)]="option.value" [value]="option.optionChecked"
+                            />
+                        <!-- <span *ngIf="option.isChecked" class="weui-icon-checked"></span> -->
                         <span class="weui-icon-checked"></span>
                     </div>
                 </label>
-                <!-- <label class="weui-cell weui-check__label">
-                    <div class="weui-cell__bd">
-                        <p>否</p>
-                    </div>
-                    <div class="weui-cell__ft">
-                        <input type="radio" class="weui-check" [(ngModel)]="res.radio" name="radio1" [value]="i"
-                            id="radio-1" />
-                        <span class="weui-icon-checked"></span>
-                    </div>
-                </label> -->
             </div>
         </div>
-        <div class="weui-form-preview__ft">
-            <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">提交</a>
+        <div class="weui-flex__item" *ngIf="!isFilled" style="text-align: center;">
+            <button type="submit" weui-button [weui-mini]="'mini'">提交</button>
         </div>
     </form>
 </Page>

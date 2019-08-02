@@ -21,8 +21,7 @@ using Abp.Linq.Extensions;
 using HC.WeChat.QuestionOptions;
 using HC.WeChat.QuestionOptions.Dtos;
 using HC.WeChat.QuestionOptions.DomainService;
-
-
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.QuestionOptions
 {
@@ -122,7 +121,7 @@ QuestionOptionEditDto editDto;
 		/// <param name="input"></param>
 		/// <returns></returns>
 		
-		public async Task CreateOrUpdate(CreateOrUpdateQuestionOptionInput input)
+		public async Task<APIResultDto> CreateOrUpdate(CreateOrUpdateQuestionOptionInput input)
 		{
 
 			if (input.QuestionOption.Id.HasValue)
@@ -133,6 +132,10 @@ QuestionOptionEditDto editDto;
 			{
 				await Create(input.QuestionOption);
 			}
+            return new APIResultDto
+            {
+                Code = 0
+            };
 		}
 
 
@@ -175,11 +178,26 @@ QuestionOptionEditDto editDto;
 		/// <param name="input"></param>
 		/// <returns></returns>
 		
-		public async Task Delete(EntityDto<Guid> input)
+		public async Task<APIResultDto> Delete(EntityDto<Guid> input)
 		{
-			//TODO:删除前的逻辑判断，是否允许删除
-			await _entityRepository.DeleteAsync(input.Id);
-		}
+            //TODO:删除前的逻辑判断，是否允许删除
+            try
+            {
+                await _entityRepository.DeleteAsync(input.Id);
+                return new APIResultDto
+                {
+                    Code = 0
+                };
+            }
+            catch
+            {
+                return new APIResultDto
+                {
+                    Code = 999,
+                    Msg = "删除异常,请重试."
+                };
+            }
+        }
 
 
 
@@ -194,17 +212,17 @@ QuestionOptionEditDto editDto;
 		}
 
 
-		/// <summary>
-		/// 导出QuestionOption为excel表,等待开发。
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<FileDto> GetToExcel()
-		//{
-		//	var users = await UserManager.Users.ToListAsync();
-		//	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
-		//	await FillRoleNames(userListDtos);
-		//	return _userListExcelExporter.ExportToFile(userListDtos);
-		//}
+        /// <summary>
+        /// 导出QuestionOption为excel表,等待开发。
+        /// </summary>
+        /// <returns></returns>
+        //public async Task<FileDto> GetToExcel()
+        //{
+        //	var users = await UserManager.Users.ToListAsync();
+        //	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
+        //	await FillRoleNames(userListDtos);
+        //	return _userListExcelExporter.ExportToFile(userListDtos);
+        //}
 
     }
 }

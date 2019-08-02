@@ -1,9 +1,8 @@
 export class QuestionOptions implements IQuestionOptions {
-    id:string;
-    questionnaireId:string;
+    id: string;
+    questionnaireId: string;
     value: string;
-    desc: string;
-    isChecked:boolean = false;
+    desc:string;
     constructor(data?: IQuestionOptions) {
         if (data) {
             for (var property in data) {
@@ -19,7 +18,6 @@ export class QuestionOptions implements IQuestionOptions {
             this.questionnaireId = data["questionnaireId"];
             this.value = data["value"];
             this.desc = data["desc"];
-            this.isChecked = data["isChecked"];
         }
     }
 
@@ -56,9 +54,8 @@ export class QuestionOptions implements IQuestionOptions {
     }
 }
 export interface IQuestionOptions {
-    id:string;
-    questionnaireId:string;
+    id: string;
+    questionnaireId: string;
     value: string;
-    desc: string;
-    isChecked:boolean
+    desc:string;
 }

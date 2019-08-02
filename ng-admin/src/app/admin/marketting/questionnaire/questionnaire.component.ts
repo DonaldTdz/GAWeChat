@@ -57,14 +57,15 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
      * 编辑问题
      */
     editQuestionnaire(id:string) {
-        this.editQuestionnaireModal.show(id);
+        //this.editQuestionnaireModal.show(id);
+        this.router.navigate(['admin/marketting/detail-questionnaire',id]);
     }
 
     /**
      * 新建问题
      */
     create(){
-        this.editQuestionnaireModal.show();
+        this.router.navigate(['admin/marketting/create-questionnaire']);
     }
 
     /**

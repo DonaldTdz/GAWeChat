@@ -1,10 +1,10 @@
-export class QuestionOptions implements IQuestionOptions {
+export class AnswerRecords implements IAnswerRecords {
     id:string;
     questionnaireId:string;
-    value: string;
-    desc: string;
-    isChecked:boolean = false;
-    constructor(data?: IQuestionOptions) {
+    values: string;
+    remark: string;
+    openId:string;
+    constructor(data?: IAnswerRecords) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -17,22 +17,22 @@ export class QuestionOptions implements IQuestionOptions {
         if (data) {
             this.id = data["id"];
             this.questionnaireId = data["questionnaireId"];
-            this.value = data["value"];
-            this.desc = data["desc"];
-            this.isChecked = data["isChecked"];
+            this.values = data["values"];
+            this.remark = data["remark"];
+            this.openId = data["openId"];
         }
     }
 
-    static fromJS(data: any): QuestionOptions {
-        let result = new QuestionOptions();
+    static fromJS(data: any): AnswerRecords {
+        let result = new AnswerRecords();
         result.init(data);
         return result;
     }
 
-    static fromJSArray(data: any[]): QuestionOptions[] {
+    static fromJSArray(data: any[]): AnswerRecords[] {
         let arry = []
         data.map(i => {
-            let item = new QuestionOptions();
+            let item = new AnswerRecords();
             item.init(i);
             arry.push(item);
         })
@@ -43,22 +43,23 @@ export class QuestionOptions implements IQuestionOptions {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["questionnaireId"] = this.questionnaireId;
-        data["value"] = this.value;
-        data["desc"] = this.desc;
+        data["values"] = this.values;
+        data["remark"] = this.remark;
+        data["openId"] = this.openId;
         return data;
     }
 
     clone() {
         const json = this.toJSON();
-        let result = new QuestionOptions();
+        let result = new AnswerRecords();
         result.init(json);
         return result;
     }
 }
-export interface IQuestionOptions {
+export interface IAnswerRecords {
     id:string;
     questionnaireId:string;
-    value: string;
-    desc: string;
-    isChecked:boolean
+    values: string;
+    remark: string;
+    openId:string;
 }

@@ -23,6 +23,7 @@ using HC.WeChat.Questionnaires.Dtos;
 using HC.WeChat.Questionnaires.DomainService;
 using HC.WeChat.Authorization;
 using HC.WeChat.Dto;
+using HC.WeChat.QuestionOptions;
 
 namespace HC.WeChat.Questionnaires
 {
@@ -35,6 +36,7 @@ namespace HC.WeChat.Questionnaires
     public class QuestionnaireAppService : WeChatAppServiceBase, IQuestionnaireAppService
     {
         private readonly IRepository<Questionnaire, Guid> _entityRepository;
+        private readonly IRepository<QuestionOption, Guid> _optionRepository;
 
         private readonly IQuestionnaireManager _entityManager;
 
@@ -44,10 +46,12 @@ namespace HC.WeChat.Questionnaires
         public QuestionnaireAppService(
         IRepository<Questionnaire, Guid> entityRepository
         , IQuestionnaireManager entityManager
+        , IRepository<QuestionOption, Guid> optionRepository
         )
         {
             _entityRepository = entityRepository;
             _entityManager = entityManager;
+            _optionRepository = optionRepository;
         }
 
 
@@ -289,6 +293,45 @@ namespace HC.WeChat.Questionnaires
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 获取微信端调查问卷集合
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<WXQuestionnaireListDto>> GetWXQuestionnaireList()
+        {
+            var list = await (from q in _entityRepository.GetAll()
+                               select new WXQuestionnaireListDto
+                               {
+                                   No = q.No,
+                                   IsMultiple = q.IsMultiple,
+                                   Type = q.Type,
+                                   Question = q.Question,
+                                   Id = q.Id
+                               })
+                        .OrderBy(i => i.No)
+                        .ToListAsync();
+            foreach (var item in list)
+            {
+                item.QuestionOptions = await GetOptions(item.Id);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 通过问题主键获取答案配置选项
+        /// </summary>
+        /// <param name="questionnaireId"></param>
+        /// <returns></returns>
+        public async Task<List<QuestionOption>> GetOptions(Guid questionnaireId)
+        {
+            var entitys = await _optionRepository.GetAll()
+                .Where(i => i.QuestionnaireId == questionnaireId)
+                .OrderBy(i=>i.Value)
+                .ToListAsync();
+            return entitys;
         }
     }
 }

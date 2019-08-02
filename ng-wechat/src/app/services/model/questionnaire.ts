@@ -9,6 +9,8 @@ export class Questionnaire
     question: string;
     typeName: string;
     questionOptions:QuestionOptions[];
+    isChecked:boolean = false;
+    optionChecked:string = null;
     constructor(data?: IQuestionnaire) {
         if (data) {
             for (var property in data) {
@@ -26,7 +28,7 @@ export class Questionnaire
             this.no = data["no"];
             this.question = data["question"];
             this.typeName = data["typeName"];
-            // this.questionOptions = data["questionOptions"];
+            this.questionOptions = data["questionOptions"];
         }
     }
 
@@ -55,7 +57,7 @@ export class Questionnaire
         data["no"] = this.no;
         data["question"] = this.question;
         data["typeName"] = this.typeName;
-        // data["questionOptions"] = this.questionOptions;
+        data["questionOptions"] = this.questionOptions;
         return data;
     }
 

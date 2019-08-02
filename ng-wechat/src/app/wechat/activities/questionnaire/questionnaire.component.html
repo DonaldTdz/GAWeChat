@@ -1,1 +1,13 @@
-<button weui-button (click)="goDetail(1)">第一季度</button>
+<Page [ngClass]="'Questionnaire'" [title]="'问卷调查'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells">
+        <div *ngFor="let fillRecord of questionnaireFillRecords" class="weui-cell weui-cell_access" (click)="goDetail(fillRecord)">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle; font-size: 14px;">{{fillRecord.desc}}</span>
+            </div>
+            <div class="weui-cell__ft">
+                {{fillRecord.status}}
+            </div>
+        </div>
+        <weui-loadmore type="line" *ngIf="!questionnaireFillRecords || questionnaireFillRecords.length == 0"></weui-loadmore>
+    </div>
+</Page>
