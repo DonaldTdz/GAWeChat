@@ -73,7 +73,7 @@
                 </div>
             </div>
         </div>
-        <nz-table #nzTable [nzAjaxData]="questionOptions" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+        <nz-table #nzTable [nzAjaxData]="questionOptions" [nzLoading]="loading" [nzIsPagination]="'false'" >
             <thead nz-thead>
                 <tr>
                     <th nz-th>

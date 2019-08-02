@@ -55,28 +55,27 @@ namespace HC.WeChat.AnswerRecords.Dtos
     public class AnswerRecordWXListDto
     {
         /// <summary>
-		/// QuestionnaireId
-		/// </summary>
-        public Guid QuestionnaireId { get; set; }
-        
-        /// <summary>
-        /// Values
+        /// 问卷调查外键
         /// </summary>
-        public string Values { get; set; }
-        
+        [Required]
+        public virtual Guid QuestionnaireId { get; set; }
+
         /// <summary>
-        /// Remark
+        /// 选项值（多选逗号分隔）
         /// </summary>
-        public string Remark { get; set; }
-        
+        public virtual string Values { get; set; }
+
         /// <summary>
-        /// OpenId
+        /// 备注
         /// </summary>
-        public string OpenId { get; set; }
-        
-        /// <summary>
-        /// CreationTime
-        /// </summary>
-        public DateTime CreationTime { get; set; }
+        [StringLength(500)]
+        public virtual string Remark { get; set; }
+
+        ///// <summary>
+        ///// 微信OpenId
+        ///// </summary>
+        //[Required]
+        //[StringLength(50)]
+        //public virtual string OpenId { get; set; }
     }
 }

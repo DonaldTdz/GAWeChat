@@ -86,7 +86,12 @@ namespace HC.WeChat.Questionnaires.Dtos
         /// <summary>
         /// 分类名称
         /// </summary>
-        public virtual string TypeName { get; set; }
+        public string TypeName {
+            get
+            {
+                return Type.ToString();
+            }
+        }
         
         /// <summary>
         /// 答案配置

@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.AnswerRecords.Dtos;
 using HC.WeChat.AnswerRecords;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.AnswerRecords
 {
@@ -80,5 +81,9 @@ namespace HC.WeChat.AnswerRecords
 
         Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input);
 
+
+        Task<List<QuestionnaireFillRecordsDto>> WXGetQuestionnaireFillRecords(string openId);
+
+        Task<APIResultDto> WXBatchCreateAnswerRecords(List<AnswerRecordEditDto> answerRecords);
     }
 }

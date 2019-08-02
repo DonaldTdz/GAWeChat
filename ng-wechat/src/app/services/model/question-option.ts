@@ -3,6 +3,7 @@ export class QuestionOptions implements IQuestionOptions {
     questionnaireId:string;
     value: string;
     desc: string;
+    isChecked:boolean = false;
     constructor(data?: IQuestionOptions) {
         if (data) {
             for (var property in data) {
@@ -18,6 +19,7 @@ export class QuestionOptions implements IQuestionOptions {
             this.questionnaireId = data["questionnaireId"];
             this.value = data["value"];
             this.desc = data["desc"];
+            this.isChecked = data["isChecked"];
         }
     }
 
@@ -58,4 +60,5 @@ export interface IQuestionOptions {
     questionnaireId:string;
     value: string;
     desc: string;
+    isChecked:boolean
 }

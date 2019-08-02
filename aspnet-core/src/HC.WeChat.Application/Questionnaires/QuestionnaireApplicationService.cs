@@ -308,7 +308,6 @@ namespace HC.WeChat.Questionnaires
                                    No = q.No,
                                    IsMultiple = q.IsMultiple,
                                    Type = q.Type,
-                                   TypeName = q.Type.ToString(),
                                    Question = q.Question,
                                    Id = q.Id
                                })

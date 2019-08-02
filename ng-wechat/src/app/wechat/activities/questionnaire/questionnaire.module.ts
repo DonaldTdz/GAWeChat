@@ -5,13 +5,15 @@ import { Routes, RouterModule } from '@angular/router';
 import { AngularSplitModule } from 'angular-split';
 import { ComponentsModule } from '../../components/components.module';
 import { SharedModule } from '../../../shared/shared.module';
-import { QuestionnaireService } from '../../../services';
+import { QuestionnaireService, DemandForecastService } from '../../../services';
 import { QuestionnaireDetailComponent } from './questionnaire-detail/questionnaire-detail.component';
-const COMPONENTS = [QuestionnaireComponent, QuestionnaireDetailComponent];
+import { SubmitSuccessComponent } from './submit-success/submit-success.component';
+const COMPONENTS = [QuestionnaireComponent, QuestionnaireDetailComponent, SubmitSuccessComponent];
 
 const routes: Routes = [
     { path: 'questionnaire', component: QuestionnaireComponent },
-    { path: 'questionnaire-detail', component: QuestionnaireDetailComponent }
+    { path: 'questionnaire-detail', component: QuestionnaireDetailComponent },
+    { path: 'submit-success', component: SubmitSuccessComponent }
 ];
 @NgModule({
     imports: [
@@ -24,7 +26,8 @@ const routes: Routes = [
         ...COMPONENTS
     ],
     providers: [
-        QuestionnaireService
+        QuestionnaireService,
+        DemandForecastService
     ]
 })
 export class QuestionnaireModule {

@@ -9,6 +9,8 @@ export class Questionnaire
     question: string;
     typeName: string;
     questionOptions:QuestionOptions[];
+    isChecked:boolean = false;
+    optionChecked:string = null;
     constructor(data?: IQuestionnaire) {
         if (data) {
             for (var property in data) {

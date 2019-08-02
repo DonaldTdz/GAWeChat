@@ -1,6 +1,7 @@
 export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
     quarter:number;
-    stutus:number;
+    status:string;
+    desc:string;
     constructor(data?: IQuestionnaireFillRecords) {
         if (data) {
             for (var property in data) {
@@ -13,7 +14,8 @@ export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
     init(data?: any) {
         if (data) {
             this.quarter = data["quarter"];
-            this.stutus = data["stutus"];
+            this.status = data["status"];
+            this.desc = data["desc"];
         }
     }
 
@@ -36,7 +38,8 @@ export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["quarter"] = this.quarter;
-        data["stutus"] = this.stutus;
+        data["status"] = this.status;
+        data["desc"] = this.desc;
         return data;
     }
 
@@ -49,5 +52,6 @@ export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
 }
 export interface IQuestionnaireFillRecords {
     quarter:number;
-    stutus:number;
+    status:string;
+    desc:string;
 }

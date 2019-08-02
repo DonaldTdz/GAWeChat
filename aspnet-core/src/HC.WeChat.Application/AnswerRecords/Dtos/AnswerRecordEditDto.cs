@@ -55,4 +55,13 @@ namespace  HC.WeChat.AnswerRecords.Dtos
 
 
     }
+
+    public class QuestionnaireFillRecordsDto
+    {
+        public int Quarter { get; set; }
+
+        public string Status { get; set; }
+
+        public string Desc { get; set; }
+    }
 }
