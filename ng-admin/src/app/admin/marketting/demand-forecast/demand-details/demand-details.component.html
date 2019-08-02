@@ -44,7 +44,7 @@
         <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
             返回
         </button>
-        <button nz-button *ngIf="!demandForecast.isPublish && demandForecast.id" [nzType]="'primary'" (click)="push()"
+        <button nz-button *ngIf="demandForecast.id &&!demandForecast.isPublish" [nzType]="'primary'" (click)="push()"
             [nzSize]="'large'" [nzLoading]="loading" [disabled]="!form.valid">
             发布
         </button>
