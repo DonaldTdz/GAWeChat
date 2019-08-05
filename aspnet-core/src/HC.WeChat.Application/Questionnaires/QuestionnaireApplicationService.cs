@@ -24,6 +24,7 @@ using HC.WeChat.Questionnaires.DomainService;
 using HC.WeChat.Authorization;
 using HC.WeChat.Dto;
 using HC.WeChat.QuestionOptions;
+using HC.WeChat.AnswerRecords;
 
 namespace HC.WeChat.Questionnaires
 {
@@ -37,6 +38,7 @@ namespace HC.WeChat.Questionnaires
     {
         private readonly IRepository<Questionnaire, Guid> _entityRepository;
         private readonly IRepository<QuestionOption, Guid> _optionRepository;
+        private readonly IRepository<AnswerRecord, Guid> _answerRecordRepository;
 
         private readonly IQuestionnaireManager _entityManager;
 
@@ -45,6 +47,7 @@ namespace HC.WeChat.Questionnaires
         ///</summary>
         public QuestionnaireAppService(
         IRepository<Questionnaire, Guid> entityRepository
+        , IRepository<AnswerRecord, Guid> answerRecordRepository
         , IQuestionnaireManager entityManager
         , IRepository<QuestionOption, Guid> optionRepository
         )
@@ -52,6 +55,7 @@ namespace HC.WeChat.Questionnaires
             _entityRepository = entityRepository;
             _entityManager = entityManager;
             _optionRepository = optionRepository;
+            _answerRecordRepository = answerRecordRepository;
         }
 
 
@@ -64,30 +68,30 @@ namespace HC.WeChat.Questionnaires
         public async Task<PagedResultDto<QuestionnaireListDto>> GetPaged(GetQuestionnairesInput input)
         {
 
-            var query = _entityRepository.GetAll().WhereIf(input.type.HasValue,q=>q.Type==input.type.Value);
+            var query = _entityRepository.GetAll().WhereIf(input.type.HasValue, q => q.Type == input.type.Value);
             // TODO:根据传入的参数添加过滤条件
 
 
             var count = await query.CountAsync();
 
             var entityList = await (from q in query
-                              orderby input.Sorting
-                              select new QuestionnaireListDto
-                              {
-                                  Id = q.Id,
-                                  No = q.No,
-                                  Type = q.Type,
-                                  IsMultiple = q.IsMultiple,
-                                  Question = q.Question,
-                                  TypeName = q.Type.ToString(),
-                                  CreationTime = q.CreationTime,
-                                  CreatorUserId = q.CreatorUserId,
-                                  DeleterUserId = q.DeleterUserId,
-                                  DeletionTime = q.DeletionTime,
-                                  IsDeleted = q.IsDeleted,
-                                  LastModificationTime = q.LastModificationTime,
-                                  LastModifierUserId = q.LastModifierUserId
-                              }).OrderBy(i=>i.No).PageBy(input).ToListAsync();
+                                    orderby input.Sorting
+                                    select new QuestionnaireListDto
+                                    {
+                                        Id = q.Id,
+                                        No = q.No,
+                                        Type = q.Type,
+                                        IsMultiple = q.IsMultiple,
+                                        Question = q.Question,
+                                        TypeName = q.Type.ToString(),
+                                        CreationTime = q.CreationTime,
+                                        CreatorUserId = q.CreatorUserId,
+                                        DeleterUserId = q.DeleterUserId,
+                                        DeletionTime = q.DeletionTime,
+                                        IsDeleted = q.IsDeleted,
+                                        LastModificationTime = q.LastModificationTime,
+                                        LastModifierUserId = q.LastModifierUserId
+                                    }).OrderBy(i => i.No).PageBy(input).ToListAsync();
 
             // var entityListDtos = ObjectMapper.Map<List<QuestionnaireListDto>>(entityList);
             //var entityListDtos = entityList.MapTo<List<QuestionnaireListDto>>();
@@ -281,7 +285,7 @@ namespace HC.WeChat.Questionnaires
             int count = await _entityRepository.GetAll().Where(i => i.No == input.No).CountAsync();
             if (input.Id.HasValue)
             {
-                count = await _entityRepository.GetAll().Where(i => i.No == input.No&&i.Id!=input.Id.Value).CountAsync();
+                count = await _entityRepository.GetAll().Where(i => i.No == input.No && i.Id != input.Id.Value).CountAsync();
                 //if (count > 1)
                 //{
                 //    return true;
@@ -303,14 +307,14 @@ namespace HC.WeChat.Questionnaires
         public async Task<List<WXQuestionnaireListDto>> GetWXQuestionnaireList()
         {
             var list = await (from q in _entityRepository.GetAll()
-                               select new WXQuestionnaireListDto
-                               {
-                                   No = q.No,
-                                   IsMultiple = q.IsMultiple,
-                                   Type = q.Type,
-                                   Question = q.Question,
-                                   Id = q.Id
-                               })
+                              select new WXQuestionnaireListDto
+                              {
+                                  No = q.No,
+                                  IsMultiple = q.IsMultiple,
+                                  Type = q.Type,
+                                  Question = q.Question,
+                                  Id = q.Id
+                              })
                         .OrderBy(i => i.No)
                         .ToListAsync();
             foreach (var item in list)
@@ -329,9 +333,57 @@ namespace HC.WeChat.Questionnaires
         {
             var entitys = await _optionRepository.GetAll()
                 .Where(i => i.QuestionnaireId == questionnaireId)
-                .OrderBy(i=>i.Value)
+                .OrderBy(i => i.Value)
                 .ToListAsync();
             return entitys;
+        }
+
+        /// <summary>
+        /// 获取当前用户问卷调查填写记录
+        /// </summary>
+        /// <param name="questionnaireId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<QuestionRecordWXListDto>> GetQuestionRecordWXByIdAsync(Guid questionnaireId)
+        {
+            var record = _answerRecordRepository.GetAll().Where(v => v.OpenId == "");
+            var question = _entityRepository.GetAll();
+            var query = await (from r in record
+                               join q in question on r.QuestionnaireId equals q.Id
+                               select new QuestionRecordWXListDto()
+                               {
+                                   Id = q.Id,
+                                   Question = q.Question,
+                                   No = q.No,
+                                   Value = r.Values,
+                                   RecordId = r.Id
+                               }).OrderBy(v => v.No).ToListAsync();
+            foreach (var item in query)
+            {
+                if (item.Value.Contains(','))
+                {
+                    string[] values = item.Value.Split(',');
+                    foreach (var value in values)
+                    {
+                        var op = await _optionRepository.GetAll().Where(v => v.QuestionnaireId == item.Id && v.Value == value).Select(v => new RecordOptionWxDto()
+                        {
+                            Desc = v.Desc,
+                            Value = v.Value
+                        }).FirstOrDefaultAsync();
+                        item.list.Add(op);
+                    }
+                }
+                else
+                {
+                    var op = await _optionRepository.GetAll().Where(v => v.QuestionnaireId == item.Id && v.Value == item.Value).Select(v => new RecordOptionWxDto()
+                    {
+                        Desc = v.Desc,
+                        Value = v.Value
+                    }).FirstOrDefaultAsync();
+                    item.list.Add(op);
+                }
+            }
+            return query;
         }
     }
 }

@@ -98,4 +98,23 @@ namespace HC.WeChat.Questionnaires.Dtos
         /// </summary>
         public List<QuestionOption> QuestionOptions { get; set; }
     }
+
+    /// <summary>
+    /// 问卷调查记录详情
+    /// </summary>
+    public class QuestionRecordWXListDto
+    {
+        public Guid Id { get; set; }
+        public string No { get; set; }
+        public string Question { get; set; }
+        public Guid RecordId { get; set; }
+        public string Value { get; set; }
+        public List<RecordOptionWxDto> list { get; set; }
+    }
+
+    public class RecordOptionWxDto
+    {
+        public string Value { get; set; }
+        public string Desc { get; set; }
+    }
 }

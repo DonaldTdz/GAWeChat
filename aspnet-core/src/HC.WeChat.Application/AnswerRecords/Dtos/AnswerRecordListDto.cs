@@ -19,11 +19,15 @@ namespace HC.WeChat.AnswerRecords.Dtos
 		public Guid QuestionnaireId { get; set; }
 
 
-
-		/// <summary>
-		/// Values
-		/// </summary>
-		public string Values { get; set; }
+        /// <summary>
+        /// 选项Id
+        /// </summary>
+        [Required]
+        public Guid OptionId { get; set; }
+        /// <summary>
+        /// Values
+        /// </summary>
+        public string Values { get; set; }
 
 
 

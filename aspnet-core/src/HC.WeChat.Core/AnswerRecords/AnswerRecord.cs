@@ -18,7 +18,11 @@ namespace HC.WeChat.AnswerRecords
         /// </summary>
         [Required]
         public virtual Guid QuestionnaireId { get; set; }
-
+        /// <summary>
+        /// 选项Id
+        /// </summary>
+        [Required]
+        public virtual Guid OptionId { get; set; }
         /// <summary>
         /// 选项值（多选逗号分隔）
         /// </summary>
