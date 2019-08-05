@@ -2,7 +2,7 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd';
-import { DemandForecast } from '@shared/entity/marketting';
+import { DemandForecast, Questionnaire } from '@shared/entity/marketting';
 import { PagedResultDtoOfDemandForecast, DemandForecastServiceProxy } from '@shared/service-proxies/marketing-service';
 import { Parameter } from '@shared/service-proxies/entity';
 
@@ -15,7 +15,8 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
     userId: string;
     searchTitle: string;
     loading = false;
-    demandForecastList: DemandForecast[] = [];
+    demandForecastList : DemandForecast[] = [];
+    questionnaireList : Questionnaire[] = [];
 
     constructor(injector: Injector, private demandForecastService: DemandForecastServiceProxy, private router: Router,
         private modal: NzModalService, private ActRouter: ActivatedRoute) {
@@ -52,6 +53,23 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
 
     demandDetail(id: string) {
         this.router.navigate(['admin/customer/retail-record', id, this.userId]);
+    }
+
+    
+    getQuestionnaireList(reset = false, search?: boolean) {
+        if (reset) {
+            this.query.pageIndex = 1;
+            this.searchTitle = '';
+        }
+        if (search) {
+            this.query.pageIndex = 1;
+        }
+        this.loading = true;
+        this.demandForecastService.getRetailDemandListById(this.query.skipCount(), this.query.pageSize, this.getDemandParameter()).subscribe((result: PagedResultDtoOfDemandForecast) => {
+            this.loading = false;
+            this.demandForecastList = result.items
+            this.query.total = result.totalCount;
+        })
     }
 
     return() {
