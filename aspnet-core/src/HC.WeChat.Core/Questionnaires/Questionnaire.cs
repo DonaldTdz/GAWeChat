@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HC.WeChat.Questionnaires
 {
     /// <summary>
-    /// 问卷调查表
+    /// 问题表
     /// </summary>
     [Table("Questionnaires")]
     public class Questionnaire : FullAuditedEntity<Guid>
