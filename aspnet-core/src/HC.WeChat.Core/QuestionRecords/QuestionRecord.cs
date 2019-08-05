@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using HC.WeChat.WechatEnums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ using System.Text;
 namespace HC.WeChat.QuestionRecords
 {
     /// <summary>
-    /// 问题表
+    /// 问卷调查表
     /// </summary>
     [Table("QuestionRecords")]
     public class QuestionRecord : Entity<Guid>, ICreationAudited
@@ -30,7 +31,7 @@ namespace HC.WeChat.QuestionRecords
         /// <summary>
         /// 季度
         /// </summary>
-        public virtual int Quarter { get; set; }
+        public virtual QuarterType Quarter { get; set; }
 
         /// <summary>
         /// CreationTime

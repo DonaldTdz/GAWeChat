@@ -85,6 +85,6 @@ namespace HC.WeChat.Questionnaires
         Task<List<WXQuestionnaireListDto>> GetWXQuestionnaireList();
 
         Task<List<QuestionOption>> GetOptions(Guid questionnaireId);
-
+        Task<List<WXQuestionnaireListDto>> GetQuestionRecordWXByIdAsync(GetWXQuestionRecordInput input);
     }
 }

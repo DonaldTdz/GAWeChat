@@ -84,6 +84,6 @@ namespace HC.WeChat.AnswerRecords
 
         Task<List<QuestionnaireFillRecordsDto>> WXGetQuestionnaireFillRecords(string openId);
 
-        Task<APIResultDto> WXBatchCreateAnswerRecords(List<AnswerRecordEditDto> answerRecords);
+        Task<APIResultDto> CreateWXAnswerRecordsAsync(CreateWXAnswerDto input);
     }
 }

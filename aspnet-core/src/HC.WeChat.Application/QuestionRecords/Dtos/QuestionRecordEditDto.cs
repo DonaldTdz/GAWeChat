@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.QuestionRecords;
+using HC.WeChat.WechatEnums;
 
 namespace  HC.WeChat.QuestionRecords.Dtos
 {
@@ -35,7 +36,7 @@ namespace  HC.WeChat.QuestionRecords.Dtos
 		/// <summary>
 		/// Quarter
 		/// </summary>
-		public int Quarter { get; set; }
+		public QuarterType Quarter { get; set; }
 
 
 

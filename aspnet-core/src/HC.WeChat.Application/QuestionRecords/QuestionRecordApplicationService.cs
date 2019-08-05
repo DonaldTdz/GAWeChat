@@ -21,8 +21,7 @@ using Abp.Linq.Extensions;
 using HC.WeChat.QuestionRecords;
 using HC.WeChat.QuestionRecords.Dtos;
 using HC.WeChat.QuestionRecords.DomainService;
-
-
+using HC.WeChat.AnswerRecords;
 
 namespace HC.WeChat.QuestionRecords
 {
@@ -33,7 +32,7 @@ namespace HC.WeChat.QuestionRecords
     public class QuestionRecordAppService : WeChatAppServiceBase, IQuestionRecordAppService
     {
         private readonly IRepository<QuestionRecord, Guid> _entityRepository;
-
+        private readonly IRepository<AnswerRecord, Guid> _answerRecordRepository;
         private readonly IQuestionRecordManager _entityManager;
 
         /// <summary>
@@ -41,11 +40,13 @@ namespace HC.WeChat.QuestionRecords
         ///</summary>
         public QuestionRecordAppService(
         IRepository<QuestionRecord, Guid> entityRepository
-        ,IQuestionRecordManager entityManager
+        , IRepository<AnswerRecord, Guid> answerRecordRepository
+        , IQuestionRecordManager entityManager
         )
         {
-            _entityRepository = entityRepository; 
-             _entityManager=entityManager;
+            _entityRepository = entityRepository;
+            _answerRecordRepository = answerRecordRepository;
+             _entityManager =entityManager;
         }
 
 
@@ -193,19 +194,36 @@ QuestionRecordEditDto editDto;
 			await _entityRepository.DeleteAsync(s => input.Contains(s.Id));
 		}
 
+        /// <summary>
+        /// 微信获取调查问卷记录列表
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<QuestionRecordWXListDto>> GetQuestionRecordWXListAsync()
+        {
+            DateTime today = DateTime.Today;
+            DateTime now = DateTime.Now;
+            int curMonth = today.Month;
+            int curSeason = (curMonth % 3 == 0 ? curMonth / 3 : (curMonth / 3 + 1));
+            DateTime startQuarter = today.AddMonths(0 - (today.Month - 1) % 3).AddDays(1 - today.Day);  //本季度初  
+            DateTime endQuarter = startQuarter.AddMonths(3).AddDays(-1);  //本季度末 
+            DateTime beginTime = endQuarter.AddDays(1 - endQuarter.Day);  //当前季度月初  
+            DateTime endTime = endQuarter.AddDays((86399F / 86400));
 
-		/// <summary>
-		/// 导出QuestionRecord为excel表,等待开发。
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<FileDto> GetToExcel()
-		//{
-		//	var users = await UserManager.Users.ToListAsync();
-		//	var userListDtos = ObjectMapper.Map<List<UserListDto>>(users);
-		//	await FillRoleNames(userListDtos);
-		//	return _userListExcelExporter.ExportToFile(userListDtos);
-		//}
-
+            var list = await _entityRepository.GetAll().Where(v => v.IsPublish == true).Select(v => new QuestionRecordWXListDto()
+            {
+                Id = v.Id,
+                Year = v.Year,
+                Quarter = v.Quarter
+            }).OrderByDescending(v=>v.Year).ThenByDescending(v=>v.Quarter).ToListAsync();
+            foreach (var item in list)
+            {   
+                int count = await _answerRecordRepository.CountAsync(v => v.QuestionRecordId == item.Id);
+                item.Title = item.Year + "年" + item.Quarter.ToString() + "调查问卷";
+                item.Status = count <= 0 ? (now.Year >DateTime.Parse(item.Year+ "-01-01").Year || (curSeason > (int)item.Quarter) ? "已逾期" : ((now >= beginTime && now <= endTime) ? "进行中" : "未开始")) : "查看记录";
+            }
+            return list;
+        }
     }
 }
 

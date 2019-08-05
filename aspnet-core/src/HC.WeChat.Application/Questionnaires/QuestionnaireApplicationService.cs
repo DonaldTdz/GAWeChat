@@ -344,13 +344,13 @@ namespace HC.WeChat.Questionnaires
         /// <param name="questionnaireId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        public async Task<List<QuestionRecordWXListDto>> GetQuestionRecordWXByIdAsync(Guid questionnaireId)
+        public async Task<List<WXQuestionnaireListDto>> GetQuestionRecordWXByIdAsync(GetWXQuestionRecordInput input)
         {
-            var record = _answerRecordRepository.GetAll().Where(v => v.OpenId == "");
+            var record = _answerRecordRepository.GetAll().Where(v => v.OpenId == input.OpenId && v.QuestionRecordId == input.QuestionRecordId);
             var question = _entityRepository.GetAll();
             var query = await (from r in record
                                join q in question on r.QuestionnaireId equals q.Id
-                               select new QuestionRecordWXListDto()
+                               select new WXQuestionnaireListDto()
                                {
                                    Id = q.Id,
                                    Question = q.Question,
@@ -365,22 +365,22 @@ namespace HC.WeChat.Questionnaires
                     string[] values = item.Value.Split(',');
                     foreach (var value in values)
                     {
-                        var op = await _optionRepository.GetAll().Where(v => v.QuestionnaireId == item.Id && v.Value == value).Select(v => new RecordOptionWxDto()
+                        var op = await _optionRepository.GetAll().Where(v => v.QuestionnaireId == item.Id && v.Value == value).Select(v => new QuestionOption()
                         {
                             Desc = v.Desc,
                             Value = v.Value
                         }).FirstOrDefaultAsync();
-                        item.list.Add(op);
+                        item.QuestionOptions.Add(op);
                     }
                 }
                 else
                 {
-                    var op = await _optionRepository.GetAll().Where(v => v.QuestionnaireId == item.Id && v.Value == item.Value).Select(v => new RecordOptionWxDto()
+                    var op = await _optionRepository.GetAll().Where(v => v.QuestionnaireId == item.Id && v.Value == item.Value).Select(v => new QuestionOption()
                     {
                         Desc = v.Desc,
                         Value = v.Value
                     }).FirstOrDefaultAsync();
-                    item.list.Add(op);
+                    item.QuestionOptions.Add(op);
                 }
             }
             return query;

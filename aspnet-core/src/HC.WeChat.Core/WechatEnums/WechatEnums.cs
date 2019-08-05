@@ -318,4 +318,12 @@ namespace HC.WeChat.WechatEnums
         市场管理评价=3,
         综合评价=4
     }
+
+    public enum QuarterType
+    {
+        第一季度 = 1,
+        第二季度 = 2,
+        第三季度 = 3,
+        第四季度 = 4
+    }
 }

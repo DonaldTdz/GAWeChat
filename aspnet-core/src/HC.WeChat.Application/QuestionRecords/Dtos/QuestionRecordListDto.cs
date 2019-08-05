@@ -4,7 +4,7 @@ using System;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations;
-using HC.WeChat.QuestionRecords;
+using HC.WeChat.WechatEnums;
 
 namespace HC.WeChat.QuestionRecords.Dtos
 {
@@ -61,9 +61,19 @@ namespace HC.WeChat.QuestionRecords.Dtos
 		/// PublishTime
 		/// </summary>
 		public DateTime? PublishTime { get; set; }
+    }
 
-
-
-
+    public class QuestionRecordWXListDto : EntityDto<Guid>
+    {
+        /// <summary>
+        /// Title
+        /// </summary>
+        public string Title { get; set; }
+        public string Year { get; set; }
+        /// <summary>
+        /// Quarter
+        /// </summary>
+        public QuarterType Quarter { get; set; }
+        public string Status { get; set; }
     }
 }

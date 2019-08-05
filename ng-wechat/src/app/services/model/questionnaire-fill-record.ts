@@ -1,8 +1,8 @@
-export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
-    quarter:number;
-    status:string;
-    desc:string;
-    constructor(data?: IQuestionnaireFillRecords) {
+export class QuestionRecord implements IQuestionRecord {
+    id: string;
+    title: string;
+    status: string;
+    constructor(data?: IQuestionRecord) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -13,22 +13,22 @@ export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
 
     init(data?: any) {
         if (data) {
-            this.quarter = data["quarter"];
+            this.id = data["id"];
+            this.title = data["title"];
             this.status = data["status"];
-            this.desc = data["desc"];
         }
     }
 
-    static fromJS(data: any): QuestionnaireFillRecords {
-        let result = new QuestionnaireFillRecords();
+    static fromJS(data: any): QuestionRecord {
+        let result = new QuestionRecord();
         result.init(data);
         return result;
     }
 
-    static fromJSArray(data: any[]): QuestionnaireFillRecords[] {
+    static fromJSArray(data: any[]): QuestionRecord[] {
         let arry = []
         data.map(i => {
-            let item = new QuestionnaireFillRecords();
+            let item = new QuestionRecord();
             item.init(i);
             arry.push(item);
         })
@@ -37,21 +37,20 @@ export class QuestionnaireFillRecords implements IQuestionnaireFillRecords {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["quarter"] = this.quarter;
-        data["status"] = this.status;
-        data["desc"] = this.desc;
+        data["id"] = this.id;
+        data["title"] = this.title;
         return data;
     }
 
     clone() {
         const json = this.toJSON();
-        let result = new QuestionnaireFillRecords();
+        let result = new QuestionRecord();
         result.init(json);
         return result;
     }
 }
-export interface IQuestionnaireFillRecords {
-    quarter:number;
-    status:string;
-    desc:string;
+export interface IQuestionRecord {
+    id: string;
+    title: string;
+    status: string;
 }

@@ -378,33 +378,32 @@ namespace HC.WeChat.AnswerRecords
         }
 
         /// <summary>
-        /// 微信端批量创建答题记录
+        /// 微信端保存答题记录
         /// </summary>
         /// <param name="answerRecords"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        public async Task<APIResultDto> WXBatchCreateAnswerRecords(List<AnswerRecordEditDto> answerRecords)
+        public async Task<APIResultDto> CreateWXAnswerRecordsAsync(CreateWXAnswerDto input)
         {
             try
             {
-                var entitys = answerRecords.MapTo<List<AnswerRecord>>();
-                foreach (var entity in entitys)
+                foreach (var item in input.List)
                 {
+                    AnswerRecord entity = new AnswerRecord();
+                    entity.OpenId = input.OpenId;
+                    entity.QuestionRecordId = input.QuestionRecordId;
+                    entity.Values = item.Values;
+                    entity.QuestionnaireId = item.QuestionnaireId;
+                    entity.Remark = item.Remark;
                     await _entityRepository.InsertAsync(entity);
                 }
-                return new APIResultDto
-                {
-                    Code = 0
-                };
+                return new APIResultDto() { Code = 0, Msg = "保存成功" };
             }
-            catch
+            catch (Exception)
             {
-                return new APIResultDto
-                {
-                    Code = 999
-                };
-            }
+                return new APIResultDto() { Code = 901, Msg = "保存失败，请重试" };
 
+            }
         }
     }
 }
