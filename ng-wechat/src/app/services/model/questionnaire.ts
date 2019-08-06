@@ -10,6 +10,9 @@ export class Questionnaire implements IQuestionnaire {
     isChecked: boolean = false;
     optionChecked: string = null;
     value: string;
+    values:string[] = [];
+    remark:string;
+    desc:string;
     constructor(data?: IQuestionnaire) {
         if (data) {
             for (var property in data) {

@@ -152,12 +152,24 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     //     }
     // }
     //#endregion
-    onRadioClick(index) {
-        if (this.questionnaireList[index].value) {
-            return;
-        } else {
-            this.checkedNum++;
+    onRadioClick(index,desc?:string) {
+        if(desc && desc == '其它（请注明）'){
+            this.questionnaireList[index].desc = desc;
+        }else{
+            this.questionnaireList[index].desc = null;
         }
+        console.log(this.questionnaireList[index]);
+        
+        if (this.questionnaireList[index].isChecked){
+            return;
+        }
+        this.questionnaireList[index].isChecked=true;
+        this.checkedNum++;
+        // if (this.questionnaireList[index].value) {
+        //     return;
+        // } else {
+        //     this.checkedNum++;
+        // }
         this.progressBar = (this.checkedNum / this.questionnaireList.length) * 100;
     }
 
@@ -166,6 +178,15 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
             this.srv['warn']('还有未选择的项');
             return;
         }
+
+        //将多选数组转换成字符串赋值给最终选项
+        this.questionnaireList.forEach(element => {
+            if(element.isMultiple){
+                element.value = element.values.join(',');
+            }
+        });
+        //console.log(this.questionnaireList);
+        //return;
         let input: any = {};
         input.openId = this.settingsService.openId;
         input.questionRecordId = this.questionRecordId;

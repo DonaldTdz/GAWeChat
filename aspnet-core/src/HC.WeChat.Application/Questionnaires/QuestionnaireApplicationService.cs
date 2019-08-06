@@ -91,7 +91,7 @@ namespace HC.WeChat.Questionnaires
                                         IsDeleted = q.IsDeleted,
                                         LastModificationTime = q.LastModificationTime,
                                         LastModifierUserId = q.LastModifierUserId
-                                    }).OrderBy(i => i.No).PageBy(input).ToListAsync();
+                                    }).OrderBy(i => i.Type).PageBy(input).ToListAsync();
 
             // var entityListDtos = ObjectMapper.Map<List<QuestionnaireListDto>>(entityList);
             //var entityListDtos = entityList.MapTo<List<QuestionnaireListDto>>();
@@ -315,7 +315,7 @@ namespace HC.WeChat.Questionnaires
                                   Question = q.Question,
                                   Id = q.Id
                               })
-                        .OrderBy(i => i.No)
+                        .OrderBy(i => i.Type)
                         .ToListAsync();
             foreach (var item in list)
             {
@@ -357,7 +357,7 @@ namespace HC.WeChat.Questionnaires
                                    No = q.No,
                                    Value = r.Values,
                                    RecordId = r.Id
-                               }).OrderBy(v => v.No).ToListAsync();
+                               }).OrderBy(v => (int)v.Type).ToListAsync();
             foreach (var item in query)
             {
                 if (item.Value.Contains(','))
