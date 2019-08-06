@@ -1,9 +1,9 @@
 export class AnswerRecords implements IAnswerRecords {
-    id:string;
-    questionnaireId:string;
+    id: string;
+    questionnaireId: string;
     values: string;
     remark: string;
-    openId:string;
+    openId: string;
     constructor(data?: IAnswerRecords) {
         if (data) {
             for (var property in data) {
@@ -57,9 +57,47 @@ export class AnswerRecords implements IAnswerRecords {
     }
 }
 export interface IAnswerRecords {
-    id:string;
-    questionnaireId:string;
+    id: string;
+    questionnaireId: string;
     values: string;
     remark: string;
-    openId:string;
+    openId: string;
+}
+
+
+export class QuestionAnswer implements IQuestionAnswer {
+    questionnaireId: string;
+    values: string;
+    remark: string;
+    constructor(data?: IQuestionAnswer) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.questionnaireId = data["id"];
+            this.values = data["value"];
+            this.remark = data["remark"];
+        }
+    }
+
+    static fromJSArray(data: any[]): QuestionAnswer[] {
+        let arry = []
+        data.map(i => {
+            let item = new QuestionAnswer();
+            item.init(i);
+            arry.push(item);
+        })
+        return arry;
+    }
+}
+export interface IQuestionAnswer {
+    questionnaireId: string;
+    values: string;
+    remark: string;
 }

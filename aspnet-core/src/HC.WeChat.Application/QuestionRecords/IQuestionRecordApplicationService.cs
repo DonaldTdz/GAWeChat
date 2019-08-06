@@ -80,13 +80,6 @@ namespace HC.WeChat.QuestionRecords
         /// 批量删除QuestionRecord
         /// </summary>
         Task BatchDelete(List<Guid> input);
-
-
-		/// <summary>
-        /// 导出QuestionRecord为excel表
-        /// </summary>
-        /// <returns></returns>
-		//Task<FileDto> GetToExcel();
-
+        Task<List<QuestionRecordWXListDto>> GetQuestionRecordWXListAsync();
     }
 }

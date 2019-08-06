@@ -1,16 +1,15 @@
 import { QuestionOptions } from "./question-option";
-
-export class Questionnaire
-    implements IQuestionnaire {
+export class Questionnaire implements IQuestionnaire {
     id: string;
     type: number;
     isMultiple: boolean;
     no: string;
     question: string;
     typeName: string;
-    questionOptions:QuestionOptions[];
-    isChecked:boolean = false;
-    optionChecked:string = null;
+    questionOptions: QuestionOptions[];
+    isChecked: boolean = false;
+    optionChecked: string = null;
+    value: string;
     constructor(data?: IQuestionnaire) {
         if (data) {
             for (var property in data) {
@@ -28,7 +27,8 @@ export class Questionnaire
             this.no = data["no"];
             this.question = data["question"];
             this.typeName = data["typeName"];
-            this.questionOptions = data["questionOptions"];
+            this.questionOptions = QuestionOptions.fromJSArray(data["questionOptions"]);
+            this.value = data["value"];
         }
     }
 
@@ -57,7 +57,6 @@ export class Questionnaire
         data["no"] = this.no;
         data["question"] = this.question;
         data["typeName"] = this.typeName;
-        data["questionOptions"] = this.questionOptions;
         return data;
     }
 
@@ -75,5 +74,6 @@ export interface IQuestionnaire {
     no: string;
     question: string;
     typeName: string;
-    questionOptions:QuestionOptions[];
+    questionOptions: QuestionOptions[];
+    value: string;
 }

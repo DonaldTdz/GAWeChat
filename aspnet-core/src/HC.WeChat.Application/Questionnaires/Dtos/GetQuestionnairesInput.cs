@@ -3,6 +3,7 @@ using Abp.Runtime.Validation;
 using HC.WeChat.Dto;
 using HC.WeChat.Questionnaires;
 using HC.WeChat.WechatEnums;
+using System;
 
 namespace HC.WeChat.Questionnaires.Dtos
 {
@@ -16,11 +17,17 @@ namespace HC.WeChat.Questionnaires.Dtos
         {
             if (string.IsNullOrEmpty(Sorting))
             {
-                Sorting = "Id"; 
+                Sorting = "Id";
             }
         }
 
         public QuestionType? type { get; set; }
 
+    }
+
+    public class GetWXQuestionRecordInput
+    {
+        public Guid QuestionRecordId { get; set; }
+        public string OpenId { get; set; }
     }
 }

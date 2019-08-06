@@ -7,83 +7,71 @@ using System.ComponentModel.DataAnnotations;
 using HC.WeChat.QuestionRecords;
 using Abp.AutoMapper;
 using System.Collections.Generic;
+using HC.WeChat.WechatEnums;
 
 namespace HC.WeChat.QuestionRecords.Dtos
 {
     [AutoMapFrom(typeof(QuestionRecord))]
-    public class QuestionRecordListDto : EntityDto<Guid>,ICreationAudited 
+    public class QuestionRecordListDto : EntityDto<Guid>, ICreationAudited
     {
 
-        
-		/// <summary>
-		/// Title
-		/// </summary>
-		[Required(ErrorMessage="Title不能为空")]
-		public string Title { get; set; }
+
+        /// <summary>
+        /// Title
+        /// </summary>
+        [Required(ErrorMessage = "Title不能为空")]
+        public string Title { get; set; }
 
 
 
-		/// <summary>
-		/// Year
-		/// </summary>
-		[Required(ErrorMessage="Year不能为空")]
-		public string Year { get; set; }
+        /// <summary>
+        /// Year
+        /// </summary>
+        [Required(ErrorMessage = "Year不能为空")]
+        public string Year { get; set; }
 
 
 
-		/// <summary>
-		/// Quarter
-		/// </summary>
-		public int Quarter { get; set; }
+        /// <summary>
+        /// Quarter
+        /// </summary>
+        public QuarterType Quarter { get; set; }
 
 
 
-		/// <summary>
-		/// CreationTime
-		/// </summary>
-		public DateTime CreationTime { get; set; }
+        /// <summary>
+        /// CreationTime
+        /// </summary>
+        public DateTime CreationTime { get; set; }
 
 
 
-		/// <summary>
-		/// CreatorUserId
-		/// </summary>
-		public long? CreatorUserId { get; set; }
+        /// <summary>
+        /// CreatorUserId
+        /// </summary>
+        public long? CreatorUserId { get; set; }
 
 
 
-		/// <summary>
-		/// IsPublish
-		/// </summary>
-		[Required(ErrorMessage="IsPublish不能为空")]
-		public bool IsPublish { get; set; }
+        /// <summary>
+        /// IsPublish
+        /// </summary>
+        [Required(ErrorMessage = "IsPublish不能为空")]
+        public bool IsPublish { get; set; }
 
 
 
-		/// <summary>
-		/// PublishTime
-		/// </summary>
-		public DateTime? PublishTime { get; set; }
-
+        /// <summary>
+        /// PublishTime
+        /// </summary>
+        public DateTime? PublishTime { get; set; }
 
         /// <summary>
         /// 年份季度拼接字符串
         /// </summary>
         public string QuarterString { get; set; }
 
-
-        /// <summary>
-        /// 填写时间
-        /// </summary>
-        public DateTime? WriteTime { get; set; }
-
-        /// <summary>
-        /// OpenId
-        /// </summary>
-        public string OpenId { get; set; }
     }
-
-
     /// <summary>
     /// 零售户问卷填写记录
     /// </summary>
@@ -124,5 +112,19 @@ namespace HC.WeChat.QuestionRecords.Dtos
         public string Values { get; set; }
 
         public string Remark { get; set; }
+    }
+
+    public class QuestionRecordWXListDto : EntityDto<Guid>
+    {
+        /// <summary>
+        /// Title
+        /// </summary>
+        public string Title { get; set; }
+        public string Year { get; set; }
+        /// <summary>
+        /// Quarter
+        /// </summary>
+        public QuarterType Quarter { get; set; }
+        public string Status { get; set; }
     }
 }

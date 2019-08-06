@@ -1,9 +1,9 @@
 export class QuestionOptions implements IQuestionOptions {
-    id:string;
-    questionnaireId:string;
+    id: string;
+    questionnaireId: string;
     value: string;
     desc: string;
-    isChecked:boolean = false;
+    isChecked: boolean = false;
     constructor(data?: IQuestionOptions) {
         if (data) {
             for (var property in data) {
@@ -56,9 +56,9 @@ export class QuestionOptions implements IQuestionOptions {
     }
 }
 export interface IQuestionOptions {
-    id:string;
-    questionnaireId:string;
+    id: string;
+    questionnaireId: string;
     value: string;
     desc: string;
-    isChecked:boolean
+    isChecked: boolean
 }

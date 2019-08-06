@@ -12,14 +12,12 @@ namespace  HC.WeChat.QuestionOptions.Dtos
         /// <summary>
         /// Id
         /// </summary>
-        public Guid? Id { get; set; }         
+        public Guid? Id { get; set; }
 
-
-        
-		/// <summary>
-		/// QuestionnaireId
-		/// </summary>
-		[Required(ErrorMessage="QuestionnaireId不能为空")]
+        /// <summary>
+        /// QuestionnaireId
+        /// </summary>
+        [Required(ErrorMessage="QuestionnaireId不能为空")]
 		public Guid QuestionnaireId { get; set; }
 
 

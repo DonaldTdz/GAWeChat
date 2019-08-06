@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.AnswerRecords;
@@ -12,14 +13,22 @@ namespace  HC.WeChat.AnswerRecords.Dtos
         /// <summary>
         /// Id
         /// </summary>
-        public Guid? Id { get; set; }         
+        public Guid? Id { get; set; }
+        /// <summary>
+        /// 问卷调查Id
+        /// </summary>
+        [Required]
+        public Guid QuestionRecordId { get; set; }
+        /// <summary>
+        /// 选项Id
+        /// </summary>
+        [Required]
+        public Guid OptionId { get; set; }
 
-
-        
-		/// <summary>
-		/// QuestionnaireId
-		/// </summary>
-		[Required(ErrorMessage="QuestionnaireId不能为空")]
+        /// <summary>
+        /// QuestionnaireId
+        /// </summary>
+        [Required(ErrorMessage="QuestionnaireId不能为空")]
 		public Guid QuestionnaireId { get; set; }
 
 
@@ -50,12 +59,28 @@ namespace  HC.WeChat.AnswerRecords.Dtos
 		/// CreationTime
 		/// </summary>
 		public DateTime CreationTime { get; set; }
-
-
-
-
     }
 
+    /// <summary>
+    /// 保存调查问卷dto
+    /// </summary>
+    public class CreateWXAnswerDto
+    {
+        public string OpenId { get; set; }
+        public Guid QuestionRecordId { get; set; }
+        public List<QuestionAnswerList> List { get; set; }
+    }
+
+    /// <summary>
+    /// 答案列表
+    /// </summary>
+    public class QuestionAnswerList
+    {
+        public Guid QuestionnaireId { get; set; }
+        public string Values { get; set; }
+        public string Remark { get; set; }
+
+    }
     public class QuestionnaireFillRecordsDto
     {
         public int Quarter { get; set; }

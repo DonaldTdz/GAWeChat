@@ -18,12 +18,20 @@ namespace HC.WeChat.AnswerRecords.Dtos
 		[Required(ErrorMessage="QuestionnaireId不能为空")]
 		public Guid QuestionnaireId { get; set; }
 
-
-
-		/// <summary>
-		/// Values
-		/// </summary>
-		public string Values { get; set; }
+        /// <summary>
+        /// 问卷调查Id
+        /// </summary>
+        [Required]
+        public Guid QuestionRecordId { get; set; }
+        /// <summary>
+        /// 选项Id
+        /// </summary>
+        [Required]
+        public Guid OptionId { get; set; }
+        /// <summary>
+        /// Values
+        /// </summary>
+        public string Values { get; set; }
 
 
 
