@@ -20,6 +20,7 @@ import { CommonModule } from "@angular/common";
 import { AlainABCModule } from "@delon/abc";
 import { RetailStatisticsComponent } from "./retail-customer/retail-statistics/retail-statistics.component";
 import { RetailDemandDetailComponent } from "./retail-customer/retail-statistics/retail-demand-detail/retail-demand-detail.component";
+import { RetailAnswerRecordComponent } from "./retail-customer/retail-answer-record/retail-answer-record.component";
 
 @NgModule({
     imports: [
@@ -45,6 +46,7 @@ import { RetailDemandDetailComponent } from "./retail-customer/retail-statistics
         RefuseComponent,
         RetailStatisticsComponent,
         RetailDemandDetailComponent,
+        RetailAnswerRecordComponent,
     ],
     providers: [
         AppRouteGuard

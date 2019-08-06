@@ -2,8 +2,8 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd';
-import { DemandForecast, Questionnaire } from '@shared/entity/marketting';
-import { PagedResultDtoOfDemandForecast, DemandForecastServiceProxy } from '@shared/service-proxies/marketing-service';
+import { DemandForecast, Questionnaire, QuestionRecord } from '@shared/entity/marketting';
+import { PagedResultDtoOfDemandForecast, DemandForecastServiceProxy, QuestionnaireServiceProxy, PagedResultDtoOfQuestionRecord } from '@shared/service-proxies/marketing-service';
 import { Parameter } from '@shared/service-proxies/entity';
 
 @Component({
@@ -16,16 +16,31 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
     searchTitle: string;
     loading = false;
     demandForecastList : DemandForecast[] = [];
-    questionnaireList : Questionnaire[] = [];
+
+    //问卷调查
+    queryQuestionRecord: any = {
+        pageIndex: 1,
+        pageSize: 10,
+        skipCount: function () { return (this.pageIndex - 1) * this.pageSize; },
+        total: 0,
+        sorter: '',
+        status: -1,
+        statusList: []
+    };
+    questionRecordList : QuestionRecord[] = [];
+    searchQuestionRecordTitle:string;
+
 
     constructor(injector: Injector, private demandForecastService: DemandForecastServiceProxy, private router: Router,
-        private modal: NzModalService, private ActRouter: ActivatedRoute) {
+        private modal: NzModalService, private ActRouter: ActivatedRoute, 
+        private questionnaireService:QuestionnaireServiceProxy) {
         super(injector);
         this.userId = this.ActRouter.snapshot.params['uId'];
     }
     ngOnInit(): void {
         if (this.userId) {
             this.getRetailDemandList();
+            this.getQuestionRecordList();
         }
     }
 
@@ -55,22 +70,29 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
         this.router.navigate(['admin/customer/retail-record', id, this.userId]);
     }
 
-    
-    getQuestionnaireList(reset = false, search?: boolean) {
+    //问卷调查
+    getQuestionRecordList(reset = false, search?: boolean) {
         if (reset) {
-            this.query.pageIndex = 1;
+            this.queryQuestionRecord.pageIndex = 1;
             this.searchTitle = '';
         }
         if (search) {
-            this.query.pageIndex = 1;
+            this.queryQuestionRecord.pageIndex = 1;
         }
         this.loading = true;
-        this.demandForecastService.getRetailDemandListById(this.query.skipCount(), this.query.pageSize, this.getDemandParameter()).subscribe((result: PagedResultDtoOfDemandForecast) => {
+        this.questionnaireService.getQuestionRecordByRetailerId(this.queryQuestionRecord.skipCount(), this.queryQuestionRecord.pageSize, this.userId, this.searchQuestionRecordTitle).subscribe((result: PagedResultDtoOfQuestionRecord) => {
             this.loading = false;
-            this.demandForecastList = result.items
-            this.query.total = result.totalCount;
+            this.questionRecordList = result.items
+            console.log(this.questionRecordList);
+            
+            this.queryQuestionRecord.total = result.totalCount;
         })
     }
+
+    questionRecordDetail(id:string){
+        this.router.navigate(['admin/customer/retail-answer-record', id, this.userId]);
+    }
+
 
     return() {
         this.router.navigate(['admin/customer/retail-customer']);

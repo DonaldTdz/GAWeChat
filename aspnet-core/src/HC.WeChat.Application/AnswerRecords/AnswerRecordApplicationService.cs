@@ -22,6 +22,10 @@ using HC.WeChat.AnswerRecords;
 using HC.WeChat.AnswerRecords.Dtos;
 using HC.WeChat.AnswerRecords.DomainService;
 using HC.WeChat.Dto;
+using HC.WeChat.QuestionRecords.Dtos;
+using HC.WeChat.WeChatUsers;
+using HC.WeChat.Questionnaires;
+using HC.WeChat.QuestionOptions;
 
 namespace HC.WeChat.AnswerRecords
 {
@@ -32,7 +36,9 @@ namespace HC.WeChat.AnswerRecords
     public class AnswerRecordAppService : WeChatAppServiceBase, IAnswerRecordAppService
     {
         private readonly IRepository<AnswerRecord, Guid> _entityRepository;
-
+        private readonly IRepository<Questionnaire, Guid> _questionnaireRepository;
+        private readonly IRepository<WeChatUser, Guid> _weChatRepository;
+        private readonly IRepository<QuestionOption, Guid> _questionOptionRepository;
         private readonly IAnswerRecordManager _entityManager;
 
         /// <summary>
@@ -40,11 +46,17 @@ namespace HC.WeChat.AnswerRecords
         ///</summary>
         public AnswerRecordAppService(
         IRepository<AnswerRecord, Guid> entityRepository
+        , IRepository<WeChatUser, Guid> weChatRepository
+        , IRepository<Questionnaire, Guid> questionnaireRepository
+        , IRepository<QuestionOption, Guid> questionOptionRepository
         , IAnswerRecordManager entityManager
         )
         {
             _entityRepository = entityRepository;
             _entityManager = entityManager;
+            _weChatRepository = weChatRepository;
+            _questionnaireRepository = questionnaireRepository;
+            _questionOptionRepository = questionOptionRepository;
         }
 
 
@@ -72,6 +84,36 @@ namespace HC.WeChat.AnswerRecords
             var entityListDtos = entityList.MapTo<List<AnswerRecordListDto>>();
 
             return new PagedResultDto<AnswerRecordListDto>(count, entityListDtos);
+        }
+
+        /// <summary>
+        /// 获取零售户调查问卷答题详情
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<List<RetailQuestionRecordDetailDto>> GetAnswerRecordsByRetailerId(GetRetailAnswerRecordsInput input)
+        {
+            var openId = await _weChatRepository.GetAll().Where(i => i.UserId == input.RetailerId).Select(i => i.OpenId).FirstOrDefaultAsync();
+
+            var query = await (from qn in _questionnaireRepository.GetAll()
+                               join a in _entityRepository.GetAll()
+                               on qn.Id equals a.QuestionnaireId
+                               where a.OpenId == openId
+                               select new RetailQuestionRecordDetailDto
+                               {
+                                   No = qn.No,
+                                   QuestionnaireId = a.QuestionnaireId,
+                                   Question = qn.Question,
+                                   Remark = a.Remark,
+                                   Values = a.Values
+                               }).AsNoTracking().ToListAsync();
+           
+            foreach (var item in query)
+            {
+                var options = item.Values.Split(',');
+                item.Desc = await _questionOptionRepository.GetAll().Where(o => options.Contains(o.Value) && o.QuestionnaireId == item.QuestionnaireId).Select(o => o.Desc).ToArrayAsync();
+            }
+            return query;
         }
 
 
@@ -222,11 +264,11 @@ namespace HC.WeChat.AnswerRecords
                     beginTime = new DateTime(nowDate.Year,1,1,0,0,0);
                     endTime = new DateTime(nowDate.Year, 3, 31, 23, 59, 59);
                     break;
-                case 3:
+                case 2:
                     beginTime = new DateTime(nowDate.Year, 4, 1, 0, 0, 0);
                     endTime = new DateTime(nowDate.Year, 6, 30, 23, 59, 59);
                     break;
-                case 2:
+                case 3:
                     beginTime = new DateTime(nowDate.Year, 7, 1, 0, 0, 0);
                     endTime = new DateTime(nowDate.Year, 9, 30, 23, 59, 59);
                     break;

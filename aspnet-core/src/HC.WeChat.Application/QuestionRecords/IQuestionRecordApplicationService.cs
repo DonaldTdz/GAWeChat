@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.QuestionRecords.Dtos;
 using HC.WeChat.QuestionRecords;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.QuestionRecords
 {
@@ -35,11 +36,20 @@ namespace HC.WeChat.QuestionRecords
         /// <returns></returns>
         Task<PagedResultDto<QuestionRecordListDto>> GetPaged(GetQuestionRecordsInput input);
 
+        /// <summary>
+        /// 分页获取零售户问卷填写记录
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task<PagedResultDto<RetailQuestionRecordListDto>> GetPagedByRetailerId(GetQuestionRecordsInput input);
 
-		/// <summary>
-		/// 通过指定id获取QuestionRecordListDto信息
-		/// </summary>
-		Task<QuestionRecordListDto> GetById(EntityDto<Guid> input);
+        Task<RetailQuestionRecordListDto> GetRetailQuetionRecordHead(GetQuestionRecordHeadInput input);
+
+
+        /// <summary>
+        /// 通过指定id获取QuestionRecordListDto信息
+        /// </summary>
+        Task<QuestionRecordListDto> GetById(EntityDto<Guid> input);
 
 
         /// <summary>
@@ -55,7 +65,7 @@ namespace HC.WeChat.QuestionRecords
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CreateOrUpdate(CreateOrUpdateQuestionRecordInput input);
+        Task<APIResultDto> CreateOrUpdate(QuestionRecordEditDto input);
 
 
         /// <summary>
@@ -63,7 +73,7 @@ namespace HC.WeChat.QuestionRecords
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Delete(EntityDto<Guid> input);
+        Task<APIResultDto> Delete(EntityDto<Guid> input);
 
 
         /// <summary>

@@ -12,6 +12,9 @@ namespace HC.WeChat.AnswerRecords
     [Table("AnswerRecords")]
     public class AnswerRecord : Entity<Guid>, IHasCreationTime
     {
+        [Required]
+        public virtual Guid QuestionRecordId { get; set; }
+
 
         /// <summary>
         /// 问卷调查外键
@@ -23,6 +26,7 @@ namespace HC.WeChat.AnswerRecords
         /// 选项值（多选逗号分隔）
         /// </summary>
         public virtual string Values { get; set; }
+        
 
         /// <summary>
         /// 备注

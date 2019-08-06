@@ -26,6 +26,7 @@ import { CreateQuestionnaireComponent } from "./questionnaire/create-questionnai
 import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
 import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.component";
 import { QuestionOptionComponent } from "./questionnaire/question-option/question-option/question-option.component";
+import { DetailQuestionRecordComponent } from "./questionnaire/detail-question-record/detail-question-record.component";
 
 @NgModule({
     imports: [
@@ -57,6 +58,7 @@ import { QuestionOptionComponent } from "./questionnaire/question-option/questio
         DetailQuestionnaireComponent,
         CreateQuestionnaireComponent,
         QuestionOptionComponent,
+        DetailQuestionRecordComponent,
         DemandDetailsComponent,
         DemandListComponent,
     ],

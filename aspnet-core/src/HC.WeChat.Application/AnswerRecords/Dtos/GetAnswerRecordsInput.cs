@@ -2,6 +2,7 @@
 using Abp.Runtime.Validation;
 using HC.WeChat.Dto;
 using HC.WeChat.AnswerRecords;
+using System;
 
 namespace HC.WeChat.AnswerRecords.Dtos
 {
@@ -20,7 +21,15 @@ namespace HC.WeChat.AnswerRecords.Dtos
         }
         public string OpenId { get; set; }
 
-        public int Quarter { get; set; }
+        public int? Quarter { get; set; }
 
+    }
+
+    public class GetRetailAnswerRecordsInput
+    {
+        
+        public Guid RetailerId { get; set; }
+
+        public Guid QuestionRecordId { get; set; }
     }
 }
