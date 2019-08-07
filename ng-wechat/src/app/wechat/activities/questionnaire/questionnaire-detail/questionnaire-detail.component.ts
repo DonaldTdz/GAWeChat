@@ -17,6 +17,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     checkedNum: number = 0;//已选择个数
     status: boolean = false;//是否可填写
     questionnaireList: Questionnaire[] = [];//问题列表
+    submitDisable:boolean=false;
     questionRecordId: string = this.route.snapshot.params['id'];
     statusParams: string = this.route.snapshot.params['status'];
     constructor(injector: Injector
@@ -78,6 +79,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
             this.questionnaireList[index].desc = desc;
         } else {
             this.questionnaireList[index].desc = null;
+            this.questionnaireList[index].remark = null;
         }
         if (value){
             this.JumpTopic(index,value);
@@ -158,6 +160,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     }
 
     save() {
+        this.submitDisable = true;
         if (this.progressBar < 100) {
             this.srv['warn']('还有未选择的项');
             return;

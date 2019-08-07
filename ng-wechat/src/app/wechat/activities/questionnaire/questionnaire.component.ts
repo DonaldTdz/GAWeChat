@@ -38,11 +38,11 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
             this.isRetailer = result;
             if (this.isRetailer) {
                 if (status != '已逾期') {
-                    if  (status == '未开始'){
-                        this.srv['warn']('活动未开始');
-                        this.status = false;
-                        return;
-                    }
+                    // if  (status == '未开始'){
+                    //     this.srv['warn']('活动未开始');
+                    //     this.status = false;
+                    //     return;
+                    // }
                     if (status == '查看记录') {
                         this.status = false;
                     } else {
