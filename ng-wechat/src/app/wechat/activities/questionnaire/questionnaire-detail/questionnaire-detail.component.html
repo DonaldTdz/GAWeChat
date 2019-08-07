@@ -4,51 +4,54 @@
         <br />
     </div>
     <div *ngFor="let item of questionnaireList; let i = index">
-        <div style="margin-left: 15px;">
-            <strong><label>{{item.no}}</label></strong>
-            <label>{{item.question}}</label>
-        </div>
-        <div *ngIf="item.isMultiple; then checkbox else radio">
-        </div>
-        <ng-template #radio>
-            <div class="weui-cells weui-cells_radio">
-                <label *ngFor="let option of item.questionOptions" for="radio-{{ option.id }}"
-                    class="weui-cell weui-check__label">
-                    <div class="weui-cell__bd">
-                        <p>{{ option.desc }}</p>
-                    </div>
-                    <div class="weui-cell__ft">
-                        <input type="radio" class="weui-check" (click)="onRadioClick(i,option.desc)" [(ngModel)]="item.value"
-                            id="radio-{{option.id}}" name="{{item.no}}" [value]="option.value" />
-                        <span class="weui-icon-checked"></span>
-                    </div>
-                </label>
+        <div *ngIf="item.enabled">
+            <div style="margin-left: 15px;margin-top: 20px;">
+                <strong><label>{{item.no}}</label></strong>
+                <label>{{item.question}}</label>
             </div>
-            <div *ngIf="item.desc" class="weui-cells">
+            <div *ngIf="item.isMultiple; then checkbox else radio">
+            </div>
+            <ng-template #radio>
+                <div class="weui-cells weui-cells_radio">
+                    <label *ngFor="let option of item.questionOptions" for="radio-{{ option.id }}"
+                        class="weui-cell weui-check__label">
+                        <div class="weui-cell__bd">
+                            <p>{{ option.desc }}</p>
+                        </div>
+                        <div class="weui-cell__ft">
+                            <input type="radio" class="weui-check" (change)="onRadioChange(i,option.desc,option.value,null)"
+                                [(ngModel)]="item.value" id="radio-{{option.id}}" name="{{item.no}}"
+                                [value]="option.value" />
+                            <span *ngIf="status" class="weui-icon-checked"></span>
+                        </div>
+                    </label>
+                </div>
+                <div *ngIf="item.desc" class="weui-cells">
                     <div class="weui-cell">
-                      <div class="weui-cell__bd">
-                        <input class="weui-input" type="text" placeholder="请输入备注" [(ngModel)]="item.remark" name="remark" />
-                      </div>
+                        <div class="weui-cell__bd">
+                            <input class="weui-input" [disabled]="!status" type="text" placeholder="请输入备注" [(ngModel)]="item.remark"
+                                name="remark" />
+                        </div>
                     </div>
-                  </div>
-        </ng-template>
-        <ng-template #checkbox>
-            <div class="weui-cells weui-cells_checkbox">
-                <label class="weui-cell weui-check__label" for="checkbox-{{ option.id }}"
-                    *ngFor="let option of item.questionOptions">
-                    <div class="weui-cell__hd">
-                        <input type="checkbox" class="weui-check" (click)="onRadioClick(i)"
-                            [weui-checklist]="item.values" name="{{item.no}}" [weui-value]="option.value"
-                            id="checkbox-{{ option.id }}" />
-                        <i class="weui-icon-checked"></i>
-                    </div>
-                    <div class="weui-cell__bd">
-                        <p>{{ option.desc }}</p>
-                    </div>
-                </label>
-            </div>
-        </ng-template>
-
+                </div>
+            </ng-template>
+            <ng-template #checkbox>
+                <div class="weui-cells weui-cells_checkbox">
+                    <label class="weui-cell weui-check__label" for="checkbox-{{ option.id }}"
+                        *ngFor="let option of item.questionOptions">
+                        <div class="weui-cell__hd">
+                            <input type="checkbox" class="weui-check" (change)="onRadioChange(i,null,null,item.values)"
+                                [weui-checklist]="item.values" name="{{item.no}}" [weui-value]="option.value"
+                                id="checkbox-{{ option.id }}" />
+                            <i class="weui-icon-checked"></i>
+                        </div>
+                        <div *ngIf="status" class="weui-cell__bd">
+                            <p>{{ option.desc }}</p>
+                        </div>
+                    </label>
+                </div>
+            </ng-template>
+        </div>
     </div>
     <div *ngIf="status" class="weui-btn-area">
         <button class="weui-btn weui-btn_primary" (click)="save()">提交</button>

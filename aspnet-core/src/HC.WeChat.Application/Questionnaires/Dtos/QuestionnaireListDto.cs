@@ -87,6 +87,10 @@ namespace HC.WeChat.Questionnaires.Dtos
         /// </summary>
         public string Question { get; set; }
 
+        public string Remark { get; set; }
+
+        public float Index { get; set; }
+
         /// <summary>
         /// 分类名称
         /// </summary>

@@ -25,6 +25,7 @@ using HC.WeChat.Authorization;
 using HC.WeChat.Dto;
 using HC.WeChat.QuestionOptions;
 using HC.WeChat.AnswerRecords;
+using Senparc.Weixin.EntityUtility;
 
 namespace HC.WeChat.Questionnaires
 {
@@ -313,9 +314,10 @@ namespace HC.WeChat.Questionnaires
                                   IsMultiple = q.IsMultiple,
                                   Type = q.Type,
                                   Question = q.Question,
-                                  Id = q.Id
+                                  Id = q.Id,
+                                  Index = float.Parse(q.No.Replace("Q", ""))
                               })
-                        .OrderBy(i => i.Type)
+                        .OrderBy(i => i.Index)
                         .ToListAsync();
             foreach (var item in list)
             {
@@ -356,8 +358,9 @@ namespace HC.WeChat.Questionnaires
                                    Question = q.Question,
                                    No = q.No,
                                    Value = r.Values,
-                                   RecordId = r.Id
-                               }).OrderBy(v => (int)v.Type).ToListAsync();
+                                   RecordId = r.Id,
+                                   Remark = r.Remark
+                               }).OrderBy(v =>v.Type).ToListAsync();
             foreach (var item in query)
             {
                 if (item.Value.Contains(','))

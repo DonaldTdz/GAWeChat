@@ -9,10 +9,12 @@ export class Questionnaire implements IQuestionnaire {
     questionOptions: QuestionOptions[];
     isChecked: boolean = false;
     optionChecked: string = null;
+    enabled: boolean = true;
     value: string;
-    values:string[] = [];
-    remark:string;
-    desc:string;
+    values: string[] = [];
+    remark: string;
+    desc: string;
+    index: number;
     constructor(data?: IQuestionnaire) {
         if (data) {
             for (var property in data) {
@@ -32,6 +34,8 @@ export class Questionnaire implements IQuestionnaire {
             this.typeName = data["typeName"];
             this.questionOptions = QuestionOptions.fromJSArray(data["questionOptions"]);
             this.value = data["value"];
+            this.index = data["index"];
+            this.remark = data["remark"];
         }
     }
 
@@ -78,5 +82,12 @@ export interface IQuestionnaire {
     question: string;
     typeName: string;
     questionOptions: QuestionOptions[];
+    isChecked: boolean;
+    optionChecked: string;
+    enabled: boolean;
     value: string;
+    values: string[];
+    remark: string;
+    desc: string;
+    index: number;
 }
