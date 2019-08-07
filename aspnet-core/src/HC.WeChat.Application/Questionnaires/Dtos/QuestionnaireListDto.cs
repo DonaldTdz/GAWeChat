@@ -53,6 +53,11 @@ namespace HC.WeChat.Questionnaires.Dtos
         /// </summary>
         public virtual string TypeName { get; set; }
 
+        /// <summary>
+        /// 排序字段
+        /// </summary>
+        public float Index { get; set; }
+
 
         //public QuestionnaireListDto()
         //{
