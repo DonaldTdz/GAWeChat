@@ -152,6 +152,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     //     }
     // }
     //#endregion
+
     onRadioClick(index) {
         if (this.questionnaireList[index].value) {
             return;

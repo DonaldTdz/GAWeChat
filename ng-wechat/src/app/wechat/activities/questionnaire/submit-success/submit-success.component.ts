@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 @Component({
     moduleId: module.id,
     selector: 'submit-success',
-    templateUrl: 'submit-success.component.html',
-    styleUrls: ['submit-success.component.scss']
+    templateUrl: 'submit-success.component.html'
 })
 export class SubmitSuccessComponent {
     constructor(private router: Router) {
