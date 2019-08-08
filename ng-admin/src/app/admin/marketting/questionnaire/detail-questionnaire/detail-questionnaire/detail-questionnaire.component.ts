@@ -17,7 +17,7 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
     @ViewChild('questionOptionModal') questionOptionModal: QuestionOptionComponent;
     questionId:string;
     question = new Questionnaire();
-    questionOptions:QuestionOptions[];
+    questionOptions:QuestionOptions[] = [];//初始化必须先赋值,否则js报"length"错误
     questionsType = [
         { text: '客户服务评价', value: 1 },
         { text: '卷烟供应评价', value: 2 },
@@ -26,6 +26,7 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
     ];
     search: any = { type: null};
     form: FormGroup;
+    loading:boolean = true;
     //用于按钮是否显示
     cardTitle = '';
 
@@ -47,23 +48,22 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
             isMultiple:[null, Validators.required],
             type:[null, Validators.required]
         });
-        this.getQuestionById(this.questionId);
+        this.getQuestionById();
     }
 
-    getQuestionById(id: string) {
-        this.questionnaireService.get(id).subscribe((result: Questionnaire) => {
+    getQuestionById() {
+        this.questionnaireService.get(this.questionId).subscribe((result: Questionnaire) => {
             this.question = result;
+            this.getQuestionOptionsListById();
         });
-        this.getQuestionOptionsListById(id);
     }
 
     //答案配置列表
-    getQuestionOptionsListById(id: string){
-        this.questionnaireService.getQuestionOptionsListById(id).subscribe((result: QuestionOptions[]) => {
+    getQuestionOptionsListById(){
+        this.questionnaireService.getQuestionOptionsListById(this.questionId).subscribe((result: QuestionOptions[]) => {
             this.questionOptions = result;
+            this.loading = false;
         });
-        console.log(this.questionOptions);
-        
     }
 
     getFormControl(name: string) {
@@ -97,8 +97,6 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
 
     /**
      * 删除问题
-     * @param employee 员工实体
-     * @param contentTpl 弹框id
      */
     delete(option: QuestionOptions): void {
         this.modal.confirm({
@@ -128,7 +126,9 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
     }
 
     refreshData(){
-        this.getQuestionOptionsListById(this.questionId);
+        if (this.questionId) {
+            this.getQuestionOptionsListById();
+        }
     }
 
     return() {

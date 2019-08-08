@@ -39,7 +39,7 @@ export class DetailQuestionRecordComponent extends AppComponentBase implements O
     ngOnInit(): void {
 
         this.form = this.fb.group({
-            title: [null, Validators.compose([Validators.required, Validators.maxLength(50)])],
+            title: [null, Validators.compose([Validators.required])],
             quarter:[null,Validators.required]
         });
         if (!this.id) {

@@ -99,6 +99,7 @@ namespace HC.WeChat.AnswerRecords
                                join a in _entityRepository.GetAll()
                                on qn.Id equals a.QuestionnaireId
                                where a.OpenId == openId
+                               where a.QuestionRecordId == input.QuestionRecordId
                                select new RetailQuestionRecordDetailDto
                                {
                                    No = qn.No,

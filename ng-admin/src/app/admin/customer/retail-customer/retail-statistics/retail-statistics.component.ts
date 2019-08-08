@@ -28,7 +28,7 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
         statusList: []
     };
     questionRecordList : QuestionRecord[] = [];
-    searchQuestionRecordTitle:string;
+    searchQuestionRecordTitle:string = '';
 
 
     constructor(injector: Injector, private demandForecastService: DemandForecastServiceProxy, private router: Router,
@@ -74,7 +74,7 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
     getQuestionRecordList(reset = false, search?: boolean) {
         if (reset) {
             this.queryQuestionRecord.pageIndex = 1;
-            this.searchTitle = '';
+            this.searchQuestionRecordTitle = '';
         }
         if (search) {
             this.queryQuestionRecord.pageIndex = 1;
@@ -83,7 +83,7 @@ export class RetailStatisticsComponent extends AppComponentBase implements OnIni
         this.questionnaireService.getQuestionRecordByRetailerId(this.queryQuestionRecord.skipCount(), this.queryQuestionRecord.pageSize, this.userId, this.searchQuestionRecordTitle).subscribe((result: PagedResultDtoOfQuestionRecord) => {
             this.loading = false;
             this.questionRecordList = result.items
-            console.log(this.questionRecordList);
+            //console.log(this.questionRecordList);
             
             this.queryQuestionRecord.total = result.totalCount;
         })

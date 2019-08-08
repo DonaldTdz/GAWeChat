@@ -41,9 +41,7 @@
                                     <span>多选</span>
                                 </label>
                             </nz-radio-group>
-                            <div nz-form-explain
-                                *ngIf="getFormControl('isMultiple').dirty&&getFormControl('isMultiple').hasError('required')">
-                                选项是否为多选</div>
+                            
                         </div>
                     </div>
                     <div nz-form-item nz-row>
@@ -99,13 +97,12 @@
         </nz-table>
         <footer-toolbar errorCollect>
             <button nz-button [nzType]="'default'" [nzSize]="'large'" type="button" (click)="return()">
-                取消
+                返回
             </button>
             <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit">
                 保存
             </button>
         </footer-toolbar>
-
         </form>
     </nz-card>
 </nz-card>

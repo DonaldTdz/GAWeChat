@@ -16,10 +16,12 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     progressBar: number = 0;//进度条
     checkedNum: number = 0;//已选择个数
     status: boolean = false;//是否可填写
-    questionnaireList: Questionnaire[] = [];//问题列表
+    questionnaireList : Questionnaire[] = [];//问题列表
     submitDisable: boolean = false;
-    questionRecordId: string = this.route.snapshot.params['id'];
-    statusParams: string = this.route.snapshot.params['status'];
+    questionRecordId : string = this.route.snapshot.params['id'];
+    loadingType : string = 'loading';
+    loading : boolean = true;
+    //statusParams: string = this.route.snapshot.params['status'];
     constructor(injector: Injector
         , private router: Router
         , private route: ActivatedRoute
@@ -30,14 +32,15 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     }
 
     ngOnInit() {
-        if (this.statusParams == 'true') {
-            this.status = true;
-            this.getQuestionnaireList();
-        } else {
-            this.status = false;
-            this.progressBar = 100;
-            this.getQuestionRecordById();
-        }
+        this.getQuestionRecordById();
+        // if (this.statusParams == 'true') {
+        //     this.status = true;
+        //     this.getQuestionnaireList();
+        // } else {
+        //     this.status = false;
+        //     this.progressBar = 100;
+        //     this.getQuestionRecordById();
+        // }
     }
 
     //获取填写记录
@@ -60,6 +63,14 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
             remarkQues.forEach(r => {
                 r.desc = r.remark;
             })
+            if(this.questionnaireList.length < 1){
+                this.status = true;
+                this.getQuestionnaireList();
+            }else{
+                this.status = false;
+                this.progressBar = 100;
+                this.loading = false;
+            }
         });
     }
 
@@ -70,6 +81,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
             //过滤掉跳题问题Q13.1
             let disabledQues = this.questionnaireList.filter(i => i.no.indexOf('.') != -1);
             disabledQues.forEach(d => d.enabled = false);
+            this.loading = false;
         });
     }
 

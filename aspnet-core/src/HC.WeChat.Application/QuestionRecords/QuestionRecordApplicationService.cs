@@ -87,7 +87,7 @@ namespace HC.WeChat.QuestionRecords
             //后台拼接字符串
             foreach (var item in entityListDtos)
             {
-                item.QuarterString = item.Year + "年" + item.Quarter.ToString();
+                item.QuarterString = item.Year + "年" + item.Quarter;
             }
 
             return new PagedResultDto<QuestionRecordListDto>(count, entityListDtos);
@@ -111,7 +111,7 @@ namespace HC.WeChat.QuestionRecords
                                      {
                                          Id = r.Id,
                                          Title = r.Title,
-                                         QuarterString = r.Year + "年" + r.Quarter.ToString(),
+                                         QuarterString = r.Year + "年" + r.Quarter,
                                          CreationTime = r.CreationTime
                                      }).OrderByDescending(i => i.CreationTime).PageBy(input).ToListAsync();
                 foreach (var result in results)
@@ -142,7 +142,7 @@ namespace HC.WeChat.QuestionRecords
             result.UserName = retailerName.Name;
             result.Id = entity.Id;
             result.Title = entity.Title;
-            result.QuarterString = entity.Year + "年第" + entity.Quarter + "季度";
+            result.QuarterString = entity.Year + "年" + entity.Quarter;
             result.WriteTime = await _answerRepository.GetAll().Where(a => a.QuestionRecordId == result.Id).Select(i => i.CreationTime).OrderByDescending(i => i).FirstOrDefaultAsync();
             return result;
         }

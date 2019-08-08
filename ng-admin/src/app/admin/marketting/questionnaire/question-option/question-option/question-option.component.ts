@@ -47,7 +47,7 @@ export class QuestionOptionComponent extends AppComponentBase implements OnInit{
     getQuestionOptionById(id: string) {
         this.questionnaireService.getQuestionOptionById(id).subscribe((result: QuestionOptions) => {
             this.questionOptions = result;
-            console.log(this.questionOptions);
+            //console.log(this.questionOptions);
             
         });
     }
