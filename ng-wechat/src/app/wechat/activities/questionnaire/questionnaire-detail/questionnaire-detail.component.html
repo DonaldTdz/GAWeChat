@@ -25,15 +25,16 @@
                             <span *ngIf="status" class="weui-icon-checked"></span>
                         </div>
                     </label>
-                </div>
-                <div *ngIf="item.desc" class="weui-cells">
-                    <div class="weui-cell">
-                        <div class="weui-cell__bd">
-                            <input class="weui-input" [disabled]="!status" type="text" placeholder="请输入备注" [(ngModel)]="item.remark"
-                                name="remark" />
+                    <div *ngIf="item.desc" class="weui-cells">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <input class="weui-input" [disabled]="!status" type="text" placeholder="请输入备注" [(ngModel)]="item.remark"
+                                    name="remark"/>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
             </ng-template>
             <ng-template #checkbox>
                 <div class="weui-cells weui-cells_checkbox">
