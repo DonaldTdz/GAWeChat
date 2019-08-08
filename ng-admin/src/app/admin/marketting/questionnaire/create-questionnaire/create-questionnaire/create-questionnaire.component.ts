@@ -48,7 +48,7 @@ export class CreateQuestionnaireComponent extends AppComponentBase implements On
     }
 
     /**
-     * 保存员工信息
+     * 保存问题信息
      */
     save() {
         //return;

@@ -53,6 +53,11 @@ namespace HC.WeChat.Questionnaires.Dtos
         /// </summary>
         public virtual string TypeName { get; set; }
 
+        /// <summary>
+        /// 排序字段
+        /// </summary>
+        public float Index { get; set; }
+
 
         //public QuestionnaireListDto()
         //{
@@ -86,6 +91,10 @@ namespace HC.WeChat.Questionnaires.Dtos
         /// Question
         /// </summary>
         public string Question { get; set; }
+
+        public string Remark { get; set; }
+
+        public float Index { get; set; }
 
         /// <summary>
         /// 分类名称

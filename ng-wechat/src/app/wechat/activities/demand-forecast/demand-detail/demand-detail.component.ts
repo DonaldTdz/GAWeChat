@@ -27,6 +27,7 @@ export class DemandDetailComponent extends AppComponentBase implements OnInit {
             this.getDetailListById();
         } else {
             this.status = false;
+            this.num=100;
             this.getDetailRecordByIdAsync();
         }
     }

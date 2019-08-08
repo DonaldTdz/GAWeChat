@@ -5,6 +5,9 @@ export class Questionnaire implements IQuestionnaire {
     no:string;
     question:string;
     typeName:string;
+    values:string;
+    desc:string;
+    remark:string;
     constructor(data?: IQuestionnaire) {
         if (data) {
             for (var property in data) {
@@ -22,6 +25,9 @@ export class Questionnaire implements IQuestionnaire {
             this.no = data["no"];
             this.question = data["question"];
             this.typeName = data["typeName"];
+            this.values = data["values"];
+            this.desc = data["desc"];
+            this.remark = data["remark"];
         }
     }
 
@@ -29,6 +35,16 @@ export class Questionnaire implements IQuestionnaire {
         let result = new Questionnaire();
         result.init(data);
         return result;
+    }
+
+    static fromJSArray(dataArray: any[]): Questionnaire[] {
+        let array = [];
+        dataArray.forEach(result => {
+            let item = new Questionnaire();
+            item.init(result);
+            array.push(item);
+        });
+        return array;
     }
 
     toJSON(data?: any) {

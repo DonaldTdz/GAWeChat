@@ -25,6 +25,7 @@ using HC.WeChat.Authorization;
 using HC.WeChat.Dto;
 using HC.WeChat.QuestionOptions;
 using HC.WeChat.AnswerRecords;
+using Senparc.Weixin.EntityUtility;
 
 namespace HC.WeChat.Questionnaires
 {
@@ -90,8 +91,9 @@ namespace HC.WeChat.Questionnaires
                                         DeletionTime = q.DeletionTime,
                                         IsDeleted = q.IsDeleted,
                                         LastModificationTime = q.LastModificationTime,
-                                        LastModifierUserId = q.LastModifierUserId
-                                    }).OrderBy(i => i.No).PageBy(input).ToListAsync();
+                                        LastModifierUserId = q.LastModifierUserId,
+                                        Index = float.Parse(q.No.Replace("Q", ""))
+                                    }).OrderBy(i => i.Index).PageBy(input).ToListAsync();
 
             // var entityListDtos = ObjectMapper.Map<List<QuestionnaireListDto>>(entityList);
             //var entityListDtos = entityList.MapTo<List<QuestionnaireListDto>>();
@@ -313,9 +315,10 @@ namespace HC.WeChat.Questionnaires
                                   IsMultiple = q.IsMultiple,
                                   Type = q.Type,
                                   Question = q.Question,
-                                  Id = q.Id
+                                  Id = q.Id,
+                                  Index = float.Parse(q.No.Replace("Q", ""))
                               })
-                        .OrderBy(i => i.No)
+                        .OrderBy(i => i.Index)
                         .ToListAsync();
             foreach (var item in list)
             {
@@ -356,8 +359,10 @@ namespace HC.WeChat.Questionnaires
                                    Question = q.Question,
                                    No = q.No,
                                    Value = r.Values,
-                                   RecordId = r.Id
-                               }).OrderBy(v => v.No).ToListAsync();
+                                   RecordId = r.Id,
+                                   Remark = r.Remark,
+                                   Index = float.Parse(q.No.Replace("Q", ""))
+                               }).OrderBy(v =>v.Index).ToListAsync();
             foreach (var item in query)
             {
                 if (item.Value.Contains(','))

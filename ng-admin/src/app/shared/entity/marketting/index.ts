@@ -7,3 +7,4 @@ export * from './questionnaire';
 export * from './demand-forecast';
 export * from './demand-detail';
 export * from './question-options';
+export * from './question-record';

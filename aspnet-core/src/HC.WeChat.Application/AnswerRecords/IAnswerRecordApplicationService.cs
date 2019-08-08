@@ -21,6 +21,7 @@ using Abp.Application.Services.Dto;
 using HC.WeChat.AnswerRecords.Dtos;
 using HC.WeChat.AnswerRecords;
 using HC.WeChat.Dto;
+using HC.WeChat.QuestionRecords.Dtos;
 
 namespace HC.WeChat.AnswerRecords
 {

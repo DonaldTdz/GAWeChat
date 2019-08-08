@@ -3,8 +3,9 @@ import { AppComponentBase } from '@shared/app-component-base';
 import { Questionnaire } from '@shared/entity/marketting/questionnaire';
 import { EditQuestionnaireComponent } from './edit-questionnaire/edit-questionnaire.component';
 import { Router } from '@angular/router';
-import { PagedResultDtoOfQuestionnaire, QuestionnaireServiceProxy } from '@shared/service-proxies/marketing-service';
+import { PagedResultDtoOfQuestionnaire, QuestionnaireServiceProxy, PagedResultDtoOfQuestionRecord } from '@shared/service-proxies/marketing-service';
 import { NzModalService } from 'ng-zorro-antd';
+import { QuestionRecord } from '@shared/entity/marketting';
 
 @Component({
     moduleId: module.id,
@@ -16,12 +17,29 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
 
     loading = false;
     searchType:number=null;
+    searchQuestionRecordType:number=null;
+    queryQuestionRecord: any = {
+        pageIndex: 1,
+        pageSize: 10,
+        skipCount: function () { return (this.pageIndex - 1) * this.pageSize; },
+        total: 0,
+        sorter: '',
+        status: -1,
+        statusList: []
+    };
     questionsType = [
         { text: '客户服务评价', value: 1 },
         { text: '卷烟供应评价', value: 2 },
         { text: '市场管理评价', value: 3 },
         { text: '综合评价', value: 4 },
     ];
+    quarterType = [
+        { text: '第一季度', value: 1 },
+        { text: '第二季度', value: 2 },
+        { text: '第三季度', value: 3 },
+        { text: '第四季度', value: 4 },
+    ];
+    questionRecords : QuestionRecord[] = [];
     questions : Questionnaire[] = [];
     constructor(injector: Injector
         ,private router:Router
@@ -32,6 +50,7 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
     }
     ngOnInit(): void {
         this.refreshData(false);
+        this.refreshQuestionRecordData(false);
     }
 
     /**
@@ -53,10 +72,26 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
         });
     }
 
+    refreshQuestionRecordData(reset = false, search?: boolean) {
+        if (reset) {
+            this.searchQuestionRecordType=null;
+            this.queryQuestionRecord.pageIndex = 1;
+        }
+        
+        this.loading = true;
+        this.questionnaireService.getAllQuestionRecord(this.queryQuestionRecord.skipCount(), this.queryQuestionRecord.pageSize, null, this.searchQuestionRecordType).subscribe((result: PagedResultDtoOfQuestionRecord) => {
+            this.loading = false;
+            this.questionRecords = result.items;
+            console.log(this.questionRecords);
+            
+            this.queryQuestionRecord.total = result.totalCount;
+        });
+    }
+
     /**
-     * 编辑问题
+     * 问题详情
      */
-    editQuestionnaire(id:string) {
+    detail(id:string) {
         //this.editQuestionnaireModal.show(id);
         this.router.navigate(['admin/marketting/detail-questionnaire',id]);
     }
@@ -68,10 +103,20 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
         this.router.navigate(['admin/marketting/create-questionnaire']);
     }
 
+    createQuestionRecord(){
+        this.router.navigate(['admin/marketting/detail-question-record']);
+    }
+
+    /**
+     * 问题详情
+     */
+    detailQuestionRecord(id:string) {
+        this.router.navigate(['admin/marketting/detail-question-record',id]);
+    }
+
     /**
      * 删除问题
-     * @param employee 员工实体
-     * @param contentTpl 弹框id
+     * @param question 问题实体
      */
     delete(question: Questionnaire): void {
         this.modal.confirm({
@@ -83,6 +128,29 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
                     if (data.code == 0) {
                         this.notify.success('删除成功！','');
                         this.refreshData();
+                    }else{
+                        this.notify.error(data.msg);
+                    }
+                })
+            }
+        })
+
+    }
+
+    /**
+     * 删除问卷记录
+     * @param question 问题实体
+     */
+    deleteQuestionRecord(questionRecord: QuestionRecord): void {
+        this.modal.confirm({
+            content: '是否确认删除问卷记录'+questionRecord.title+'?',
+            okText: '是',
+            cancelText: '否',
+            onOk: () => {
+                this.questionnaireService.deleteQuestionRecord(questionRecord.id).subscribe((data) => {
+                    if (data.code == 0) {
+                        this.notify.success('删除成功！','');
+                        this.refreshQuestionRecordData();
                     }else{
                         this.notify.error(data.msg);
                     }

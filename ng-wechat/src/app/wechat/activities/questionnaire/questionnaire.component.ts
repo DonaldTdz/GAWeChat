@@ -38,6 +38,11 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
             this.isRetailer = result;
             if (this.isRetailer) {
                 if (status != '已逾期') {
+                    // if  (status == '未开始'){
+                    //     this.srv['warn']('活动未开始');
+                    //     this.status = false;
+                    //     return;
+                    // }
                     if (status == '查看记录') {
                         this.status = false;
                     } else {
@@ -45,7 +50,7 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
                     }
                     this.router.navigate(['/questionnaires/questionnaire-detail', { id: id, status: this.status }]);
                 } else {
-                    this.srv['warn']('当前项目已逾期，无法填写');
+                    this.srv['warn']('该调查问卷活动已结束，无法填写');
                 }
             } else {
                 this.srv['info']('请先进行零售客户绑定');
