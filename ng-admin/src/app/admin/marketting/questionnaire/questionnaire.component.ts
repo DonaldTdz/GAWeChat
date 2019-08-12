@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { Questionnaire } from '@shared/entity/marketting/questionnaire';
-import { EditQuestionnaireComponent } from './edit-questionnaire/edit-questionnaire.component';
 import { Router } from '@angular/router';
 import { PagedResultDtoOfQuestionnaire, QuestionnaireServiceProxy, PagedResultDtoOfQuestionRecord } from '@shared/service-proxies/marketing-service';
 import { NzModalService } from 'ng-zorro-antd';
@@ -13,7 +12,6 @@ import { QuestionRecord } from '@shared/entity/marketting';
     templateUrl: 'questionnaire.component.html'
 })
 export class QuestionnaireComponent extends AppComponentBase implements OnInit {
-    @ViewChild('editQuestionnaireModal') editQuestionnaireModal: EditQuestionnaireComponent;
 
     loading = false;
     searchType:number=null;

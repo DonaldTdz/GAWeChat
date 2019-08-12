@@ -7,8 +7,7 @@ import { QuestionnaireServiceProxy } from '@shared/service-proxies/marketing-ser
 @Component({
     moduleId: module.id,
     selector: 'question-option-modal',
-    templateUrl: 'question-option.component.html',
-    styleUrls: ['question-option.component.scss']
+    templateUrl: 'question-option.component.html'
 })
 export class QuestionOptionComponent extends AppComponentBase implements OnInit{
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();

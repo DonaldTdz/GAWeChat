@@ -10,8 +10,7 @@ import { NzModalService } from 'ng-zorro-antd';
 @Component({
     moduleId: module.id,
     selector: 'detail-questionnaire',
-    templateUrl: 'detail-questionnaire.component.html',
-    styleUrls: ['detail-questionnaire.component.scss']
+    templateUrl: 'detail-questionnaire.component.html'
 })
 export class DetailQuestionnaireComponent extends AppComponentBase implements OnInit{
     @ViewChild('questionOptionModal') questionOptionModal: QuestionOptionComponent;
@@ -27,6 +26,7 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
     search: any = { type: null};
     form: FormGroup;
     loading:boolean = true;
+    isConfirmLoading:boolean = false;
     //用于按钮是否显示
     cardTitle = '';
 
@@ -76,13 +76,14 @@ export class DetailQuestionnaireComponent extends AppComponentBase implements On
     save() {
         //return;
         //检查form验证
+        this.isConfirmLoading = true;
         for (const i in this.form.controls) {
             this.form.controls[i].markAsDirty();
         }
         if (this.form.valid) {
             this.questionnaireService.create(this.question)
                         .finally(() => {
-
+                            this.isConfirmLoading = false;
                         })
                         .subscribe(data => {
                             if (data.code == 0) {
