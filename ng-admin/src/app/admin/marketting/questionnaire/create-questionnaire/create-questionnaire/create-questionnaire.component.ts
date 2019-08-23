@@ -8,8 +8,7 @@ import { Router } from '@angular/router';
 @Component({
     moduleId: module.id,
     selector: 'create-questionnaire',
-    templateUrl: 'create-questionnaire.component.html',
-    styleUrls: ['create-questionnaire.component.scss']
+    templateUrl: 'create-questionnaire.component.html'
 })
 export class CreateQuestionnaireComponent extends AppComponentBase implements OnInit{
     question = new Questionnaire();
@@ -20,6 +19,7 @@ export class CreateQuestionnaireComponent extends AppComponentBase implements On
         { text: '综合评价', value: 4 },
     ];
     search: any = { type: null};
+    isConfirmLoading:boolean = false;
     form: FormGroup;
     //用于按钮是否显示
     cardTitle = '';
@@ -57,9 +57,10 @@ export class CreateQuestionnaireComponent extends AppComponentBase implements On
             this.form.controls[i].markAsDirty();
         }
         if (this.form.valid) {
+            this.isConfirmLoading = true;
             this.questionnaireService.create(this.question)
                         .finally(() => {
-
+                            this.isConfirmLoading = false;
                         })
                         .subscribe(data => {
                             if (data.code == 0) {

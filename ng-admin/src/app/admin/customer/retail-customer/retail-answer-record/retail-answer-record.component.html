@@ -2,7 +2,7 @@
     <ng-template #content *ngIf="info">
         <div nz-row nzGutter="16">
             <div nz-col nzXs="24" nzSm="18">
-                <desc-list size="small" col="4" class="mb-md" style="padding-left: 8px;">
+                <desc-list size="small" col="2" class="mb-md" style="padding-left: 8px;">
                     <desc-list-item term="用户姓名">{{info.userName}}</desc-list-item>
                     <desc-list-item term="问卷名称">{{info.title}}</desc-list-item>
                     <desc-list-item term="调查季度">{{info.quarterString}}</desc-list-item>
@@ -11,21 +11,22 @@
             </div>
         </div>
     </ng-template>
-</pro-header>
-<nz-card [nzBordered]="false">
-    <form nz-form (ngSubmit)="noThing()">
+    <form nz-form>
         <div nz-row>
             <div nz-col [nzSpan]="16" *ngFor="let detail of answerDetailList">
                 <div nz-form-item nz-row style="margin-bottom: 0px;">
                     <div nz-form-label nz-col [nzSm]="2">
-                        <label>{{detail.no}}</label>
+                        <label nz-form-item-required>{{detail.no}}</label>
                     </div>
                     <div nz-form-control nz-col [nzSm]="20" nzHasFeedback>
                         {{detail.question}}
                     </div>
                 </div>
-                <div nz-form-item nz-row style="margin-bottom: 0px; margin-left: 50px;"
+                <div nz-form-item nz-row style="margin-bottom: 0px;"
                     *ngFor="let item of detail.desc">
+                    <div nz-form-label nz-col [nzSm]="2">
+                      
+                    </div>
                     <div nz-form-control nz-col [nzSm]="6">
                         {{item}}
                     </div>
@@ -41,7 +42,7 @@
             </div>
         </div>
     </form>
-</nz-card>
+</pro-header>
 <footer-toolbar>
     <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
         返回

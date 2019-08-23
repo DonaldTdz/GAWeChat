@@ -43,7 +43,7 @@ export class RetailAnswerRecordComponent extends AppComponentBase implements OnI
         this.questionnaireService.getAnswerRecordsByRetailerId(this.userId,this.id).subscribe((result: Questionnaire[]) => {
             this.loading = false;
             this.answerDetailList = result;
-            console.log(this.answerDetailList);
+            //console.log(this.answerDetailList);
             
         });
     }

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { Questionnaire } from '@shared/entity/marketting/questionnaire';
-import { EditQuestionnaireComponent } from './edit-questionnaire/edit-questionnaire.component';
 import { Router } from '@angular/router';
 import { PagedResultDtoOfQuestionnaire, QuestionnaireServiceProxy, PagedResultDtoOfQuestionRecord } from '@shared/service-proxies/marketing-service';
 import { NzModalService } from 'ng-zorro-antd';
@@ -13,7 +12,6 @@ import { QuestionRecord } from '@shared/entity/marketting';
     templateUrl: 'questionnaire.component.html'
 })
 export class QuestionnaireComponent extends AppComponentBase implements OnInit {
-    @ViewChild('editQuestionnaireModal') editQuestionnaireModal: EditQuestionnaireComponent;
 
     loading = false;
     searchType:number=null;
@@ -82,7 +80,7 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
         this.questionnaireService.getAllQuestionRecord(this.queryQuestionRecord.skipCount(), this.queryQuestionRecord.pageSize, null, this.searchQuestionRecordType).subscribe((result: PagedResultDtoOfQuestionRecord) => {
             this.loading = false;
             this.questionRecords = result.items;
-            console.log(this.questionRecords);
+            //console.log(this.questionRecords);
             
             this.queryQuestionRecord.total = result.totalCount;
         });
@@ -92,7 +90,6 @@ export class QuestionnaireComponent extends AppComponentBase implements OnInit {
      * 问题详情
      */
     detail(id:string) {
-        //this.editQuestionnaireModal.show(id);
         this.router.navigate(['admin/marketting/detail-questionnaire',id]);
     }
 

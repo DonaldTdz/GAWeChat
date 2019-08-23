@@ -9,8 +9,7 @@ import { NzModalService } from 'ng-zorro-antd';
 @Component({
     moduleId: module.id,
     selector: 'detail-question-record',
-    templateUrl: 'detail-question-record.component.html',
-    styleUrls: ['detail-question-record.component.scss']
+    templateUrl: 'detail-question-record.component.html'
 })
 export class DetailQuestionRecordComponent extends AppComponentBase implements OnInit {
     questionRecord = new QuestionRecord();
@@ -22,6 +21,7 @@ export class DetailQuestionRecordComponent extends AppComponentBase implements O
         { text: '第三季度', value: 3 },
         { text: '第四季度', value: 4 },
     ];
+    isConfirmLoading:boolean=false;
     //用于按钮是否显示
     cardTitle = '';
 
@@ -39,7 +39,7 @@ export class DetailQuestionRecordComponent extends AppComponentBase implements O
     ngOnInit(): void {
 
         this.form = this.fb.group({
-            title: [null, Validators.compose([Validators.required, Validators.maxLength(50)])],
+            title: [null, Validators.compose([Validators.required])],
             quarter:[null,Validators.required]
         });
         if (!this.id) {
@@ -75,9 +75,10 @@ export class DetailQuestionRecordComponent extends AppComponentBase implements O
             this.form.controls[i].markAsDirty();
         }
         if (this.form.valid) {
+            this.isConfirmLoading=true;
             this.questionnaireService.createQuestionRecord(this.questionRecord)
                 .finally(() => {
-
+                    this.isConfirmLoading=false;
                 })
                 .subscribe(data => {
                     if (data.code == 0) {

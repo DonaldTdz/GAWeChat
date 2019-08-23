@@ -59,11 +59,11 @@
             返回
         </button>
         <button nz-button *ngIf="questionRecord.id && !questionRecord.isPublish" [nzType]="'primary'" (click)="push()"
-            [nzSize]="'large'" [nzLoading]="loading" [disabled]="!form.valid">
+            [nzSize]="'large'" [nzLoading]="isConfirmLoading" [disabled]="!form.valid">
             发布
         </button>
         <button nz-button *ngIf="!questionRecord.isPublish" [nzType]="'primary'" (click)="save()" [nzSize]="'large'"
-            [nzLoading]="loading" [disabled]="!form.valid">
+            [nzLoading]="isConfirmLoading" [disabled]="!form.valid">
             保存
         </button>
     </footer-toolbar>

@@ -19,7 +19,9 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     questionnaireList: Questionnaire[] = [];//问题列表
     submitDisable: boolean = false;
     questionRecordId: string = this.route.snapshot.params['id'];
-    statusParams: string = this.route.snapshot.params['status'];
+    loadingType: string = 'loading';
+    loading: boolean = true;
+    //statusParams: string = this.route.snapshot.params['status'];
     constructor(injector: Injector
         , private router: Router
         , private route: ActivatedRoute
@@ -30,14 +32,15 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
     }
 
     ngOnInit() {
-        if (this.statusParams == 'true') {
-            this.status = true;
-            this.getQuestionnaireList();
-        } else {
-            this.status = false;
-            this.progressBar = 100;
-            this.getQuestionRecordById();
-        }
+        this.getQuestionRecordById();
+        // if (this.statusParams == 'true') {
+        //     this.status = true;
+        //     this.getQuestionnaireList();
+        // } else {
+        //     this.status = false;
+        //     this.progressBar = 100;
+        //     this.getQuestionRecordById();
+        // }
     }
 
     //获取填写记录
@@ -60,27 +63,41 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
             remarkQues.forEach(r => {
                 r.desc = r.remark;
             })
+            if (this.questionnaireList.length < 1) {
+                this.status = true;
+                this.getQuestionnaireList();
+            } else {
+                this.status = false;
+                this.progressBar = 100;
+                this.loading = false;
+            }
         });
     }
 
     //获取问题列表
     getQuestionnaireList() {
-        let params: any = {};
-        params.openId = this.settingsService.openId;
-        params.questionRecordId = this.questionRecordId;
-        this.questionnaireService.getIsFillInQustionAsync(params).subscribe(res => {
-            if (res) {
-                this.status = false;
-                this.progressBar = 100;
-                this.getQuestionRecordById();
-            } else {
-                this.questionnaireService.getQuestionnaireList().subscribe(data => {
-                    this.questionnaireList = data;
-                    //过滤掉跳题问题Q13.1
-                    let disabledQues = this.questionnaireList.filter(i => i.no.indexOf('.') != -1);
-                    disabledQues.forEach(d => d.enabled = false);
-                });
-            }
+        // let params: any = {};
+        // params.openId = this.settingsService.openId;
+        // params.questionRecordId = this.questionRecordId;
+        // this.questionnaireService.getIsFillInQustionAsync(params).subscribe(res => {
+        //     if (res) {
+        //         this.status = false;
+        //         this.progressBar = 100;
+        //         this.getQuestionRecordById();
+        //     } else {
+        //         this.questionnaireService.getQuestionnaireList().subscribe(data => {
+        //             this.questionnaireList = data;
+        //             //过滤掉跳题问题Q13.1
+        //             let disabledQues = this.questionnaireList.filter(i => i.no.indexOf('.') != -1);
+        //             disabledQues.forEach(d => d.enabled = false);
+        //         });
+        //     }
+        this.questionnaireService.getQuestionnaireList().subscribe(data => {
+            this.questionnaireList = data;
+            //过滤掉跳题问题Q13.1
+            let disabledQues = this.questionnaireList.filter(i => i.no.indexOf('.') != -1);
+            disabledQues.forEach(d => d.enabled = false);
+            this.loading = false;
         });
     }
 
