@@ -66,4 +66,14 @@ export class QuestionnaireService {
             return result;
         });
     }
+
+    getIsFillInQustionAsync(params: any): Observable<boolean> {
+        return this.http.get('/api/services/app/AnswerRecord/GetIsFillInQustionAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return false;
+            }
+        });
+    }
 }

@@ -194,6 +194,21 @@ namespace HC.WeChat.ForecastRecords
             await _entityRepository.DeleteAsync(s => input.Contains(s.Id));
         }
 
+        /// <summary>
+        /// 判断用户是否填写需求预测
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<bool> GetIsFillInDemandAsync(ForecastRecordWXEditDto input)
+        {
+           int num = await _entityRepository.CountAsync(v => v.DemandForecastId == input.DemandForecastId && v.OpenId == input.OpenId);
+            if(num != 0)
+            {
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// 微信保存预测结果
@@ -209,7 +224,7 @@ namespace HC.WeChat.ForecastRecords
                 {
                     var entity = new ForecastRecord();
                     entity.OpenId = input.OpenId;
-                    entity.DemandDetailId = input.DemandForecastId;
+                    entity.DemandForecastId = input.DemandForecastId;
                     entity.PredictiveValue = item.PredictiveValue;
                     entity.DemandDetailId = item.DemandDetailId;
                     await _entityRepository.InsertAsync(entity);

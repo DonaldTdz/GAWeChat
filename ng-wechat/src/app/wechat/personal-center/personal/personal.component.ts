@@ -103,4 +103,8 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
     goFavorite() {
         this.router.navigate(['/favorites/favorite']);
     }
+
+    goEmpRetailer() {
+        this.router.navigate(['/emp-retailers/emp-retailer']);
+    }
 } 

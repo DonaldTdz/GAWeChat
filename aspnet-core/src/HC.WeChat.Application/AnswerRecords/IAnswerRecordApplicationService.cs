@@ -80,11 +80,12 @@ namespace HC.WeChat.AnswerRecords
         /// <returns></returns>
         //Task<FileDto> GetToExcel();
 
-        Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input);
+        //Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input);
 
 
-        Task<List<QuestionnaireFillRecordsDto>> WXGetQuestionnaireFillRecords(string openId);
+        //Task<List<QuestionnaireFillRecordsDto>> WXGetQuestionnaireFillRecords(string openId);
 
         Task<APIResultDto> CreateWXAnswerRecordsAsync(CreateWXAnswerDto input);
+        Task<bool> GetIsFillInQustionAsync(CreateWXAnswerDto input);
     }
 }

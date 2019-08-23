@@ -11,13 +11,13 @@
                     </div>
                 </div>
                 <div nz-form-item nz-row style="margin-bottom: 0px;">
-                        <div nz-form-label nz-col [nzSm]="4">
-                            <label nz-form-item-required>调查年份</label>
-                        </div>
-                        <div nz-form-control nz-col [nzSm]="20" style="color: rgb(247, 98, 158);" nzHasFeedback>
-                            {{questionRecord.year}}
-                        </div>
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label nz-form-item-required>调查年份</label>
                     </div>
+                    <div nz-form-control nz-col [nzSm]="20" style="color: rgb(247, 98, 158);" nzHasFeedback>
+                        {{questionRecord.year}}
+                    </div>
+                </div>
                 <div nz-form-item nz-row>
                     <div nz-form-label nz-col [nzSm]="4">
                         <label for="title" nz-form-item-required>问卷标题</label>
@@ -34,19 +34,21 @@
                     </div>
                 </div>
                 <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSm]="4">
-                            <label nz-form-item-required>问卷季度</label>
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label nz-form-item-required>问卷季度</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20">
+                        <nz-select formControlName="quarter" name="quarterType" nzHasFeedback
+                            [nzPlaceHolder]="'请选择问卷季度'" [(ngModel)]="questionRecord.quarter" [nzShowSearch]="true"
+                            nzSize="large">
+                            <nz-option *ngFor="let i of quarterType" [nzLabel]="i.text" [nzValue]="i.value">
+                            </nz-option>
+                        </nz-select>
+                        <div nz-form-explain
+                            *ngIf="getFormControl('quarter').dirty&&getFormControl('quarter').hasError('required')">
+                            请输入问卷标题
                         </div>
-                        <div nz-form-control nz-col [nzSm]="20">
-                            <nz-select formControlName="quarter"  name="quarterType" nzHasFeedback [nzPlaceHolder]="'请选择问卷季度'"
-                                [(ngModel)]="questionRecord.quarter" [nzShowSearch]="true" nzSize="large">
-                                <nz-option *ngFor="let i of quarterType" [nzLabel]="i.text" [nzValue]="i.value">
-                                </nz-option>
-                            </nz-select>
-                            <div nz-form-explain
-                            *ngIf="getFormControl('quarter').dirty&&getFormControl('quarter').hasError('required')">请输入问卷标题
-                        </div>
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,7 +58,7 @@
         <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
             返回
         </button>
-        <button nz-button *ngIf="!questionRecord.isPublish && questionRecord.id" [nzType]="'primary'" (click)="push()"
+        <button nz-button *ngIf="questionRecord.id && !questionRecord.isPublish" [nzType]="'primary'" (click)="push()"
             [nzSize]="'large'" [nzLoading]="loading" [disabled]="!form.valid">
             发布
         </button>

@@ -64,4 +64,24 @@ export class DemandForecastService {
             }
         });
     }
+
+    getIsFillInDemandAsync(params: any): Observable<boolean> {
+        return this.http.get('/api/services/app/ForecastRecord/GetIsFillInDemandAsync', params).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return false;
+            }
+        });
+    }
+
+    getRetailDemandedListAsync(userId: string): Observable<DemandForecast[]> {
+        return this.http.get('/api/services/app/DemandForecast/GetWXRetailDemandListByIdAsync?userId=' + userId).map(data => {
+            if (data.result) {
+                return DemandForecast.fromJSArray(data.result);
+            } else {
+                return null;
+            }
+        });
+    }
 }

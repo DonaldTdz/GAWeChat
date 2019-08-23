@@ -74,5 +74,6 @@ namespace HC.WeChat.DemandForecasts
         Task<List<DemandWXListDto>> GetWXDemandListAsync();
         Task<PagedResultDto<RetailDemandForecastListDto>> GetRetailDemandListByIdAsync(GetDemandForecastsInput input);
         Task<RetailDemandHeadDto> GetRetailDemandHeadByIdAsync(GetDemandForecastsInput input);
+        Task<List<RetailDemandForecastListDto>> GetWXRetailDemandListByIdAsync(Guid userId);
     }
 }

@@ -72,5 +72,6 @@ namespace HC.WeChat.ForecastRecords
         /// </summary>
         Task BatchDelete(List<Guid> input);
         Task<APIResultDto> CreateForecastRecordAsync(ForecastRecordWXEditDto input);
+        Task<bool> GetIsFillInDemandAsync(ForecastRecordWXEditDto input);
     }
 }

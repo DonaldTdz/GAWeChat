@@ -31,7 +31,7 @@
                     </div>
                     <div nz-form-control nz-col [nzValidateStatus]="getFormControl('month')">
                         <nz-datepicker formControlName="month" [(ngModel)]="demandForecast.month"
-                            [nzPlaceHolder]="'请选择月份'" [nzMode]="'month'"></nz-datepicker>
+                            [nzPlaceHolder]="'请选择月份'" [nzFormat]="'YYYY-MM'" [nzMode]="'month'"></nz-datepicker>
                         <div nz-form-explain *ngIf="getFormControl('month').hasError('required')">
                             请选择预测时间</div>
                     </div>

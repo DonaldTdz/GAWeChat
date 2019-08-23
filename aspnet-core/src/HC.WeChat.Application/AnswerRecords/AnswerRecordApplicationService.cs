@@ -252,172 +252,172 @@ namespace HC.WeChat.AnswerRecords
         ///</summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
-        public async Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input)
-        {
-            DateTime beginTime;
-            DateTime endTime;
-            var nowDate = DateTime.Now;
-            switch (input.Quarter)
-            {
-                case 1:
-                    beginTime = new DateTime(nowDate.Year,1,1,0,0,0);
-                    endTime = new DateTime(nowDate.Year, 3, 31, 23, 59, 59);
-                    break;
-                case 2:
-                    beginTime = new DateTime(nowDate.Year, 4, 1, 0, 0, 0);
-                    endTime = new DateTime(nowDate.Year, 6, 30, 23, 59, 59);
-                    break;
-                case 3:
-                    beginTime = new DateTime(nowDate.Year, 7, 1, 0, 0, 0);
-                    endTime = new DateTime(nowDate.Year, 9, 30, 23, 59, 59);
-                    break;
-                case 4:
-                    beginTime = new DateTime(nowDate.Year, 10, 1, 0, 0, 0);
-                    endTime = new DateTime(nowDate.Year, 12, 30, 23, 59, 59);
-                    break;
-                default:
-                    beginTime = nowDate;
-                    endTime = nowDate;
-                    break;
-            }
-            var query = await _entityRepository.GetAll()
-                .Where(a => a.OpenId == input.OpenId && a.CreationTime > beginTime && a.CreationTime < endTime)
-                .AsNoTracking()
-                .ToListAsync();
+        //[AbpAllowAnonymous]
+        //public async Task<List<AnswerRecordWXListDto>> WXGetAnswerRecordList(GetAnswerRecordsInput input)
+        //{
+        //    DateTime beginTime;
+        //    DateTime endTime;
+        //    var nowDate = DateTime.Now;
+        //    switch (input.Quarter)
+        //    {
+        //        case 1:
+        //            beginTime = new DateTime(nowDate.Year,1,1,0,0,0);
+        //            endTime = new DateTime(nowDate.Year, 3, 31, 23, 59, 59);
+        //            break;
+        //        case 2:
+        //            beginTime = new DateTime(nowDate.Year, 4, 1, 0, 0, 0);
+        //            endTime = new DateTime(nowDate.Year, 6, 30, 23, 59, 59);
+        //            break;
+        //        case 3:
+        //            beginTime = new DateTime(nowDate.Year, 7, 1, 0, 0, 0);
+        //            endTime = new DateTime(nowDate.Year, 9, 30, 23, 59, 59);
+        //            break;
+        //        case 4:
+        //            beginTime = new DateTime(nowDate.Year, 10, 1, 0, 0, 0);
+        //            endTime = new DateTime(nowDate.Year, 12, 30, 23, 59, 59);
+        //            break;
+        //        default:
+        //            beginTime = nowDate;
+        //            endTime = nowDate;
+        //            break;
+        //    }
+        //    var query = await _entityRepository.GetAll()
+        //        .Where(a => a.OpenId == input.OpenId && a.CreationTime > beginTime && a.CreationTime < endTime)
+        //        .AsNoTracking()
+        //        .ToListAsync();
 
-            // TODO:待实现
-            return query.MapTo<List<AnswerRecordWXListDto>>();
-        }
+        //    // TODO:待实现
+        //    return query.MapTo<List<AnswerRecordWXListDto>>();
+        //}
 
         /// <summary>
         /// 微信端根据openId获取问卷填写情况
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
-        [AbpAllowAnonymous]
-        public async Task<List<QuestionnaireFillRecordsDto>> WXGetQuestionnaireFillRecords(string openId)
-        {
-            var result = new List<QuestionnaireFillRecordsDto>();
-            var nowDate = DateTime.Now;
-            if (nowDate.Month >= 3)
-            {
-                var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 3, 31, 23, 59, 59)).CountAsync();
-                if (nowDate.Month==3 && entity<=0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第一季度调查问卷",
-                        Quarter = 1,
-                        Status = "未填写"
-                    });
-                }
-                else if (nowDate.Month>3 && entity<=0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第一季度调查问卷",
-                        Quarter = 1,
-                        Status = "已逾期"
-                    });
-                }
-                else
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第一季度调查问卷",
-                        Quarter = 1,
-                        Status = "已完成"
-                    });
-                }
-            }
-            if (nowDate.Month >= 6)
-            {
-                var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 6, 30, 23, 59, 59)).CountAsync();
-                if (nowDate.Month == 6 && entity <= 0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第二季度调查问卷",
-                        Quarter = 2,
-                        Status = "未填写"
-                    });
-                }
-                else if (nowDate.Month == 6 && entity <= 0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第二季度调查问卷",
-                        Quarter = 2,
-                        Status = "已逾期"
-                    });
-                }
-                else
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第二季度调查问卷",
-                        Quarter = 2,
-                        Status = "已完成"
-                    });
-                }
-            }
-            if (nowDate.Month >= 9)
-            {
-                var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 9, 30, 23, 59, 59)).CountAsync();
-                if (nowDate.Month == 9 && entity <= 0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第三季度调查问卷",
-                        Quarter = 3,
-                        Status = "未填写"
-                    });
-                }
-                else if (nowDate.Month == 9 && entity <= 0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第三季度调查问卷",
-                        Quarter = 3,
-                        Status = "已逾期"
-                    });
-                }
-                else
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第三季度调查问卷",
-                        Quarter = 3,
-                        Status = "已完成"
-                    });
-                }
-            }
-            if (nowDate.Month == 12)
-            {
-                var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 12, 30, 23, 59, 59)).CountAsync();
-                if ( entity <= 0)
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第四季度调查问卷",
-                        Quarter = 4,
-                        Status = "未填写"
-                    });
-                }
-                else
-                {
-                    result.Add(new QuestionnaireFillRecordsDto
-                    {
-                        Desc = "第四季度调查问卷",
-                        Quarter = 4,
-                        Status = "已完成"
-                    });
-                }
-            }
+        //[AbpAllowAnonymous]
+        //public async Task<List<QuestionnaireFillRecordsDto>> WXGetQuestionnaireFillRecords(string openId)
+        //{
+        //    var result = new List<QuestionnaireFillRecordsDto>();
+        //    var nowDate = DateTime.Now;
+        //    if (nowDate.Month >= 3)
+        //    {
+        //        var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 3, 31, 23, 59, 59)).CountAsync();
+        //        if (nowDate.Month==3 && entity<=0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第一季度调查问卷",
+        //                Quarter = 1,
+        //                Status = "未填写"
+        //            });
+        //        }
+        //        else if (nowDate.Month>3 && entity<=0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第一季度调查问卷",
+        //                Quarter = 1,
+        //                Status = "已逾期"
+        //            });
+        //        }
+        //        else
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第一季度调查问卷",
+        //                Quarter = 1,
+        //                Status = "已完成"
+        //            });
+        //        }
+        //    }
+        //    if (nowDate.Month >= 6)
+        //    {
+        //        var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 6, 30, 23, 59, 59)).CountAsync();
+        //        if (nowDate.Month == 6 && entity <= 0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第二季度调查问卷",
+        //                Quarter = 2,
+        //                Status = "未填写"
+        //            });
+        //        }
+        //        else if (nowDate.Month == 6 && entity <= 0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第二季度调查问卷",
+        //                Quarter = 2,
+        //                Status = "已逾期"
+        //            });
+        //        }
+        //        else
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第二季度调查问卷",
+        //                Quarter = 2,
+        //                Status = "已完成"
+        //            });
+        //        }
+        //    }
+        //    if (nowDate.Month >= 9)
+        //    {
+        //        var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 9, 30, 23, 59, 59)).CountAsync();
+        //        if (nowDate.Month == 9 && entity <= 0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第三季度调查问卷",
+        //                Quarter = 3,
+        //                Status = "未填写"
+        //            });
+        //        }
+        //        else if (nowDate.Month == 9 && entity <= 0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第三季度调查问卷",
+        //                Quarter = 3,
+        //                Status = "已逾期"
+        //            });
+        //        }
+        //        else
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第三季度调查问卷",
+        //                Quarter = 3,
+        //                Status = "已完成"
+        //            });
+        //        }
+        //    }
+        //    if (nowDate.Month == 12)
+        //    {
+        //        var entity = await _entityRepository.GetAll().Where(i => i.OpenId == openId && i.CreationTime < new DateTime(nowDate.Year, 12, 30, 23, 59, 59)).CountAsync();
+        //        if ( entity <= 0)
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第四季度调查问卷",
+        //                Quarter = 4,
+        //                Status = "未填写"
+        //            });
+        //        }
+        //        else
+        //        {
+        //            result.Add(new QuestionnaireFillRecordsDto
+        //            {
+        //                Desc = "第四季度调查问卷",
+        //                Quarter = 4,
+        //                Status = "已完成"
+        //            });
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         /// <summary>
         /// 微信端保存答题记录
@@ -446,6 +446,23 @@ namespace HC.WeChat.AnswerRecords
                 return new APIResultDto() { Code = 901, Msg = "保存失败，请重试" };
 
             }
+        }
+
+
+        /// <summary>
+        /// 判断用户是否填写需求预测
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<bool> GetIsFillInQustionAsync(CreateWXAnswerDto input)
+        {
+            int num = await _entityRepository.CountAsync(v => v.QuestionRecordId == input.QuestionRecordId && v.OpenId == input.OpenId);
+            if (num != 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

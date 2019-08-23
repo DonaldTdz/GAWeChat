@@ -24,20 +24,28 @@ export class DemandDetailComponent extends AppComponentBase implements OnInit {
     ngOnInit() {
         if (this.statusParams == 'true') {
             this.status = true;
-            this.getDetailListById();
+            this.getIsFillInDemandAsync();
         } else {
             this.status = false;
-            this.num=100;
+            this.num = 100;
             this.getDetailRecordByIdAsync();
         }
     }
 
-    getDetailListById() {
+    getIsFillInDemandAsync() {
         let params: any = {};
         params.openId = this.settingsService.openId;
         params.demandForecastId = this.demandId;
-        this.demandService.getDetailListByIdAsync(params).subscribe(result => {
-            this.detailList = result;
+        this.demandService.getIsFillInDemandAsync(params).subscribe(res => {
+            if (res) {
+                this.status = false;
+                this.num = 100;
+                this.getDetailRecordByIdAsync();
+            } else {
+                this.demandService.getDetailListByIdAsync(params).subscribe(result => {
+                    this.detailList = result;
+                });
+            }
         });
     }
 
@@ -57,6 +65,7 @@ export class DemandDetailComponent extends AppComponentBase implements OnInit {
         input.list = ForecastRecordDto.fromJSArray(this.detailList);
         this.demandService.createForecastRecordAsync(input).subscribe(result => {
             if (result && result.code == 0) {
+                this.status = false;
                 this.router.navigate(['/demand-forecasts/feedback-success']);
             } else {
                 this.srv['warn']('提交失败，请重试');

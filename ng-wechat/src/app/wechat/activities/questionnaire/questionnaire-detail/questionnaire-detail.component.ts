@@ -65,11 +65,22 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
 
     //获取问题列表
     getQuestionnaireList() {
-        this.questionnaireService.getQuestionnaireList().subscribe(data => {
-            this.questionnaireList = data;
-            //过滤掉跳题问题Q13.1
-            let disabledQues = this.questionnaireList.filter(i => i.no.indexOf('.') != -1);
-            disabledQues.forEach(d => d.enabled = false);
+        let params: any = {};
+        params.openId = this.settingsService.openId;
+        params.questionRecordId = this.questionRecordId;
+        this.questionnaireService.getIsFillInQustionAsync(params).subscribe(res => {
+            if (res) {
+                this.status = false;
+                this.progressBar = 100;
+                this.getQuestionRecordById();
+            } else {
+                this.questionnaireService.getQuestionnaireList().subscribe(data => {
+                    this.questionnaireList = data;
+                    //过滤掉跳题问题Q13.1
+                    let disabledQues = this.questionnaireList.filter(i => i.no.indexOf('.') != -1);
+                    disabledQues.forEach(d => d.enabled = false);
+                });
+            }
         });
     }
 
@@ -165,6 +176,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
         this.submitDisable = true;
         if (this.progressBar < 100) {
             this.srv['warn']('还有未选择的项');
+            this.submitDisable = false;
             return;
         }
         let checkBoxList: Questionnaire[] = this.questionnaireList.filter(v => v.isMultiple == true);
@@ -187,6 +199,7 @@ export class QuestionnaireDetailComponent extends AppComponentBase implements On
             } else {
                 this.srv['warn']('提交失败，请重试');
             }
+            this.submitDisable = false;
         });
     }
 }

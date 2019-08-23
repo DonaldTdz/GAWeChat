@@ -1,0 +1,13 @@
+<Page [title]="'我的零售客户'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells__title">我的零售客户</div>
+    <div class="weui-panel weui-panel_access">
+        <div class="weui-cell weui-cell_access" *ngFor="let item of retailerList" (click)="goDetail()">
+            <div class="weui-cell__bd" (click)="goDetail(item.id)">
+                <span style="vertical-align: middle">{{item.name}}</span>
+            </div>
+            <div class="weui-cell__ft">
+            </div>
+        </div>
+        <weui-loadmore type="line" *ngIf="!retailerList || retailerList.length == 0"></weui-loadmore>
+    </div>
+</Page>

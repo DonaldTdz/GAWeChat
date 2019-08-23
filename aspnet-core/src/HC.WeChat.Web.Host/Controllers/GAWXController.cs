@@ -20,9 +20,10 @@ namespace HC.WeChat.Web.Host.Controllers
         //private readonly IConfigurationRoot _appConfiguration;
         //private WeChatTenantSetting _settings;
         //private string host = "http://ga.intcov.com";
-        private string host = "http://localhost:21021";
+        //private string host = "http://localhost:21021";
         //private string host = "http://wx.photostory.top";
         //private string host = "http://hcwx.sayequ.me";
+        private string host = "http://ga.hechuangcd.com";
         private int? tenantId;
 
         private string UserOpenId
@@ -94,7 +95,7 @@ namespace HC.WeChat.Web.Host.Controllers
             APIResultDto result = new APIResultDto();
             //UserOpenId = "oPM5Uv81jfyJqWbVxWAH-RUqsCAs";
             //UserOpenId = "oPM5Uv89yy7Iv8k9gLHjjsMTT5Gw";//零售户
-            UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU0"; //杨帆 20
+            //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU0"; //杨帆 20
             //UserOpenId = "oWusewEMAQ_9km_ME19diwMrEop4"; // 199
             //UserOpenId = "oB4nYjnoHhuWrPVi2pYLuPjnCaU1"; //杨帆专用
             //UserOpenId = "oWusewPRxWuP4wMz3UmHR0y7CJME"; //回家测试用
@@ -271,6 +272,26 @@ namespace HC.WeChat.Web.Host.Controllers
                         //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
                     }
                     break;
+                case GAAuthorizationPageEnum.Questionnaire:
+                    {
+                        if (!string.IsNullOrEmpty(UserOpenId))
+                        {
+                            return Redirect(string.Format(GAAuthorizationPageUrl.QuestionnaireUrl, param));
+                        }
+                        url = host + "/GAWX/Questionnaire";
+                        //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
+                    }
+                    break;
+                case GAAuthorizationPageEnum.DemandForecast:
+                    {
+                        if (!string.IsNullOrEmpty(UserOpenId))
+                        {
+                            return Redirect(string.Format(GAAuthorizationPageUrl.DemandForecastUrl, param));
+                        }
+                        url = host + "/GAWX/DemandForecast";
+                        //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
+                    }
+                    break;
                 default:
                     {
                         return Redirect("/gawechat/index.html");
@@ -430,6 +451,22 @@ namespace HC.WeChat.Web.Host.Controllers
             return Redirect(string.Format(GAAuthorizationPageUrl.ExhibitionDetailUrl, state));
         }
 
+        public IActionResult Questionnaire(string code, string state)
+        {
+            //存储openId 避免重复提交
+            SetUserOpenId(code);
+
+            return Redirect(string.Format(GAAuthorizationPageUrl.QuestionnaireUrl, state));
+        }
+
+        public IActionResult DemandForecast(string code, string state)
+        {
+            //存储openId 避免重复提交
+            SetUserOpenId(code);
+
+            return Redirect(string.Format(GAAuthorizationPageUrl.QuestionnaireUrl, state));
+        }
+
         public IActionResult Login(string openId)
         {
             UserOpenId = openId;
@@ -513,7 +550,9 @@ namespace HC.WeChat.Web.Host.Controllers
         IntegralDetail = 301,
         CustBindInfo = 302,
         ShopReview = 303,
-        ExhibitionDetailUrl = 304
+        ExhibitionDetailUrl = 304,
+        Questionnaire = 104,
+        DemandForecast = 105,
     }
 
     public class GAAuthorizationPageUrl
@@ -536,5 +575,7 @@ namespace HC.WeChat.Web.Host.Controllers
         public static string ShopUrl = "/gawechat/index.html#/shops/shop;shopId={0}";
         public static string ShopQrCodeUrl = "/gawechat/index.html#/qrcodes/qrcode;shopId={0}";
         public static string ExhibitionDetailUrl = "/gawechat/index.html#/exhibitions/exhibition-detail;shopId={0}";
+        public static string QuestionnaireUrl = "/gawechat/index.html#/questionnaires/questionnaire";
+        public static string DemandForecastUrl = "/gawechat/index.html#/demand-forecasts/demand-forecast";
     }
 }

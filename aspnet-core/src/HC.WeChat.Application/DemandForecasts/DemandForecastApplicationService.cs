@@ -233,7 +233,7 @@ namespace HC.WeChat.DemandForecasts
             {
                 int count = await _forecastRecordRepository.CountAsync(v => v.DemandForecastId == item.Id);
                 //item.Status = count <= 0 ? (DateTime.Now.Month > item.Month.Value.Month ? "已逾期" : ((now >= beginTime && now <= endTime) ? "进行中" : "未开始")) : "查看记录";
-                item.Status = "进行中（*需注释）";
+                item.Status = count <= 0 ? "进行中（*需注释）" : "查看记录";
             }
             return list;
         }
@@ -283,6 +283,32 @@ namespace HC.WeChat.DemandForecasts
                 CompleteTime = completeTime
             }).FirstOrDefaultAsync();
             return result;
+        }
+
+
+        /// <summary>
+        /// 微信端查询当前零售户需求预测列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<RetailDemandForecastListDto>> GetWXRetailDemandListByIdAsync(Guid userId)
+        {
+            string openId = await _wechatuserRepository.GetAll().Where(v => v.UserId == userId).Select(v => v.OpenId).FirstOrDefaultAsync();
+            Guid[] DemandIds = await _forecastRecordRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.DemandForecastId).Distinct().ToArrayAsync();
+            var query = _entityRepository.GetAll().Where(v => DemandIds.Contains(v.Id));
+            var list = await (from q in query
+                              select new RetailDemandForecastListDto()
+                              {
+                                  Id = q.Id,
+                                  Title = q.Title,
+                                  Month = q.Month
+                              }).OrderByDescending(v => v.Month).ToListAsync();
+            foreach (var item in list)
+            {
+                item.CompleteTime = await _forecastRecordRepository.GetAll().Where(v => v.DemandForecastId == item.Id).Select(v => v.CreationTime).OrderByDescending(v => v).FirstOrDefaultAsync();
+            }
+            return list;
         }
     }
 }
