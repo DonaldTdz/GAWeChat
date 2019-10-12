@@ -33,6 +33,7 @@ using HC.WeChat.Products;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.WechatEnums;
 using Abp.Auditing;
+using HC.WeChat.Employees;
 
 namespace HC.WeChat.Retailers
 {
@@ -54,7 +55,7 @@ namespace HC.WeChat.Retailers
         private readonly IRepository<IntegralDetail, Guid> _integraldetailRepository;
         private readonly IRepository<Product, Guid> _productRepository;
         private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
-
+        private readonly IRepository<Employee, Guid> _employeeRepository;
 
         /// <summary>
         /// 构造函数
@@ -67,6 +68,7 @@ namespace HC.WeChat.Retailers
             , IRepository<IntegralDetail, Guid> integraldetailRepository
             , IRepository<Product, Guid> productRepository
             , IRepository<WeChatUser, Guid> wechatuserRepository
+            , IRepository<Employee, Guid> employeeRepository
         )
         {
             _hostingEnvironment = hostingEnvironment;
@@ -77,6 +79,7 @@ namespace HC.WeChat.Retailers
             _integraldetailRepository = integraldetailRepository;
             _productRepository = productRepository;
             _wechatuserRepository = wechatuserRepository;
+            _employeeRepository = employeeRepository;
         }
 
         /// <summary>
@@ -948,6 +951,32 @@ namespace HC.WeChat.Retailers
             return "/files/downloadtemp/" + fileName;
         }
         #endregion
+
+
+        /// <summary>
+        /// 微信获取客户经理零售户列表
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<List<EmpRetailerList>> GetWXEmpRetailerListByIdAsync(string openId)
+        {
+            Guid? userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
+            var empInfo = await _employeeRepository.GetAll().Where(v => v.Id == userId).Select(v => new { v.Id, v.Position }).FirstOrDefaultAsync();
+            if(empInfo.Position == UserPositionEnum.客户经理)
+            {
+                var list = await _retailerRepository.GetAll().Where(v => v.EmployeeId == empInfo.Id).Select(v => new EmpRetailerList()
+                {
+                    Id = v.Id,
+                    Name = v.Name
+                }).ToListAsync();
+                return list;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
 }

@@ -1,0 +1,70 @@
+<nz-card [nzBordered]="false" nzTitle="{{cardTitle}}">
+    <form nz-form [formGroup]="form" id="frm_create_role">
+        <div nz-row>
+            <div nz-col [nzSpan]="16">
+                <div nz-form-item nz-row style="margin-bottom: 0px;">
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label for="status" nz-form-item-required>发布状态</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" style="color: rgb(247, 98, 158);" nzHasFeedback>
+                        {{questionRecord.isPublish==true?"已发布":"草稿"}}
+                    </div>
+                </div>
+                <div nz-form-item nz-row style="margin-bottom: 0px;">
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label nz-form-item-required>调查年份</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" style="color: rgb(247, 98, 158);" nzHasFeedback>
+                        {{questionRecord.year}}
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label for="title" nz-form-item-required>问卷标题</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('title')">
+                        <nz-input formControlName="title" [(ngModel)]="questionRecord.title" [nzId]="'title'">
+                        </nz-input>
+                        <div nz-form-explain
+                            *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('maxlength')">
+                            字符长度小于等于100</div>
+                        <div nz-form-explain
+                            *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">请输入问卷标题
+                        </div>
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label nz-form-item-required>问卷季度</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20">
+                        <nz-select formControlName="quarter" name="quarterType" nzHasFeedback
+                            [nzPlaceHolder]="'请选择问卷季度'" [(ngModel)]="questionRecord.quarter" [nzShowSearch]="true"
+                            nzSize="large">
+                            <nz-option *ngFor="let i of quarterType" [nzLabel]="i.text" [nzValue]="i.value">
+                            </nz-option>
+                        </nz-select>
+                        <div nz-form-explain
+                            *ngIf="getFormControl('quarter').dirty&&getFormControl('quarter').hasError('required')">
+                            请输入问卷标题
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <demand-list #itemList></demand-list>
+    <footer-toolbar errorCollect>
+        <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
+            返回
+        </button>
+        <button nz-button *ngIf="questionRecord.id && !questionRecord.isPublish" [nzType]="'primary'" (click)="push()"
+            [nzSize]="'large'" [nzLoading]="isConfirmLoading" [disabled]="!form.valid">
+            发布
+        </button>
+        <button nz-button *ngIf="!questionRecord.isPublish" [nzType]="'primary'" (click)="save()" [nzSize]="'large'"
+            [nzLoading]="isConfirmLoading" [disabled]="!form.valid">
+            保存
+        </button>
+    </footer-toolbar>
+</nz-card>

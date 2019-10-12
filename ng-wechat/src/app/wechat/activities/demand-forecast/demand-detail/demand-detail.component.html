@@ -1,0 +1,28 @@
+<Page [ngClass]="'DemandForecast'" [title]="'需求预测'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells__title">商品需求预测列表</div>
+    <div *ngIf="detailList.length > 0" class="weui-cell" style="padding-bottom: 0px;">
+        <div style="float: left;width:70%;">
+            商品信息
+        </div>
+        <div>
+            预测数量
+        </div>
+    </div>
+    <div *ngIf="detailList.length > 0" class="weui-cells" style="margin-top: 0px;">
+        <div class="weui-cell" *ngFor="let item of detailList">
+            <div class="weui-cell__bd">
+                <p>{{item.name}}</p>
+                <p style="color:#999999;font-size:12px;">上月订购量:{{item.lastMonthNum}}</p>
+            </div>
+            <div class="weui-cell__ft">
+                <weui-stepper [(ngModel)]="item.predictiveValue" [disabled]="!status" [min]="0" [max]="99999"
+                    name="num">
+                </weui-stepper>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="detailList.length > 0" class="weui-btn-area">
+        <button class="weui-btn weui-btn_primary" *ngIf="status" (click)="save()">提交</button>
+    </div>
+    <weui-loadmore type="line" *ngIf="!detailList || detailList.length == 0"></weui-loadmore>
+</Page>

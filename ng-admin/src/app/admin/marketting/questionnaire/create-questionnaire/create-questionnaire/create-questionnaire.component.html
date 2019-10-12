@@ -1,0 +1,74 @@
+<nz-card [nzBordered]="false" nzTitle="新建问题">
+    <nz-card [nzBordered]="false">
+        <form nz-form [formGroup]="form" (ngSubmit)="save()" id="frm_create_activity">
+            <div nz-row>
+                <div nz-col [nzSpan]="24">
+                    <div nz-form-item nz-row>
+                        <div nz-form-label nz-col [nzSm]="2">
+                            <label for="no" nz-form-item-required>问题编号</label>
+                        </div>
+                        <div nz-form-control nz-col [nzSm]="18">
+                            <nz-input formControlName="no" [(ngModel)]="question.no" [nzId]="'no'"></nz-input>
+                            <div nz-form-explain
+                                *ngIf="getFormControl('no').dirty&&getFormControl('no').hasError('required')">问题编号不能为空
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-form-item nz-row>
+                        <div nz-form-label nz-col [nzSm]="2">
+                            <label for="type" nz-form-item-required>问题类型</label>
+                        </div>
+                        <div nz-form-control nz-col [nzSm]="18" nzHasFeedback
+                            [nzValidateStatus]="getFormControl('type')">
+                            <nz-select formControlName="type" [nzPlaceHolder]="'请选择问题类型'" [(ngModel)]="question.type"
+                                [nzShowSearch]="false" nzSize="large">
+                                <nz-option *ngFor="let i of questionsType" [nzLabel]="i.text" [nzValue]="i.value">
+                                </nz-option>
+                            </nz-select>
+                        </div>
+                    </div>
+                    <div nz-form-item nz-row>
+                        <div nz-form-label nz-col [nzSm]="2">
+                            <label for="isMultiple" nz-form-item-required>是否多选</label>
+                        </div>
+                        <div nz-form-control nz-col [nzSm]="18" nzHasFeedback>
+                            <nz-radio-group formControlName="isMultiple" [(ngModel)]="question.isMultiple"
+                                class="mb-md">
+                                <label nz-radio [nzValue]="false">
+                                    <span>单选</span>
+                                </label>
+                                <label nz-radio [nzValue]="true">
+                                    <span>多选</span>
+                                </label>
+                            </nz-radio-group>
+                            <div nz-form-explain
+                                *ngIf="getFormControl('isMultiple').dirty&&getFormControl('isMultiple').hasError('required')">
+                                选项是否为多选</div>
+                        </div>
+                    </div>
+                    <div nz-form-item nz-row>
+                        <div nz-form-label nz-col [nzSm]="2">
+                            <label for="question" nz-form-item-required>问题内容</label>
+                        </div>
+                        <div nz-form-control nz-col [nzSm]="18" nzHasFeedback
+                            [nzValidateStatus]="getFormControl('question')">
+                            <nz-input nzType="textarea" nzRows="3" formControlName="question"
+                                [(ngModel)]="question.question" [nzId]="'question'"></nz-input>
+                            <div nz-form-explain
+                                *ngIf="getFormControl('question').dirty&&getFormControl('question').hasError('required')">
+                                问题内容不能为空</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer-toolbar errorCollect>
+                <button nz-button [nzType]="'default'" [nzSize]="'large'" type="button" (click)="return()">
+                    返回
+                </button>
+                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit">
+                    保存
+                </button>
+            </footer-toolbar>
+        </form>
+    </nz-card>
+</nz-card>

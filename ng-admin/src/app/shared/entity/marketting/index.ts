@@ -3,3 +3,8 @@ export * from './employee';
 export * from './manuscript';
 export * from './exhibitionShop';
 export * from './exhibition';
+export * from './questionnaire';
+export * from './demand-forecast';
+export * from './demand-detail';
+export * from './question-options';
+export * from './question-record';

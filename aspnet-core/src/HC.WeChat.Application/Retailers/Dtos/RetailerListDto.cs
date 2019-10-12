@@ -180,4 +180,12 @@ namespace HC.WeChat.Retailers.Dtos
         /// </summary>
         public string Specification { get; set; }
     }
+
+    /// <summary>
+    /// 客户经理零售户列表
+    /// </summary>
+    public class EmpRetailerList {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
 }

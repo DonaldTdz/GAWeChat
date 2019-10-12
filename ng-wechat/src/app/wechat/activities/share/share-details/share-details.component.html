@@ -1,23 +1,25 @@
 <weui-loadmore type="line" *ngIf="!sDetailsOfShare"></weui-loadmore>
 <div *ngIf="sDetailsOfShare" [innerHTML]="assembleHTML(sDetailsOfShare.content)"></div>
-<br/>
+<br />
 <div class="weui-flex">
     <div class="weui-flex__item">
         <div class="placeholder read">阅读 {{sDetailsOfShare.readTotal}}</div>
     </div>
     <div class="placeholder good" *ngIf="!isGood">
-        <img src="assets/images/activity/heartFalse.png" style="width:16px;" alt="" (click)="addGood()"> {{sDetailsOfShare.goodTotal}}
+        <img src="assets/images/activity/heartFalse.png" style="width:16px;" alt="" (click)="addGood()">
+        {{sDetailsOfShare.goodTotal}}
     </div>
     <div class="placeholder good" *ngIf="isGood">
-        <img src="assets/images/activity/heartTrue.png" style="width:16px;" alt="" (click)="addGood()"> {{sDetailsOfShare.goodTotal}}
+        <img src="assets/images/activity/heartTrue.png" style="width:16px;" alt="" (click)="addGood()">
+        {{sDetailsOfShare.goodTotal}}
     </div>
 </div>
-<br/>
+<br />
 <div class="weui-flex">
     <div class="weui-flex__item" style="text-align: center;">
         <button weui-button [weui-mini]="'mini'" (click)="goShareWrite()">我要分享</button>
     </div>
 </div>
 <div class="weui-footer">
-    <p class="weui-footer__text">广安烟草 | 渠江烟语</p>
+    <p class="weui-footer__text">XXXX | XXXX</p>
 </div>

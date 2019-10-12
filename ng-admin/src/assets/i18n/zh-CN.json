@@ -103,8 +103,8 @@
     "roles": "角色管理",
     "tenants": "租户管理",
     "homeindex": {
-        "title": "广安烟草",
-        "welcome": "欢迎您！广安烟草信息化平台V2.0"
+        "title": "XXXX",
+        "welcome": "欢迎您！XXXX信息化平台V2.0"
     },
     "rolepage": {
         "title": "角色管理",
@@ -153,7 +153,6 @@
     "consume-serve": "消费服务",
     "near-store": "附近店铺",
     "feedback": "意见反馈",
-    "questionnaire": "问卷调查",
     "activity-form-detail": "申请单详情",
     "/admin/activity-form-detail": "申请单详情",
     "activity-list": "营销活动列表",
@@ -179,5 +178,7 @@
     "member-setting": "会员设置",
     "lottery-setting": "抽奖设置",
     "exhibition": "陈列活动",
-    "data-statistics": "消费报表"
+    "data-statistics": "消费报表",
+    "demand-forecast": "需求预测",
+    "questionnaire": "问卷调查"
 }

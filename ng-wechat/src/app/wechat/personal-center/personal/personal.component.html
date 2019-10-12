@@ -9,7 +9,8 @@
                 <p style="font-size: 13px; color: #888888;">{{user.userTypeName}}</p>
             </div>
             <div class="weui-cell__ft">
-                <img alt="" (click)="goShowCard()" src="./assets/images/icon_nav_layout.png" style="height: 25px; margin-right: 12px;">
+                <img alt="" (click)="goShowCard()" src="./assets/images/icon_nav_layout.png"
+                    style="height: 25px; margin-right: 12px;">
             </div>
         </div>
         <div class="weui-cell weui-cell_access" (click)="goIntegralTotal(user.openId)" *ngIf="user">
@@ -17,7 +18,8 @@
                 <span style="vertical-align: middle; font-size: 13px;">我的积分</span>
             </div>
             <div class="weui-cell__ft">
-                <span class="weui-badge" style="margin-left: 5px; background-color:goldenrod;">{{user.integralTotal}}</span>
+                <span class="weui-badge"
+                    style="margin-left: 5px; background-color:goldenrod;">{{user.integralTotal}}</span>
             </div>
         </div>
     </div>
@@ -33,7 +35,8 @@
         <div class="weui-cell weui-cell_access" (click)="goShopEvaluation(user.openId)">
             <div class="weui-cell__bd">
                 <span style="vertical-align: middle">店铺评价</span>
-                <span class="weui-badge" *ngIf="countNotEvaluation" style="margin-left: 5px;">{{countNotEvaluation}}</span>
+                <span class="weui-badge" *ngIf="countNotEvaluation"
+                    style="margin-left: 5px;">{{countNotEvaluation}}</span>
             </div>
             <div class="weui-cell__ft" style="font-size: 13px;">评价送积分</div>
         </div>
@@ -66,10 +69,18 @@
             </div>
             <div class="weui-cell__ft" style="font-size: 13px;"></div>
         </div>
-        <div class="weui-cell weui-cell_access" *ngIf="user && user.userType == 1 && user.isShopkeeper" (click)="goShopEmployee()">
+        <div class="weui-cell weui-cell_access" (click)="goEmpRetailer()">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">零售户数据</span>
+            </div>
+            <div class="weui-cell__ft" style="font-size: 13px;"></div>
+        </div>
+        <div class="weui-cell weui-cell_access" *ngIf="user && user.userType == 1 && user.isShopkeeper"
+            (click)="goShopEmployee()">
             <div class="weui-cell__bd">
                 <span style="vertical-align: middle">店员管理</span>
-                <span class="weui-badge" *ngIf="noCheckShopEmployeeCount>0" style="margin-left: 5px;">{{noCheckShopEmployeeCount}}</span>
+                <span class="weui-badge" *ngIf="noCheckShopEmployeeCount>0"
+                    style="margin-left: 5px;">{{noCheckShopEmployeeCount}}</span>
             </div>
             <div class="weui-cell__ft" style="font-size: 13px;"></div>
         </div>

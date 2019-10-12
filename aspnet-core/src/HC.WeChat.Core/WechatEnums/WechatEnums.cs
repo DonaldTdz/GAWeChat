@@ -310,4 +310,20 @@ namespace HC.WeChat.WechatEnums
     {
         店铺 = 1
     }
+
+    public enum QuestionType
+    {
+        客户服务评价=1,
+        卷烟供应评价=2,
+        市场管理评价=3,
+        综合评价=4
+    }
+
+    public enum QuarterType
+    {
+        第一季度 = 1,
+        第二季度 = 2,
+        第三季度 = 3,
+        第四季度 = 4
+    }
 }
