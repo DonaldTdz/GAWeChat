@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "ng-zorro-antd admin panel front-end framework",
   "author": "donald",
-  "homepage": "https://cipchk.github.io/ng-alain/",
   "bugs": {
     "url": "https://github.com/cipchk/ng-alain/issues"
   },
@@ -122,7 +121,7 @@
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",
     "typescript": "~2.5.0",
-    "webpack-bundle-analyzer": "^2.9.0",
+    "webpack-bundle-analyzer": "^3.3.2",
     "xlsx": "^0.11.16"
   },
   "lint-staged": {
