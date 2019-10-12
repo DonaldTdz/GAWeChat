@@ -46,7 +46,7 @@
                 入驻店铺统计
             </ng-template>
             <bar height="275" [data]="shopData"></bar>
-            <nz-table #nzTable [nzAjaxData]="shopStatistics" [nzIsPagination]="false"  [nzShowSizeChanger]="true">
+            <nz-table #nzTable [nzAjaxData]="shopStatistics" [nzIsPagination]="false" [nzShowSizeChanger]="true">
                 <thead nz-thead>
                     <tr>
                         <th nz-th>
@@ -77,7 +77,7 @@
                 关注微信用户统计
             </ng-template>
             <bar height="275" color="#00a854" [data]="wechatData"></bar>
-            <nz-table #nzTablew [nzAjaxData]="wechatUserStatistic" [nzIsPagination]="false"  [nzShowSizeChanger]="true">
+            <nz-table #nzTablew [nzAjaxData]="wechatUserStatistic" [nzIsPagination]="false" [nzShowSizeChanger]="true">
                 <thead nz-thead>
                     <tr>
                         <th nz-th>
@@ -123,29 +123,24 @@
 </div> -->
 <div nz-row nzGutter="16">
     <div nz-col nzXs="24" nzMd="12">
-        <nz-card [nzLoading]="loading" [nzBordered]="false" nzTitle="微信用户类型占比" [nzBodyStyle]="{'padding.px': 24}" class="sales-card" style="min-height: 482px;">
-           
+        <nz-card [nzLoading]="loading" [nzBordered]="false" nzTitle="微信用户类型占比" [nzBodyStyle]="{'padding.px': 24}"
+            class="sales-card" style="min-height: 482px;">
+
             <ng-template #body>
                 <h4 class="margin:8px 0 32px 0;">微信用户</h4>
-                <pie
-                    [hasLegend]="true"
-                    subTitle="微信用户"
-                    [height]="248"
-                    [lineWidth]="4"
-                    [total]="weChatTotal"
-                    [data]="weChatPicData"
-                    [valueFormat]="handlePieValueFormat">
+                <pie [hasLegend]="true" subTitle="微信用户" [height]="248" [lineWidth]="4" [total]="weChatTotal"
+                    [data]="weChatPicData" [valueFormat]="handlePieValueFormat">
                 </pie>
             </ng-template>
         </nz-card>
     </div>
     <div nz-col nzXs="24" nzMd="12">
-        <nz-card  [nzTitle]="nzTitle3" [nzBordered]="false" nzNoPadding>
+        <nz-card [nzTitle]="nzTitle3" [nzBordered]="false" nzNoPadding>
             <ng-template #nzTitle3>
                 最新用户建议反馈
             </ng-template>
-            <div nz-row  [nzType]="'flex'" [nzJustify]="'center'" [nzAlign]="'middle'" class="py-sm bg-grey-lighter-h point" *ngFor="let item of adviseList"
-                (click)="adviseDetail(item)">
+            <div nz-row [nzType]="'flex'" [nzJustify]="'center'" [nzAlign]="'middle'"
+                class="py-sm bg-grey-lighter-h point" *ngFor="let item of adviseList" (click)="adviseDetail(item)">
                 <div nz-col [nzSpan]="20" style="padding-left: 24px;">
                     <strong>{{item.userTypeName}}</strong>
                     <p>{{item.content | lengthLimit:50}}</p>
@@ -167,7 +162,7 @@
         </nz-card>
     </div>
     <div nz-col nzXs="24" nzMd="18">
-       
+
     </div>
 </div>
 

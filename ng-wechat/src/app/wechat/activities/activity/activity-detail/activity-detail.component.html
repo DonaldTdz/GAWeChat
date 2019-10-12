@@ -1,18 +1,20 @@
 <weui-loadmore type="line" *ngIf="!activity"></weui-loadmore>
 <div *ngIf="activity.content" [innerHTML]="assembleHTML(activity.content)"></div>
-<br/>
+<br />
 <div class="weui-flex">
     <div class="weui-flex__item">
         <div class="placeholder read">阅读 {{activity.readTotal}}</div>
     </div>
     <div class="placeholder good" *ngIf="!isGood">
-        <img src="assets/images/activity/heartFalse.png" style="width:16px;" alt="" (click)="addGood()"> {{activity.goodTotal}}
+        <img src="assets/images/activity/heartFalse.png" style="width:16px;" alt="" (click)="addGood()">
+        {{activity.goodTotal}}
     </div>
     <div class="placeholder good" *ngIf="isGood">
-        <img src="assets/images/activity/heartTrue.png" style="width:16px;" alt="" (click)="addGood()"> {{activity.goodTotal}}
+        <img src="assets/images/activity/heartTrue.png" style="width:16px;" alt="" (click)="addGood()">
+        {{activity.goodTotal}}
     </div>
 </div>
-<br/>
+<br />
 <div class="weui-footer">
     <p class="weui-footer__text">XXXX | XXXX</p>
 </div>

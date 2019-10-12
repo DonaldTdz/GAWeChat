@@ -232,8 +232,8 @@ namespace HC.WeChat.DemandForecasts
             foreach (var item in list)
             {
                 int count = await _forecastRecordRepository.CountAsync(v => v.DemandForecastId == item.Id);
-                //item.Status = count <= 0 ? (DateTime.Now.Month > item.Month.Value.Month ? "已逾期" : ((now >= beginTime && now <= endTime) ? "进行中" : "未开始")) : "查看记录";
-                item.Status = count <= 0 ? "进行中（*需注释）" : "查看记录";
+                item.Status = count <= 0 ? (DateTime.Now.Month > item.Month.Value.Month ? "已逾期" : ((now >= beginTime && now <= endTime) ? "进行中" : "未开始")) : "查看记录";
+                //item.Status = count <= 0 ? "进行中（*需注释）" : "查看记录";
             }
             return list;
         }

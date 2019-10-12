@@ -310,8 +310,8 @@ namespace HC.WeChat.QuestionRecords
             {
                 int count = await _answerRepository.CountAsync(v => v.QuestionRecordId == item.Id);
                 item.Title = item.Year + "年" + item.Quarter.ToString() + "调查问卷";
-                //item.Status = count <= 0 ? (now.Year > DateTime.Parse(item.Year + "-01-01").Year || (curSeason > (int)item.Quarter) ? "已逾期" : ((now >= beginTime && now <= endTime) ? "进行中" : "未开始")) : "查看记录";
-                item.Status = count <= 0 ? "进行中（*需注释）" : "查看记录";
+                item.Status = count <= 0 ? (now.Year > DateTime.Parse(item.Year + "-01-01").Year || (curSeason > (int)item.Quarter) ? "已逾期" : ((now >= beginTime && now <= endTime) ? "进行中" : "未开始")) : "查看记录";
+                //item.Status = count <= 0 ? "进行中（*需注释）" : "查看记录";
             }
             return list;
         }

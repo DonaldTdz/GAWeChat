@@ -30,24 +30,6 @@
                     </div>
                 </div>
             </div>
-            <div nz-form-control nz-col [nzSm]="18">
-                <nz-input formControlName="value" [(ngModel)]="questionOptions.value" [nzId]="'value'"></nz-input>
-                <div nz-form-explain
-                    *ngIf="getFormControl('value').dirty&&getFormControl('value').hasError('required')">选项值不能为空</div>
-            </div>
-            </div>
-            <div nz-form-item nz-row>
-                <div nz-form-label nz-col [nzSm]="5">
-                    <label for="desc" nz-form-item-required>选项描述</label>
-                </div>
-                <div nz-form-control nz-col [nzSm]="18">
-                    <nz-input formControlName="desc" [(ngModel)]="questionOptions.desc" [nzId]="'desc'"></nz-input>
-                    <div nz-form-explain
-                        *ngIf="getFormControl('desc').dirty&&getFormControl('desc').hasError('required')">选项描述不能为空</div>
-                </div>
-            </div>
-            </div>
-            </div>
         </ng-template>
         <ng-template #modalFooter>
             <button nz-button [nzType]="'default'" [nzSize]="'large'" type="button" (click)="ehandleCancel($event)">
