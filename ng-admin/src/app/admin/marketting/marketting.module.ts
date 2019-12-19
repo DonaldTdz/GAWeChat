@@ -18,6 +18,14 @@ import { ExhibitionComponent } from "./exhibition/exhibition.component";
 import { ExhibitionDetailComponent } from "./exhibition/exhibition-detail/exhibition-detail.component";
 import { DataStatisticsComponent } from "./data-statistics/data-statistics.component";
 import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics-detail/data-statistics-detail.component";
+import { DemandForecastComponent } from "./demand-forecast/demand-forecast.component";
+import { QuestionnaireComponent } from "./questionnaire/questionnaire.component";
+import { DetailQuestionnaireComponent } from "./questionnaire/detail-questionnaire/detail-questionnaire/detail-questionnaire.component";
+import { CreateQuestionnaireComponent } from "./questionnaire/create-questionnaire/create-questionnaire/create-questionnaire.component";
+import { DemandDetailsComponent } from "./demand-forecast/demand-details/demand-details.component";
+import { DemandListComponent } from "./demand-forecast/demand-list/demand-list.component";
+import { QuestionOptionComponent } from "./questionnaire/question-option/question-option/question-option.component";
+import { DetailQuestionRecordComponent } from "./questionnaire/detail-question-record/detail-question-record.component";
 
 @NgModule({
     imports: [
@@ -42,7 +50,15 @@ import { DataStatisticsDetailComponent } from "./data-statistics/data-statistics
         ExhibitionComponent,
         ExhibitionDetailComponent,
         DataStatisticsComponent,
-        DataStatisticsDetailComponent
+        DataStatisticsDetailComponent,
+        DemandForecastComponent,
+        QuestionnaireComponent,
+        DetailQuestionnaireComponent,
+        CreateQuestionnaireComponent,
+        QuestionOptionComponent,
+        DetailQuestionRecordComponent,
+        DemandDetailsComponent,
+        DemandListComponent,
     ],
     providers: [
         AppRouteGuard

@@ -1,0 +1,138 @@
+<pro-header></pro-header>
+<nz-tabset>
+    <nz-tab>
+        <ng-template #nzTabHeading>
+            问题配置
+        </ng-template>
+        <nz-card [nzBordered]="false">
+            <form nz-form (ngSubmit)="refreshData(false,true)" [nzLayout]="'inline'">
+                <div nz-row [nzGutter]="24">
+                    <div nz-col [nzSpan]="8" class="mb-md">
+                        <div nz-form-item class="d-flex">
+                            <div nz-form-label>
+                                <label>问题类型</label>
+                            </div>
+                            <div nz-form-control class="flex-1">
+                                <nz-select name="questionsType" [nzPlaceHolder]="'请选择问题类型'" [(ngModel)]="searchType"
+                                    [nzShowSearch]="true" nzSize="large">
+                                    <nz-option *ngFor="let i of questionsType" [nzLabel]="i.text" [nzValue]="i.value">
+                                    </nz-option>
+                                </nz-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-col [nzSpan]="8" style="float: right;" [class.text-right]="'true'">
+                        <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading"
+                            [nzSize]="'large'">查询</button>
+                        <button nz-button type="reset" (click)="refreshData(true)" [nzSize]="'large'"
+                            class="mx-sm">重置</button>
+                        <button nz-button type="button" (click)="create()" [nzType]="'primary'" [nzSize]="'large'">
+                            <i class="anticon anticon-plus"></i>
+                            <span>新建</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <nz-table #nzTable1 [nzAjaxData]="questions" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex"
+                [(nzPageSize)]="query.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true"
+                (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
+                <thead nz-thead>
+                    <tr>
+                        <th nz-th>
+                            <span>问题编号</span>
+                        </th>
+                        <th nz-th>
+                            <span>问题类型</span>
+                        </th>
+                        <th nz-th>
+                            <span>问题描述</span>
+                        </th>
+                        <th nz-th>
+                            <span>操作</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody nz-tbody>
+                    <tr nz-tbody-tr *ngFor="let item of nzTable1.data">
+                        <td nz-td>{{item.no}}</td>
+                        <td nz-td>{{item.typeName}}</td>
+                        <td nz-td>{{item.question}}</td>
+                        <td nz-td>
+                            <a (click)="detail(item.id)">查看详情</a>
+                            <span nz-table-divider></span>
+                            <a (click)="delete(item)">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </nz-card>
+    </nz-tab>
+    <nz-tab>
+            <ng-template #nzTabHeading>
+                问卷调查
+            </ng-template>
+            <nz-card [nzBordered]="false">
+                <form nz-form (ngSubmit)="refreshQuestionRecordData(false,true)" [nzLayout]="'inline'">
+                    <div nz-row [nzGutter]="24">
+                        <div nz-col [nzSpan]="8" class="mb-md">
+                            <div nz-form-item class="d-flex">
+                                <div nz-form-label>
+                                    <label>季度</label>
+                                </div>
+                                <div nz-form-control class="flex-1">
+                                    <nz-select name="quarterType" [nzPlaceHolder]="'请选择问卷查询季度'" [(ngModel)]="searchQuestionRecordType"
+                                        [nzShowSearch]="true" nzSize="large">
+                                        <nz-option *ngFor="let i of quarterType" [nzLabel]="i.text" [nzValue]="i.value">
+                                        </nz-option>
+                                    </nz-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div nz-col [nzSpan]="8" style="float: right;" [class.text-right]="'true'">
+                            <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading"
+                                [nzSize]="'large'">查询</button>
+                            <button nz-button type="reset" (click)="refreshQuestionRecordData(true)" [nzSize]="'large'"
+                                class="mx-sm">重置</button>
+                            <button nz-button type="button" (click)="createQuestionRecord()" [nzType]="'primary'" [nzSize]="'large'">
+                                <i class="anticon anticon-plus"></i>
+                                <span>新建</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <nz-table #nzTable [nzAjaxData]="questionRecords" [nzTotal]="queryQuestionRecord.total" [(nzPageIndex)]="queryQuestionRecord.pageIndex"
+                    [(nzPageSize)]="queryQuestionRecord.pageSize" [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true"
+                    (nzPageIndexChange)="refreshQuestionRecordData()" (nzPageSizeChange)="refreshQuestionRecordData()">
+                    <thead nz-thead>
+                        <tr>
+                            <th nz-th>
+                                <span>标题</span>
+                            </th>
+                            <th nz-th>
+                                <span>季度</span>
+                            </th>
+                            <th nz-th>
+                                    <span>状态</span>
+                                </th>
+                            <th nz-th>
+                                <span>操作</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody nz-tbody>
+                        <tr nz-tbody-tr *ngFor="let item of nzTable.data">
+                            <td nz-td>{{item.title}}</td>
+                            <td nz-td>{{item.quarterString}}</td>
+                            <td nz-td>{{item.isPublish?'已发布':'草稿'}}</td>
+                            <td nz-td>
+                                <a (click)="detailQuestionRecord(item.id)">查看详情</a>
+                                <span *ngIf="!item.isPublish" nz-table-divider></span>
+                                <a *ngIf="!item.isPublish" (click)="deleteQuestionRecord(item)">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </nz-card>
+        </nz-tab>
+</nz-tabset>
+<!-- <edit-questionnaire-modal #editQuestionnaireModal (modalSave)="refreshData()"></edit-questionnaire-modal> -->

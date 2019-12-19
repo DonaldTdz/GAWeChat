@@ -1,0 +1,14 @@
+<Page [ngClass]="'DemandForecast'" [title]="'需求预测'" [showTitle]="false" [spacing]="false">
+    <div class="weui-cells__title">需求预测记录</div>
+    <div class="weui-cells">
+        <div *ngFor="let item of demandList" class="weui-cell weui-cell_access" (click)="goDetail(item.id,item.status)">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle; font-size: 14px;">{{item.title}}</span>
+            </div>
+            <div class="weui-cell__ft">
+                查看记录
+            </div>
+        </div>
+        <weui-loadmore type="line" *ngIf="!demandList || demandList.length == 0"></weui-loadmore>
+    </div>
+</Page>

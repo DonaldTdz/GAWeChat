@@ -106,5 +106,6 @@ namespace HC.WeChat.Retailers
         Task<PagedResultDto<ShopReportData>> GetShopReportDataDetailAsync(GetShopReportDataInput input);
         Task<APIResultDto> ExportShopReportDataExcel(GetShopReportDataInput input);
         Task<APIResultDto> ExportShopReportDataByOrganizationExcel(GetShopReportDataInput input);
+        Task<List<EmpRetailerList>> GetWXEmpRetailerListByIdAsync(string openId);
     }
 }

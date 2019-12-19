@@ -83,4 +83,10 @@ export class WechatUserService {
       return WechatUser.fromJS(data.result);
     });
   }
+
+  getEmpRetailerList(openId: string): Observable<any> {
+    return this.http.get('/api/services/app/Retailer/GetWXEmpRetailerListByIdAsync?openId=' + openId).map(data => {
+      return data.result;
+    });
+  }
 }

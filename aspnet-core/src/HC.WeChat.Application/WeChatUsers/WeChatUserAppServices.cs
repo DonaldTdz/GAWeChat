@@ -1323,6 +1323,26 @@ namespace HC.WeChat.WeChatUsers
             var userInfo = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
             return userInfo.MapTo<WeChatUserListDto>();
         }
+
+        /// <summary>
+        /// 判断是否是零售客户
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<bool> GetIsRetailerByIdAsync(string openId)
+        {
+            var userType = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserType).FirstOrDefaultAsync();
+            if(userType == UserTypeEnum.零售客户)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
 

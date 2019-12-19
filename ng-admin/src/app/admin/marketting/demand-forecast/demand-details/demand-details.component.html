@@ -1,0 +1,56 @@
+<nz-card [nzBordered]="false" nzTitle="{{cardTitle}}">
+    <form nz-form [formGroup]="form" id="frm_create_role">
+        <div nz-row>
+            <div nz-col [nzSpan]="16">
+                <div nz-form-item nz-row style="margin-bottom: 0px;">
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label for="status" nz-form-item-required>状态</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" style="color: rgb(247, 98, 158);" nzHasFeedback>
+                        {{demandForecast.isPublish==true?"已发布":"草稿"}}
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label for="title" nz-form-item-required>预测标题</label>
+                    </div>
+                    <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('title')">
+                        <nz-input formControlName="title" [(ngModel)]="demandForecast.title" [nzId]="'title'">
+                        </nz-input>
+                        <div nz-form-explain
+                            *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('maxlength')">
+                            字符长度小于等于100</div>
+                        <div nz-form-explain
+                            *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">请输入预测标题
+                        </div>
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSm]="4">
+                        <label for="month" nz-form-item-required>预测时间</label>
+                    </div>
+                    <div nz-form-control nz-col [nzValidateStatus]="getFormControl('month')">
+                        <nz-datepicker formControlName="month" [(ngModel)]="demandForecast.month"
+                            [nzPlaceHolder]="'请选择月份'" [nzFormat]="'YYYY-MM'" [nzMode]="'month'"></nz-datepicker>
+                        <div nz-form-explain *ngIf="getFormControl('month').hasError('required')">
+                            请选择预测时间</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <demand-list #itemList></demand-list>
+    <footer-toolbar errorCollect>
+        <button nz-button [nzType]="'default'" (click)="return()" [nzSize]="'large'">
+            返回
+        </button>
+        <button nz-button *ngIf="demandForecast.id &&!demandForecast.isPublish" [nzType]="'primary'" (click)="push()"
+            [nzSize]="'large'" [nzLoading]="loading" [disabled]="!form.valid">
+            发布
+        </button>
+        <button nz-button *ngIf="!demandForecast.isPublish" [nzType]="'primary'" (click)="save()" [nzSize]="'large'"
+            [nzLoading]="loading" [disabled]="!form.valid">
+            保存
+        </button>
+    </footer-toolbar>
+</nz-card>

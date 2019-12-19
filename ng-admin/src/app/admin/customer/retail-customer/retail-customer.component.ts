@@ -76,19 +76,24 @@ export class RetailCustomerComponent extends AppComponentBase implements OnInit 
         arry.push(Parameter.fromJS({ key: 'Status', value: this.search.isAction === 0 ? null : this.search.isAction }));
         return arry;
     }
-    editRetail(retail: RetailCustomer) {
-        this.router.navigate(['admin/customer/retail-detail', retail.id])
+    editRetail(id: string) {
+        this.router.navigate(['admin/customer/retail-detail', id]);
     }
+
+    goStatistics(id: string) {
+        this.router.navigate(['admin/customer/retail-statistics', id]);
+    }
+
     /**
      * 删除零售户
      */
-    delete(retail: RetailCustomer, TplContent) {
+    delete(id: string, TplContent) {
         this.modal.confirm({
             content: TplContent,
             cancelText: '否',
             okText: '是',
             onOk: () => {
-                this.retailService.delete(retail.id).subscribe(() => {
+                this.retailService.delete(id).subscribe(() => {
                     this.notify.info(this.l('删除成功！'));
                     this.refreshData();
                 });
