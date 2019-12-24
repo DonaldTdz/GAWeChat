@@ -48,14 +48,5 @@ namespace HC.WeChat.LotteryDetails.DomainService
 		{
 			throw new NotImplementedException();
 		}
-
-		// TODO:编写领域业务代码
-
-
-
-		 
-		  
-		 
-
 	}
 }

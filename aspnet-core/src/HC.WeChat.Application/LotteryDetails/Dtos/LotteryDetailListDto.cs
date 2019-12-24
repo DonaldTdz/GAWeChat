@@ -8,7 +8,7 @@ using HC.WeChat.LotteryDetails;
 
 namespace HC.WeChat.LotteryDetails.Dtos
 {
-    public class LotteryDetailListDto : AuditedEntityDto<Guid>,IHasCreationTime 
+    public class LotteryDetailListDto : EntityDto<Guid>,IHasCreationTime 
     {
 
         
@@ -20,11 +20,11 @@ namespace HC.WeChat.LotteryDetails.Dtos
 
 
 
-		/// <summary>
-		/// OpenId
-		/// </summary>
-		[Required(ErrorMessage="OpenId不能为空")]
-		public string OpenId { get; set; }
+        /// <summary>
+        /// UserId
+        /// </summary>
+        [Required(ErrorMessage="OpenId不能为空")]
+		public Guid UserId { get; set; }
 
 
 
@@ -35,11 +35,16 @@ namespace HC.WeChat.LotteryDetails.Dtos
 		public bool IsWin { get; set; }
 
 
+        /// <summary>
+        /// 是否允许中奖
+        /// </summary>
+        [Required]
+        public bool IsCanWin { get; set; }
 
-		/// <summary>
-		/// PrizeId
-		/// </summary>
-		public Guid? PrizeId { get; set; }
+        /// <summary>
+        /// PrizeId
+        /// </summary>
+        public Guid? PrizeId { get; set; }
 
 
 
@@ -62,8 +67,6 @@ namespace HC.WeChat.LotteryDetails.Dtos
 		/// </summary>
 		public DateTime? LotteryTime { get; set; }
 
-
-
-
+        public DateTime CreationTime { get; set; }
     }
 }

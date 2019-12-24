@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,14 +7,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HC.WeChat.LuckySigns
 {
     [Table("LuckySigns")]
-    public class LuckySign : AuditedEntity<Guid>, IHasCreationTime
+    public class LuckySign : Entity<Guid>, IHasCreationTime
     {
 
         /// <summary>
         /// OpenId
         /// </summary>
         [Required]
-        [StringLength(50)]
-        public virtual string OpenId { get; set; }
+        public virtual Guid UserId { get; set; }
+        public virtual DateTime CreationTime { get; set; }
     }
 }

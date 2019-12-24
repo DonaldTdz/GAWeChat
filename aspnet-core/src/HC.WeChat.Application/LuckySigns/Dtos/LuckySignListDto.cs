@@ -8,18 +8,16 @@ using HC.WeChat.LuckySigns;
 
 namespace HC.WeChat.LuckySigns.Dtos
 {
-    public class LuckySignListDto : AuditedEntityDto<Guid>,IHasCreationTime 
+    public class LuckySignListDto : EntityDto<Guid>,IHasCreationTime 
     {
 
         
 		/// <summary>
 		/// OpenId
 		/// </summary>
-		[Required(ErrorMessage="OpenId不能为空")]
-		public string OpenId { get; set; }
+		[Required(ErrorMessage= "UserId不能为空")]
+		public Guid UserId { get; set; }
 
-
-
-
+        public DateTime CreationTime { get; set; }
     }
 }

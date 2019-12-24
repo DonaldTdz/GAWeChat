@@ -1,21 +1,14 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.LotteryDetails;
 
 namespace  HC.WeChat.LotteryDetails.Dtos
 {
-    public class LotteryDetailEditDto
+    public class LotteryDetailEditDto : EntityDto<Guid?>, IHasCreationTime
     {
-
-        /// <summary>
-        /// Id
-        /// </summary>
-        public Guid? Id { get; set; }         
-
-
-        
 		/// <summary>
 		/// LuckyDrawId
 		/// </summary>
@@ -24,18 +17,23 @@ namespace  HC.WeChat.LotteryDetails.Dtos
 
 
 
-		/// <summary>
-		/// OpenId
-		/// </summary>
-		[Required(ErrorMessage="OpenId不能为空")]
-		public string OpenId { get; set; }
+        /// <summary>
+        /// UserId
+        /// </summary>
+        [Required(ErrorMessage="OpenId不能为空")]
+		public Guid UserId { get; set; }
 
 
+        /// <summary>
+        /// 是否允许中奖
+        /// </summary>
+        [Required]
+        public bool IsCanWin { get; set; }
 
-		/// <summary>
-		/// IsWin
-		/// </summary>
-		[Required(ErrorMessage="IsWin不能为空")]
+        /// <summary>
+        /// IsWin
+        /// </summary>
+        [Required(ErrorMessage="IsWin不能为空")]
 		public bool IsWin { get; set; }
 
 
@@ -66,8 +64,6 @@ namespace  HC.WeChat.LotteryDetails.Dtos
 		/// </summary>
 		public DateTime? LotteryTime { get; set; }
 
-
-
-
+        public DateTime CreationTime { get; set; }
     }
 }

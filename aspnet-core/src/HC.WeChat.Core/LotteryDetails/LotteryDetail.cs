@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HC.WeChat.LotteryDetails
 {
     [Table("LotteryDetails")]
-    public class LotteryDetail : AuditedEntity<Guid>, IHasCreationTime
+    public class LotteryDetail : Entity<Guid>, IHasCreationTime
     {
 
         /// <summary>
@@ -19,11 +20,16 @@ namespace HC.WeChat.LotteryDetails
         /// OpenId
         /// </summary>
         [Required]
-        [StringLength(50)]
-        public virtual string OpenId { get; set; }
+        public virtual Guid UserId { get; set; }
 
         /// <summary>
         /// 是否允许中奖
+        /// </summary>
+        [Required]
+        public virtual bool IsCanWin { get; set; }
+
+        /// <summary>
+        /// 是否中奖
         /// </summary>
         [Required]
         public virtual bool IsWin { get; set; }
@@ -48,5 +54,7 @@ namespace HC.WeChat.LotteryDetails
         /// 抽奖时间
         /// </summary>
         public virtual DateTime? LotteryTime { get; set; }
+
+        public virtual DateTime CreationTime { get; set; }
     }
 }
