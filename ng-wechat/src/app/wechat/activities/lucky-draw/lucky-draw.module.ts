@@ -3,18 +3,14 @@ import { Routes, RouterModule } from '@angular/router';
 import { AngularSplitModule } from 'angular-split';
 import { SharedModule } from '../../../shared/shared.module';
 import { ComponentsModule } from '../../components/components.module';
+import { LuckyDrawComponent } from './lucky-draw.component';
+import { LotteryService } from '../../../services';
 
-import { LotteryComponent } from './lottery.component';
-
-// region: components
-
-const COMPONENTS = [LotteryComponent];
+const COMPONENTS = [LuckyDrawComponent];
 
 const routes: Routes = [
-    { path: 'lottery', component: LotteryComponent },
+    { path: 'lucky-draw', component: LuckyDrawComponent },
 ];
-// endregion
-
 @NgModule({
     imports: [
         SharedModule,
@@ -26,8 +22,8 @@ const routes: Routes = [
         ...COMPONENTS
     ],
     providers: [
+        LotteryService
     ]
 })
-export class LotteryModule {
-
+export class LuckyDrawModule {
 }

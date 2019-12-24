@@ -2,7 +2,6 @@
 
 using AutoMapper;
 using HC.WeChat.Favorites;
-using HC.WeChat.Favorites;
 
 namespace HC.WeChat.Favorites.Dtos.CustomMapper
 {

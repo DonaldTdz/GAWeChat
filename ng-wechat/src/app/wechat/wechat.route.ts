@@ -22,13 +22,13 @@ export const routes = [
     { path: 'shop-employees', loadChildren: './personal-center/shop-employee/shop-employee.module#ShopEmployeeModule' },
     //{ path: 'imgs', loadChildren: './personal-center/img-cropper/img-cropper.module#ImgCropperModule' },
     // Not found
-    { path: 'lotteries', loadChildren: './activities/lottery/lottery.module#LotteryModule' },
+    // { path: 'lotteries', loadChildren: './activities/lottery/lottery.module#LotteryModule' },
     { path: 'exhibitions', loadChildren: './activities/exhibition/exhibition.module#ExhibitionModule' },
     { path: 'favorites', loadChildren: './personal-center/favorite/favorite.module#FavoriteModule' },
     { path: 'questionnaires', loadChildren: './activities/questionnaire/questionnaire.module#QuestionnaireModule' },
     { path: 'demand-forecasts', loadChildren: './activities/demand-forecast/demand-forecast.module#DemandForecastModule' },
     { path: 'emp-retailers', loadChildren: './personal-center/retailer-manage/retailer-manage.module#RetailerManageModule' },
+    { path: 'lotterys', loadChildren: './activities/lucky-draw/lucky-draw.module#LuckyDrawModule' },
     { path: '**', redirectTo: '' }
-
 ];
 

@@ -1,24 +1,56 @@
-﻿using System;
+
+
+using System;
 using Abp.Application.Services.Dto;
-using HC.WeChat.LuckyDraws.Dtos.LTMAutoMapper;
+using Abp.Domain.Entities.Auditing;
+using System.ComponentModel.DataAnnotations;
 using HC.WeChat.LuckyDraws;
-using System.Collections.Generic;
-using HC.WeChat.WechatEnums;
 
 namespace HC.WeChat.LuckyDraws.Dtos
 {
-    public class LuckyDrawListDto : AuditedEntityDto<Guid>
+    public class LuckyDrawListDto : AuditedEntityDto<Guid>,IHasCreationTime 
     {
-        ////BCC/ BEGIN CUSTOM CODE SECTION
-        ////ECC/ END CUSTOM CODE SECTION
-        public string Name { get; set; }
-        public DateTime? BeginTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public LotteryType Type { get; set; }
-        public string Content { get; set; }
-        public string Desc { get; set; }
-        public int? Consume { get; set; }
-        public int? Frequency { get; set; }
-        public int? TenantId { get; set; }
+
+        
+		/// <summary>
+		/// Name
+		/// </summary>
+		[Required(ErrorMessage="Name不能为空")]
+		public string Name { get; set; }
+
+
+
+		/// <summary>
+		/// BeginTime
+		/// </summary>
+		[Required(ErrorMessage="BeginTime不能为空")]
+		public DateTime BeginTime { get; set; }
+
+
+
+		/// <summary>
+		/// EndTime
+		/// </summary>
+		[Required(ErrorMessage="EndTime不能为空")]
+		public DateTime EndTime { get; set; }
+
+
+
+		/// <summary>
+		/// IsPubish
+		/// </summary>
+		[Required(ErrorMessage="IsPubish不能为空")]
+		public bool IsPubish { get; set; }
+
+
+
+		/// <summary>
+		/// PubishTime
+		/// </summary>
+		public DateTime? PubishTime { get; set; }
+
+
+
+
     }
 }

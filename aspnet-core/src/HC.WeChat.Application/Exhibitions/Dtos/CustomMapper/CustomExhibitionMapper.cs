@@ -1,6 +1,5 @@
 using AutoMapper;
 using HC.WeChat.Exhibitions;
-using HC.WeChat.Exhibitions;
 
 namespace HC.WeChat.Exhibitions.Dtos
 {

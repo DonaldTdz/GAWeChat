@@ -1,17 +1,12 @@
-﻿using Abp.Runtime.Validation;
+
+using Abp.Runtime.Validation;
 using HC.WeChat.Dto;
 using HC.WeChat.Prizes;
 
 namespace HC.WeChat.Prizes.Dtos
 {
-    public class GetPrizesInput : PagedAndSortedInputDto, IShouldNormalize
+    public class GetPrizesInput : PagedSortedAndFilteredInputDto, IShouldNormalize
     {
-        ////BCC/ BEGIN CUSTOM CODE SECTION
-        ////ECC/ END CUSTOM CODE SECTION
-        /// <summary>
-        /// 模糊搜索使用的关键字
-        /// </summary>
-        public string Filter { get; set; }
 
         /// <summary>
         /// 正常化排序使用

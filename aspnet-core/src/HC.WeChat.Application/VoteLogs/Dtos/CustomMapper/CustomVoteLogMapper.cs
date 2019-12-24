@@ -1,6 +1,5 @@
 using AutoMapper;
 using HC.WeChat.VoteLogs;
-using HC.WeChat.VoteLogs;
 
 namespace HC.WeChat.VoteLogs.Dtos
 {

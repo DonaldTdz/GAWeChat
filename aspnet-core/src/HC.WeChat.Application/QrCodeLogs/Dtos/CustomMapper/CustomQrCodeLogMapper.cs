@@ -1,6 +1,5 @@
 using AutoMapper;
 using HC.WeChat.QrCodeLogs;
-using HC.WeChat.QrCodeLogs;
 
 namespace HC.WeChat.QrCodeLogs.Dtos
 {

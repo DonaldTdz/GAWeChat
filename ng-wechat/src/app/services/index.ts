@@ -14,3 +14,4 @@ export * from './personal-center/shopevaluation.service';
 export * from './personal-center/favorite.service';
 export * from './article/questionnaire.service';
 export * from './article/demand-forecast.service';
+export * from './article/lottery.service';

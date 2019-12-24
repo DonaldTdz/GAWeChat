@@ -1,17 +1,12 @@
-﻿using Abp.Runtime.Validation;
+
+using Abp.Runtime.Validation;
 using HC.WeChat.Dto;
 using HC.WeChat.LuckyDraws;
 
 namespace HC.WeChat.LuckyDraws.Dtos
 {
-    public class GetLuckyDrawsInput : PagedAndSortedInputDto, IShouldNormalize
+    public class GetLuckyDrawsInput : PagedSortedAndFilteredInputDto, IShouldNormalize
     {
-        ////BCC/ BEGIN CUSTOM CODE SECTION
-        ////ECC/ END CUSTOM CODE SECTION
-        /// <summary>
-        /// 模糊搜索使用的关键字
-        /// </summary>
-        public string Filter { get; set; }
 
         /// <summary>
         /// 正常化排序使用

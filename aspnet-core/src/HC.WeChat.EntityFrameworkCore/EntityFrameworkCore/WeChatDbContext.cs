@@ -52,6 +52,8 @@ using HC.WeChat.ForecastRecords;
 using HC.WeChat.Questionnaires;
 using HC.WeChat.QuestionOptions;
 using HC.WeChat.QuestionRecords;
+using HC.WeChat.LotteryDetails;
+using HC.WeChat.LuckySigns;
 
 namespace HC.WeChat.EntityFrameworkCore
 {
@@ -132,9 +134,6 @@ namespace HC.WeChat.EntityFrameworkCore
 
         public virtual DbSet<LevelLog> LevelLogs { get; set; }
 
-        public virtual DbSet<LuckyDraw> LuckyDraws { get; set; }
-
-        public virtual DbSet<Prize> Prizes { get; set; }
 
         public virtual DbSet<UserAddress> UserAddresss { get; set; }
 
@@ -162,5 +161,11 @@ namespace HC.WeChat.EntityFrameworkCore
         public virtual DbSet<QuestionOption> QuestionOptions { get; set; }
 
         public virtual DbSet<QuestionRecord> QuestionRecords { get; set; }
+
+
+        public virtual DbSet<LuckyDraw> LuckyDraws { get; set; }
+        public virtual DbSet<Prize> Prizes { get; set; }
+        public virtual DbSet<LotteryDetail> LotteryDetails { get; set; }
+        public virtual DbSet<LuckySign> LuckySigns { get; set; }
     }
 }
