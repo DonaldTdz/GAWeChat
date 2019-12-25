@@ -1,0 +1,45 @@
+<Page [ngClass]="'article'" [title]="'广安烟草'" [subTitle]="'内部抽奖'" [spacing]="false">
+  <article class="weui-article">
+        <p>
+          <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1577188059415&di=a771836d1c21a85fb61ae41e0ae0b381&imgtype=jpg&src=http%3A%2F%2Fimg2.imgtn.bdimg.com%2Fit%2Fu%3D442630917%2C3806063700%26fm%3D214%26gp%3D0.jpg" alt="" />
+        </p>
+        <div class="weui-cells__title">奖品说明</div>
+        <div class="weui-cells">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>奖品名称</p>
+            </div>
+            <div class="weui-cell__ft">Ipad一只</div>
+          </div>
+
+
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>奖品等级</p>
+            </div>
+            <div class="weui-cell__ft">三等奖</div>
+          </div>
+
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>截至时间</p>
+            </div>
+            <div class="weui-cell__ft">2019-12-20 18:00</div>
+          </div>
+        </div>
+        
+        <div class="button-sp-area">
+          <button weui-button [weui-loading]="loading" (click)="loading = !loading">加入抽奖</button>
+          <button weui-button weui-type="default" (click)="show = true">分享给其他人</button>
+        </div>
+        <div class="weui-cells__title">
+          <section>
+          <h3>抽奖说明</h3>
+          <p>
+          本次抽奖仅供广安烟草内部人员使用。
+          </p>
+        </section>
+        </div>
+  </article>
+  <weui-gallery [imgs]="'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1577784545&di=31ed8eaba7d124887506184ac6bcec22&imgtype=jpg&er=1&src=http%3A%2F%2Fimg.mp.itc.cn%2Fq_mini%2Cc_zoom%2Cw_640%2Fupload%2F20161219%2Fa995d33bd30542529920537ac5df1afa_th.jpg'" [(show)]="show"></weui-gallery>
+</Page>

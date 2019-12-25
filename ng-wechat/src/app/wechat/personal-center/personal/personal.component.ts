@@ -13,6 +13,7 @@ import { PurchaserecordService, WechatUserService } from '../../../services';
 export class PersonalComponent extends AppComponentBase implements OnInit {
 
     user: WechatUser;
+    islotteryadmin:boolean=true;
     isShowRetailer: boolean = false;
     accountTitle: string = '我的台账';
     countNotEvaluation: number;
@@ -106,5 +107,10 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
 
     goEmpRetailer() {
         this.router.navigate(['/emp-retailers/emp-retailer']);
+    }
+
+    //创建新的抽奖
+    creatNewLottery(){
+        this.router.navigate(['/lottery-draws/lottery-draw']);
     }
 } 

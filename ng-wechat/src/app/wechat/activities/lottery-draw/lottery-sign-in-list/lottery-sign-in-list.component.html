@@ -1,0 +1,18 @@
+<Page [ngClass]="'article'" [title]="'广安烟草'" [subTitle]="'签到情况查看'" [spacing]="false">
+
+  <weui-infiniteloader (loadmore)="onLoadMore($event)">
+    <article class="weui-article">
+      <h1>部门列表</h1>
+      <div class="weui-cells">
+      <div class="weui-cells__title">签到人数：411/420</div>
+
+    </div>
+      <div class="weui-cells">
+        <a *ngFor="let i of items" class="weui-cell weui-cell_access" href="javascript:;">
+          <div class="weui-cell__bd">{{ i }}</div>
+          <div class="weui-cell__ft"></div>
+        </a>
+      </div>
+    </article>
+  </weui-infiniteloader>
+</Page>
