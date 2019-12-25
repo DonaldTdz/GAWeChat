@@ -85,6 +85,19 @@
             <div class="weui-cell__ft" style="font-size: 13px;"></div>
         </div>
     </div>
+         <!-- 是否是抽奖管理员 -->
+       <div class="weui-cells__title" *ngIf="islotteryadmin">抽奖活动</div>
+       <div class="weui-cells" *ngIf="islotteryadmin">
+   
+        <div class="weui-cell weui-cell_access" (click)="creatNewLottery()">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">创建抽奖活动</span>
+            </div>
+            <div class="weui-cell__ft">
+            </div>
+        </div>
+       </div>
+    
     <div class="weui-cells">
         <div class="weui-cell weui-cell_access" (click)="goFeedBack()">
             <div class="weui-cell__bd">
