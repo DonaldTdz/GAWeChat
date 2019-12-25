@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { InfiniteLoaderComponent } from 'ngx-weui';
+import { LotteryDrawService } from '../../../../services/lottery-draw/lottery-draw.service';
 
 @Component({
   selector: 'lottery-sign-in-list',
@@ -8,7 +8,7 @@ import { InfiniteLoaderComponent } from 'ngx-weui';
 })
 export class LotterySignInListComponent implements OnInit {
 
-  constructor() { }
+  constructor(private lotterydrawService: LotteryDrawService) { }
 
   ngOnInit() {
     this.items.push('开发部');
@@ -25,7 +25,13 @@ export class LotterySignInListComponent implements OnInit {
   onSelect() {
     this.time = new Date().getTime();
   }
-  items: any[] = Array()
+  items: any[] = Array();
+
+  loadlist(){
+    this.lotterydrawService.GetWXLuckyDrawListAsyn().subscribe(result => {
+      console.log(result);
+    });
+  }
 
 
   

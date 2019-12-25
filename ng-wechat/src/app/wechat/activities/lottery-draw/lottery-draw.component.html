@@ -1,5 +1,5 @@
 <Page [ngClass]="'input'" [title]="'广安烟草'" [subTitle]="'创建新抽奖'" [spacing]="false">
-  <form #f="ngForm" (ngSubmit)="onSave()">
+  <form #f="ngForm">
     <div class="weui-cells weui-cells_form">
 
       <div class="weui-cells__tips">填写活动名称</div>
@@ -9,10 +9,10 @@
           <input
             class="weui-input"
             type="text"
-            [(ngModel)]="input.price_name"
-            name="input.price_name"
+            [(ngModel)]="input.name"
+            name="input.name"
             placeholder="请输入活动名称"
-            weui-input="prize_name"
+            weui-input="name"
             weui-required
           />
         </div>
@@ -22,13 +22,13 @@
       <div class="weui-cell">
         <div class="weui-cell__hd"><label for="" class="weui-label">开始时间</label></div>
         <div class="weui-cell__bd">
-          <input class="weui-input" type="datetime-local" [(ngModel)]="res.time" name="time" value="" placeholder="" />
+          <input class="weui-input" type="datetime-local" [(ngModel)]="input.beginTime" name="beginTime" value="" placeholder="" />
         </div>
       </div>
       <div class="weui-cell">
         <div class="weui-cell__hd"><label for="" class="weui-label">结束日期</label></div>
         <div class="weui-cell__bd">
-          <input class="weui-input" type="datetime-local" [(ngModel)]="res.endtime" name="time" value="" placeholder="" />
+          <input class="weui-input" type="datetime-local" [(ngModel)]="input.endTime" name="endTime" value="" placeholder="" />
         </div>
       </div>
     </div>
@@ -37,33 +37,61 @@
       <div class="weui-cell">
       <div class="weui-cell">
         <div class="weui-cell__hd"><label class="weui-label">奖品名称</label></div>
+      </div>
+      <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
+      </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">奖品等级</label>
+          </div>
+      </div>
+      </div>
+
+      <div class="weui-cell" *ngFor="let i of items">
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">{{i.name}}</label></div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">{{i.num}}</label></div>
+        </div>
+          <div class="weui-cell">
+            <div class="weui-cell__hd">
+              <label class="weui-label">{{i.type}}</label>
+            </div>
+        </div>
+        </div>
+
+        <div class="weui-cell" *ngIf="iSPriceButtonShow">
+        <!-- <div class="weui-cell__hd">填写奖品列表</div>    -->
+        <div class="weui-cell__hd"><label class="weui-label">奖品名称</label></div>
         <div class="weui-cell__bd">
           <input
             class="weui-input"
             type="text"
-            [(ngModel)]="input.price_name"
-            name="input.price_name"
+            [(ngModel)]="name"
+            name="name"
             placeholder="请输入奖品名称"
-            weui-input="prize_name"
+            weui-input="name"
             weui-required
           />
         </div>
-      </div>
-      <div class="weui-cell">
+        </div>
+      <div class="weui-cell" *ngIf="iSPriceButtonShow">
         <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
         <div class="weui-cell__bd">
           <input
             class="weui-input"
             type="number"
-            [(ngModel)]="input.price_count"
-            name="input.price_count"
+            [(ngModel)]="num"
+            name="num"
             placeholder="请输入奖品数量"
-            weui-input="price_count"
+            weui-input="num"
             weui-required
           />
         </div>
       </div>
-        <div class="weui-cell">
+        <div class="weui-cell" *ngIf="iSPriceButtonShow">
           <div class="weui-cell__hd">
             <label class="weui-label">奖品等级</label>
           </div>
@@ -72,12 +100,18 @@
               placeholder="选择奖品等级"
               required
               [groups]="itemGroup"
-              [(ngModel)]="res.item"
-              name="item"
+              [(ngModel)]="type"
+              name="type"
             ></weui-picker>
           </div>
-      </div>
-      </div>
+     
+      <br>
+      <div class="button-sp-area" *ngIf="iSPriceButtonShow">
+        <button weui-button  (click)="savePrice()">保存奖品</button>
+    </div>
+  </div>
+
+
       <a
         (click)="addMore()"
         class="weui-cell weui-cell_link"
@@ -87,55 +121,19 @@
 
 
 
-    <!-- <div class="weui-cells weui-cells_form">
-      <div class="weui-cell">
-        <div class="weui-cell__bd">
-    <div class="weui-uploader">
-    <div class="weui-uploader__hd">
-      <p class="weui-uploader__title">图片上传</p>
-      <div class="weui-uploader__info">{{ uploader?.uploadedCount }}/1</div>
-    </div>
-    <div class="weui-uploader__bd">
-      <ul class="weui-uploader__files">
-        <li
-          class="weui-uploader__file"
-          *ngFor="let item of uploader.queue"
-          [weui-thumb]="item._file"
-          (click)="onGallery(item)"
-          [ngClass]="{ 'weui-uploader__file_status': item.isError }"
-        >
-          <div class="weui-uploader__file-content" *ngIf="item.isUploading">{{ item.progress }}%</div>
-          <div class="weui-uploader__file-content" *ngIf="item.isError">
-            <i class="weui-icon-warn"></i>
-          </div>
-        </li>
-      </ul>
-      <div class="weui-uploader__input-box">
-        <input
-          class="weui-uploader__input"
-          type="file"
-          accept="image/*"
-          multiple
-          [weui-uploader-file]="uploader"
-        />
-      </div>
-    </div>
-    </div>
-  </div>
-</div>
-</div> -->
-
     <div class="button-sp-area">
       <button
         class="weui-btn weui-btn_primary"
         [disabled]=""
         [ngClass]="default"
-
+        (click)="publish()"
       >
         发布
       </button>
-      <button weui-button [weui-plain]="true">保存</button>
+      <button weui-button [weui-plain]="true" (click)="onSave()">保存</button>
     </div>
   </form>
-  <!-- {{ res | json }} -->
+  <!--将对话框组件放在底部-->
+
+  
 </Page>

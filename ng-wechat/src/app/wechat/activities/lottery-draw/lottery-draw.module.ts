@@ -11,6 +11,8 @@ import { LotterySignInListComponent } from './lottery-sign-in-list/lottery-sign-
 import { LotterySignInDetailComponent } from './lottery-sign-in-detail/lottery-sign-in-detail.component';
 import { LotteryPriceAddComponent } from './lottery-price-add/lottery-price-add.component';
 import { LotteryDrawComponent } from './lottery-draw.component';
+import { LotteryActivitiesListComponent } from './lottery-activities-list/lottery-activities-list.component';
+import { LotteryDrawService } from '../../../services/lottery-draw/lottery-draw.service';
 
 const COMPONENTS = [        LotterySignInDetailComponent,
     LotterySignInComponent,
@@ -19,12 +21,19 @@ const COMPONENTS = [        LotterySignInDetailComponent,
     LotteryDetailComponent,
     LotteryListComponent,
     LotteryPriceAddComponent,
-    LotteryDrawComponent,];
+    LotteryDrawComponent,
+    LotteryActivitiesListComponent,
+];
 
 const routes: Routes = [
     { path: '', redirectTo: 'lottery-draw' },
     { path: 'lottery-price-add', component: LotteryPriceAddComponent },
-    { path: 'lottery-draw', component: LotteryDrawComponent }
+    { path: 'lottery-draw', component: LotteryDrawComponent },
+    { path: 'lottery-list', component: LotteryListComponent },
+    { path: 'lottery-activities-list', component: LotteryActivitiesListComponent },
+    { path: 'lottery-sign-in-list', component: LotterySignInListComponent },
+    { path: 'lottery-sign-in', component: LotterySignInComponent },
+    { path: 'lottery-join', component: LotteryJoinComponent }
 ];
 @NgModule({
     imports: [
@@ -40,6 +49,7 @@ const routes: Routes = [
 
     ],
     providers: [
+        LotteryDrawService
     ]
 })
 export class LotteryDrawModule { }

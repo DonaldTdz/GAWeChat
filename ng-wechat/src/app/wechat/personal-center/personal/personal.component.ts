@@ -113,4 +113,23 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
     creatNewLottery(){
         this.router.navigate(['/lottery-draws/lottery-draw']);
     }
+    //查看抽奖活动列表
+    showLotteryList(){
+        this.router.navigate(['/lottery-draws/lottery-activities-list']);
+    }
+
+    //查看签到部门页 admin
+    showSignInPeople(){
+
+    this.router.navigate(['/lottery-draws/lottery-sign-in-list']);
+    }
+    //去签到
+    gotoSigin(){
+        this.router.navigate(['/lottery-draws/lottery-sign-in']); 
+    }
+
+    //去抽奖
+    goToLuckyDraw(){
+        this.router.navigate(['/lottery-draws/lottery-list']); 
+    }
 } 

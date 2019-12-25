@@ -1,9 +1,11 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { timer } from 'rxjs/observable/timer';
 import { map } from 'rxjs/operators';
-import { Uploader } from 'ngx-weui';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { LotteryDrawService } from '../../../services/lottery-draw/lottery-draw.service';
+
+
 
 @Component({
   selector: 'lottery-draw',
@@ -11,71 +13,111 @@ import { Router } from '@angular/router';
   encapsulation: ViewEncapsulation.None,
 })
 export class LotteryDrawComponent implements OnInit {
-  res: any = {
-    cho2: true,
-    worldpost: '1',
-    contact: '1',
-    country: '1',
-    agree: true,
-  };
+  
 
   input:any={
-    price_name:"",
-    price_count:0,
+    name:"",
+    beginTime:Date,
+    endTime:Date
   };
 
-  uploader: Uploader = new Uploader({
-    url: './upload.php',
-    headers: [{ name: 'auth', value: 'test' }],
-    params: {
-      a: 1,
-      b: new Date(),
-      c: 'test',
-      d: 12.123,
-    },})
-  itemGroup: any = [
-    [
-      {
-        label: '一等奖',
-        value: 1,
-      },
-      {
-        label: '二等奖',
-        disabled: true,
-        value: 2,
-      },
-      {
-        label: '三等奖',
-        value: 3,
-      },
+    items: any[] = Array();
+
+    itemGroup: any = [
+      [
+        {
+          label: '一等奖',
+          value: 1,
+        },
+        {
+          label: '二等奖',
+          value: 2,
+        },
+        {
+          label: '三等奖',
+          value: 3,
+        },
+        {
+          label: '四等奖',
+          value: 4,
+        },
+        {
+          label: '安慰奖',
+          value: 5,
+        },
+        {
+          label: '参与奖',
+          value: 6,
+        },
+      ]
     ]
-  ]
 
-  radio: any[] = [{ id: 1, name: 'asdf1' }, { id: 2, name: 'asdf2' }];
-  checkbox: any[] = ['A', 'B'];
-
-  constructor(private router: Router,) { 
-    this.res.radio = this.radio[0];
-    this.res.checkbox = [this.checkbox[0]];
+  constructor(private router: Router, private actRouter: ActivatedRoute
+    , private lotterydrawService: LotteryDrawService
+    ) { 
   }
 
   ngOnInit() {
+    this.items.push({name:"姓名1",num:123,typeName:"一等奖",type:1});
   }
-  onAddCheckbox() {
-    // tslint:disable-next-line: binary-expression-operand-order
-    this.checkbox.push(String.fromCharCode(65 + this.checkbox.length));
-  }
+
 
   onSendCode(): Observable<boolean> {
     return timer(1000).pipe(map(() => true));
   }
+  
 
-  onSave() {
-    alert('请求数据：' + JSON.stringify(this.res));
+  iSPriceButtonShow:boolean=false;
+  type:number=0;
+  typeName:string="";
+  name:string="";
+  num:number=0;
+  //存储奖品
+  savePrice(){
+      if(this.type!==0&&this.name!==""&&this.num!==0){
+    this.items.push({name:this.name,num:this.num,type:this.type});
+  }
+  this.iSPriceButtonShow=false; 
   }
   //添加更多奖品
-  addMore(){
-    this.router.navigate(['lottery-draws/lottery-price-add']);
+  addMore(){   
+    this.iSPriceButtonShow=true;
+    this.type=0;
+    this.name="";
+    this.num=0;
+  }
+  //发布 --存储并公示
+  publish(){
+  
+    // this.submit(true);
+  }
+  loading:boolean;
+  //保存表单
+  onSave() {
+    this.submit(false);
+  }
+  submit(isPublish:boolean){
+
+    var param:any={};
+    console.log("进入点击")
+    if(this.input.Name!==""&&this.input.endTime!==null&&this.input.beginTime!==null){
+
+     param.name=this.input.name;
+     param.endTime=this.input.endTime;
+     param.beginTime=this.input.beginTime;
+     param.list=this.items;
+     param.isPublish=isPublish;
+     console.log(param)
+     this.lotterydrawService.WXLuckyDrawCreateAsyn(param).subscribe(result => {
+       console.log(result);
+
+
+       if(result["iSsuccess"]==1){
+        this.router.navigate(['/lottery-draw/lottery-activities-list']);
+      }
+     });
+
+   }
   }
 
 }
