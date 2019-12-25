@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.LotteryDetails.Dtos;
 using HC.WeChat.LotteryDetails;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.LotteryDetails
 {
@@ -72,11 +73,6 @@ namespace HC.WeChat.LotteryDetails
         Task BatchDelete(List<Guid> input);
 
 
-		/// <summary>
-        /// 导出LotteryDetail为excel表
-        /// </summary>
-        /// <returns></returns>
-		//Task<FileDto> GetToExcel();
-
+        Task<APIResultDto> GetCurLotteryDetailAsync(string openId, Guid luckyId);
     }
 }

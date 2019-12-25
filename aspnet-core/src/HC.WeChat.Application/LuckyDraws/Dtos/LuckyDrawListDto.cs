@@ -8,7 +8,7 @@ using HC.WeChat.LuckyDraws;
 
 namespace HC.WeChat.LuckyDraws.Dtos
 {
-    public class LuckyDrawListDto : AuditedEntityDto<Guid>,IHasCreationTime 
+    public class LuckyDrawListDto : EntityDto<Guid>,IHasCreationTime 
     {
 
         
@@ -40,17 +40,15 @@ namespace HC.WeChat.LuckyDraws.Dtos
 		/// IsPubish
 		/// </summary>
 		[Required(ErrorMessage="IsPubish不能为空")]
-		public bool IsPubish { get; set; }
+		public bool IsPublish { get; set; }
 
 
 
 		/// <summary>
 		/// PubishTime
 		/// </summary>
-		public DateTime? PubishTime { get; set; }
+		public DateTime? PublishTime { get; set; }
 
-
-
-
+        public DateTime CreationTime { get; set; }
     }
 }

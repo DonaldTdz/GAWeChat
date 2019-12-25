@@ -1,30 +1,23 @@
 
-using System;
-using System.Data;
-using System.Linq;
-using System.Linq.Dynamic;
-using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-
-using Abp.UI;
-using Abp.AutoMapper;
-using Abp.Extensions;
-using Abp.Authorization;
-using Abp.Domain.Repositories;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.AutoMapper;
+using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
-
-
-using HC.WeChat.LotteryDetails;
-using HC.WeChat.LotteryDetails.Dtos;
-using HC.WeChat.LotteryDetails.DomainService;
 using HC.WeChat.Dto;
-using HC.WeChat.LuckySigns;
 using HC.WeChat.Employees;
+using HC.WeChat.LotteryDetails.DomainService;
+using HC.WeChat.LotteryDetails.Dtos;
+using HC.WeChat.LuckyDraws;
+using HC.WeChat.LuckySigns;
 using HC.WeChat.Prizes;
+using HC.WeChat.WeChatUsers;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
 
 namespace HC.WeChat.LotteryDetails
 {
@@ -38,7 +31,8 @@ namespace HC.WeChat.LotteryDetails
         private readonly IRepository<LuckySign, Guid> _luckySignRepository;
         private readonly IRepository<Employee, Guid> _employeeRepository;
         private readonly IRepository<Prize, Guid> _prizeRepository;
-
+        private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
+        private readonly IRepository<LuckyDraw, Guid> _luckyDrawRepository;
         private readonly ILotteryDetailManager _entityManager;
 
         /// <summary>
@@ -50,6 +44,8 @@ namespace HC.WeChat.LotteryDetails
         , ILotteryDetailManager entityManager
         , IRepository<Employee, Guid> employeeRepository
         , IRepository<Prize, Guid> prizeRepository
+        , IRepository<WeChatUser, Guid> wechatuserRepository
+        , IRepository<LuckyDraw, Guid> luckyDrawRepository
         )
         {
             _entityRepository = entityRepository;
@@ -57,6 +53,8 @@ namespace HC.WeChat.LotteryDetails
             _luckySignRepository = luckySignRepository;
             _employeeRepository = employeeRepository;
             _prizeRepository = prizeRepository;
+            _wechatuserRepository = wechatuserRepository;
+            _luckyDrawRepository = luckyDrawRepository;
         }
 
 
@@ -65,7 +63,6 @@ namespace HC.WeChat.LotteryDetails
         ///</summary>
         /// <param name="input"></param>
         /// <returns></returns>
-
         public async Task<PagedResultDto<LotteryDetailListDto>> GetPaged(GetLotteryDetailsInput input)
         {
 
@@ -90,7 +87,6 @@ namespace HC.WeChat.LotteryDetails
         /// <summary>
         /// 通过指定id获取LotteryDetailListDto信息
         /// </summary>
-
         public async Task<LotteryDetailListDto> GetById(EntityDto<Guid> input)
         {
             var entity = await _entityRepository.GetAsync(input.Id);
@@ -103,7 +99,6 @@ namespace HC.WeChat.LotteryDetails
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-
         public async Task<GetLotteryDetailForEditOutput> GetForEdit(NullableIdDto<Guid> input)
         {
             var output = new GetLotteryDetailForEditOutput();
@@ -132,7 +127,6 @@ namespace HC.WeChat.LotteryDetails
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-
         public async Task CreateOrUpdate(CreateOrUpdateLotteryDetailInput input)
         {
 
@@ -150,7 +144,6 @@ namespace HC.WeChat.LotteryDetails
         /// <summary>
         /// 新增LotteryDetail
         /// </summary>
-
         protected virtual async Task<LotteryDetailEditDto> Create(LotteryDetailEditDto input)
         {
             //TODO:新增前的逻辑判断，是否允许新增
@@ -166,7 +159,6 @@ namespace HC.WeChat.LotteryDetails
         /// <summary>
         /// 编辑LotteryDetail
         /// </summary>
-
         protected virtual async Task Update(LotteryDetailEditDto input)
         {
             //TODO:更新前的逻辑判断，是否允许更新
@@ -177,7 +169,6 @@ namespace HC.WeChat.LotteryDetails
             // ObjectMapper.Map(input, entity);
             await _entityRepository.UpdateAsync(entity);
         }
-
 
 
         /// <summary>
@@ -191,7 +182,6 @@ namespace HC.WeChat.LotteryDetails
             //TODO:删除前的逻辑判断，是否允许删除
             await _entityRepository.DeleteAsync(input.Id);
         }
-
 
 
         /// <summary>
@@ -211,7 +201,7 @@ namespace HC.WeChat.LotteryDetails
         /// <param name="luckyId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        public async Task<APIResultDto> CreateLotteryDetailsAsync(Guid luckyId)
+        private async Task<APIResultDto> GetLotteryLogicAsync(Guid luckyId)
         {
             var empList = await _luckySignRepository.GetAll().Where(v => v.CreationTime.Date == DateTime.Today).Select(v => v.UserId).ToArrayAsync();
             int empTotal = empList.Length;
@@ -351,6 +341,106 @@ namespace HC.WeChat.LotteryDetails
                 Msg = "抽奖活动发布成功"
             };
         }
+
+        /// <summary>
+        /// 当前用户抽奖
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <param name="luckyId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<APIResultDto> GetCurLotteryDetailAsync(string openId, Guid luckyId)
+        {
+            if (string.IsNullOrEmpty(openId))
+            {
+                return new APIResultDto()
+                {
+                    Code = 401,
+                    Msg = "未获取到当前用户信息，请重新进入公众号"
+                };
+            }
+            DateTime curTime = DateTime.Now;
+            var lottery = await _luckyDrawRepository.FirstOrDefaultAsync(v=>v.Id == luckyId && v.IsPublish == true);
+            if (lottery == null)
+            {
+                return new APIResultDto()
+                {
+                    Code = 402,
+                    Msg = "未获取到本轮活动信息，请重新进入公众号"
+                };
+            }
+            if (curTime > lottery.EndTime)
+            {
+                return new APIResultDto()
+                {
+                    Code = 801,
+                    Msg = "本轮抽奖活动已截止！"
+                };
+            }
+            else if (curTime < lottery.CreationTime)
+            {
+                return new APIResultDto()
+                {
+                    Code = 802,
+                    Msg = "本轮抽奖活动尚未开始！"
+                };
+            }
+            var user = await _wechatuserRepository.FirstOrDefaultAsync(v => v.OpenId == openId);
+            if (user.UserType != WechatEnums.UserTypeEnum.内部员工)
+            {
+                return new APIResultDto()
+                {
+                    Code = 901,
+                    Msg = "非内部员工，请前往绑定！"
+                };
+            }
+
+            bool isSign = await _luckySignRepository.GetAll().AnyAsync(v => v.UserId == user.UserId && v.CreationTime.Date == DateTime.Today);
+            if (!isSign)
+            {
+                return new APIResultDto()
+                {
+                    Code = 902,
+                    Msg = "请先签到！"
+                };
+            }
+
+            var luckyDetail = await _entityRepository.FirstOrDefaultAsync(v => v.LuckyDrawId == luckyId && v.UserId == user.UserId);
+            if (luckyDetail == null)
+            {
+                return new APIResultDto()
+                {
+                    Code = 701,
+                    Msg = "很遗憾，奖品与你擦肩而过"
+                };
+            }
+            else if(luckyDetail.IsLottery == true)
+            {
+                return new APIResultDto()
+                {
+                    Code = 704,
+                    Msg = "您已抽过奖，等下一轮活动吧"
+                };
+            }
+
+            luckyDetail.IsLottery = true;
+            luckyDetail.LotteryTime = curTime;
+            if (luckyDetail.PrizeId.HasValue)
+            {
+                return new APIResultDto()
+                {
+                    Code = 702,
+                    Msg = "恭喜您中奖"
+                };
+            }
+            return new APIResultDto()
+            {
+                Code = 703,
+                Msg = "很遗憾，奖品与你擦肩而过"
+            };
+        }
+
+
 
         [AbpAllowAnonymous]
         public List<int> TestRadomNum()

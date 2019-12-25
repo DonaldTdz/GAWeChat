@@ -13,7 +13,7 @@ namespace HC.WeChat.LuckyDraws
     /// 抽奖活动
     /// </summary>
     [Table("LuckyDraws")]
-    public class LuckyDraw : AuditedEntity<Guid>, IHasCreationTime
+    public class LuckyDraw : Entity<Guid>, IHasCreationTime
     {
 
         /// <summary>
@@ -39,17 +39,17 @@ namespace HC.WeChat.LuckyDraws
         /// 是否发布
         /// </summary>
         [Required]
-        public virtual bool IsPubish { get; set; }
+        public virtual bool IsPublish { get; set; }
 
         ///// <summary>
         ///// CreationTime
         ///// </summary>
-        //[Required]
-        //public virtual DateTime CreationTime { get; set; }
+        [Required]
+        public virtual DateTime CreationTime { get; set; }
 
         /// <summary>
         /// 发布时间
         /// </summary>
-        public virtual DateTime? PubishTime { get; set; }
+        public virtual DateTime? PublishTime { get; set; }
     }
 }

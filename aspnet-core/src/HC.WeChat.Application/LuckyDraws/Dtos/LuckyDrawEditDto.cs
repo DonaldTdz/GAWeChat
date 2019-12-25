@@ -1,21 +1,14 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.LuckyDraws;
 
 namespace  HC.WeChat.LuckyDraws.Dtos
 {
-    public class LuckyDrawEditDto
+    public class LuckyDrawEditDto : EntityDto<Guid?>, IHasCreationTime
     {
-
-        /// <summary>
-        /// Id
-        /// </summary>
-        public Guid? Id { get; set; }         
-
-
-        
 		/// <summary>
 		/// Name
 		/// </summary>
@@ -44,17 +37,16 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 		/// IsPubish
 		/// </summary>
 		[Required(ErrorMessage="IsPubish不能为空")]
-		public bool IsPubish { get; set; }
+		public bool IsPublish { get; set; }
 
 
 
 		/// <summary>
 		/// PubishTime
 		/// </summary>
-		public DateTime? PubishTime { get; set; }
+		public DateTime? PublishTime { get; set; }
 
 
-
-
+        public DateTime CreationTime { get; set; }
     }
 }
