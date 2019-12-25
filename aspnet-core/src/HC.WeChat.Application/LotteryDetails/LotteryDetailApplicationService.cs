@@ -246,18 +246,21 @@ namespace HC.WeChat.LotteryDetails
 
                 var winEmpList = empList.OrderBy(v => Guid.NewGuid()).Take(prizeTotal).ToList();
                 var prizeList = await _prizeRepository.GetAll().Where(v => v.LuckyDrawId == luckyId).Select(v => new { v.Id, v.Name }).ToListAsync();
+                int i = 0;
                 foreach (var item in winEmpList)
                 {
-                    int i = 0;
                     LotteryDetail entity = new LotteryDetail();
                     entity.LuckyDrawId = luckyId;
                     entity.UserId = item;
                     entity.IsCanWin = true;
                     //entity.IsLottery = false;
                     entity.IsWin = true;
-                    entity.PrizeId = prizeList[0].Id;
-                    entity.PrizeName = prizeList[0].Name;
+                    entity.PrizeId = prizeList[i].Id;
+                    entity.PrizeName = prizeList[i].Name;
                     await _entityRepository.InsertAsync(entity);
+
+                    var prize = await _prizeRepository.GetAsync(prizeList[i].Id);
+                    prize.WinUserId = item;
                     i++;
                 }
                 var notWinEmpList = empList.Where(v => !winEmpList.Contains(v)).ToList();
@@ -274,36 +277,72 @@ namespace HC.WeChat.LotteryDetails
             }
             else
             {
-                //var canWinEmpTotal = await _entityRepository.GetAll().CountAsync(v => empList.Contains(v.UserId) && !v.IsWin);
-                //var canWinEmpList = await _entityRepository.GetAll().where(v => empList.Contains(v.UserId) && v.IsWin);
-                //if (canWinEmpTotal == 0)
-                //{
-                //    return new APIResultDto()
-                //    {
-                //        Code = 701,
-                //        Msg = "可中奖的人数必须大于0！"
-                //    };
-                //}
-                //if (prizeTotal > canWinEmpTotal)
-                //{
-                //    return new APIResultDto()
-                //    {
-                //        Code = 903,
-                //        Msg = "奖品总量大于可中奖的人数，请重新分配奖品数量！"
-                //    };
-                //}
-                //foreach (var item in empList)
-                //{
-                //    var winIndex = Enumerable.Range(0, empList - 1).OrderBy(v => Guid.NewGuid()).Take(prizeTotal).ToList().OrderBy(v => v).ToList();
-                //    bool isWin = _entityRepository.GetAll().Where(v => v.UserId == item && v.IsWin == true).Any();
-                //    LotteryDetail entity = new LotteryDetail();
-                //    if (!isWin)
-                //    {
-                //        entity.IsCanWin = true;
-                //    }
-                //    entity.LuckyDrawId = luckyId;
-                //    entity.IsLottery = false;
-                //}
+                Guid[] cantWinEmpIds = await _entityRepository.GetAll().Where(v => v.IsWin).Select(v => v.UserId).ToArrayAsync();
+                //Guid[] canWinEmpList = await _luckySignRepository.GetAll().Where(v => !cantWinEmpIds.Contains(v.UserId)).Select(v=>v.UserId).ToArrayAsync();
+                Guid[] canWinEmpList = empList.Where(v => !cantWinEmpIds.Contains(v)).ToArray();
+                int canWinEmpTotal = canWinEmpList.Length;
+                if (canWinEmpTotal == 0)
+                {
+                    return new APIResultDto()
+                    {
+                        Code = 701,
+                        Msg = "可中奖的人数必须大于0！"
+                    };
+                }
+                if (prizeTotal > canWinEmpTotal)
+                {
+                    return new APIResultDto()
+                    {
+                        Code = 903,
+                        Msg = "奖品总量大于可中奖的人数，请重新分配奖品数量！"
+                    };
+                }
+                var winEmpList = canWinEmpList.OrderBy(v => Guid.NewGuid()).Take(prizeTotal).ToList();
+                var prizeList = await _prizeRepository.GetAll().Where(v => v.LuckyDrawId == luckyId).Select(v => new { v.Id, v.Name }).ToListAsync();
+                int i = 0;
+
+                //中奖人员
+                foreach (var item in winEmpList)
+                {
+                    LotteryDetail entity = new LotteryDetail();
+                    entity.LuckyDrawId = luckyId;
+                    entity.UserId = item;
+                    entity.IsCanWin = true;
+                    //entity.IsLottery = false;
+                    entity.IsWin = true;
+                    entity.PrizeId = prizeList[i].Id;
+                    entity.PrizeName = prizeList[i].Name;
+                    await _entityRepository.InsertAsync(entity);
+
+                    var prize = await _prizeRepository.GetAsync(prizeList[i].Id);
+                    prize.WinUserId = item;
+                    i++;
+                }
+
+                //无中奖权限人员
+                foreach (var item in cantWinEmpIds)
+                {
+                    LotteryDetail entity = new LotteryDetail();
+                    entity.LuckyDrawId = luckyId;
+                    entity.UserId = item;
+                    //entity.IsCanWin = false;
+                    //entity.IsLottery = false;
+                    //entity.IsWin = false;
+                    await _entityRepository.InsertAsync(entity);
+                }
+
+                //未中奖人员
+                var notWinEmpList = canWinEmpList.Where(v => !winEmpList.Contains(v)).ToList();
+                foreach (var item in notWinEmpList)
+                {
+                    LotteryDetail entity = new LotteryDetail();
+                    entity.LuckyDrawId = luckyId;
+                    entity.UserId = item;
+                    entity.IsCanWin = true;
+                    //entity.IsLottery = false;
+                    //entity.IsWin = false;
+                    await _entityRepository.InsertAsync(entity);
+                }
             }
 
             return new APIResultDto()
@@ -323,8 +362,19 @@ namespace HC.WeChat.LotteryDetails
         [AbpAllowAnonymous]
         public List<int> TestRadom2Num()
         {
-            var num = Enumerable.Range(0, 399).Select(x => new { v = x, k = Guid.NewGuid().ToString() }).ToList().OrderBy(x => x.k).Select(x => x.v).Take(10).ToList();
+            var num = Enumerable.Range(0, 399).Select(x => new { v = x, k = Guid.NewGuid().ToString() }).ToList().OrderBy(x => x.k).Select(x => x.v).Take(30).ToList();
             return num;
+        }
+
+        [AbpAllowAnonymous]
+        public async Task TestAddSign()
+        {
+            for (int i = 1; i <= 400; i++)
+            {
+                var sign = new LuckySign();
+                sign.UserId = Guid.NewGuid();
+                await _luckySignRepository.InsertAsync(sign);
+            }
         }
     }
 }

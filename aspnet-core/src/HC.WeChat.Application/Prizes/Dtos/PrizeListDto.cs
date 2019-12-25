@@ -9,7 +9,7 @@ using HC.WeChat.WechatEnums;
 
 namespace HC.WeChat.Prizes.Dtos
 {
-    public class PrizeListDto : AuditedEntityDto<Guid>,IHasCreationTime 
+    public class PrizeListDto : EntityDto<Guid>,IHasCreationTime 
     {
 
         
@@ -42,5 +42,12 @@ namespace HC.WeChat.Prizes.Dtos
 		/// </summary>
 		[Required(ErrorMessage="Num不能为空")]
 		public int Num { get; set; }
+
+        /// <summary>
+        /// 中奖人Id
+        /// </summary>
+        public Guid? WinUserId { get; set; }
+
+        public DateTime CreationTime { get; set; }
     }
 }

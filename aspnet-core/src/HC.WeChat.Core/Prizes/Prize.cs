@@ -13,7 +13,7 @@ namespace HC.WeChat.Prizes
     /// 奖品
     /// </summary>
     [Table("Prizes")]
-    public class Prize : AuditedEntity<Guid>,IHasCreationTime
+    public class Prize : Entity<Guid>,IHasCreationTime
     {
 
         /// <summary>
@@ -40,5 +40,12 @@ namespace HC.WeChat.Prizes
         /// 投放总量 
         /// </summary>
         public virtual int Num { get; set; }
+
+        /// <summary>
+        /// 中奖人Id
+        /// </summary>
+        public virtual Guid? WinUserId { get; set; }
+
+        public virtual DateTime CreationTime { get; set; }
     }
 }

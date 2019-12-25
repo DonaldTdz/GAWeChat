@@ -1,22 +1,15 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.Prizes;
 using HC.WeChat.WechatEnums;
 
 namespace  HC.WeChat.Prizes.Dtos
 {
-    public class PrizeEditDto
+    public class PrizeEditDto : EntityDto<Guid?>, IHasCreationTime
     {
-
-        /// <summary>
-        /// Id
-        /// </summary>
-        public Guid? Id { get; set; }         
-
-
-        
 		/// <summary>
 		/// Name
 		/// </summary>
@@ -46,5 +39,12 @@ namespace  HC.WeChat.Prizes.Dtos
 		/// </summary>
 		[Required(ErrorMessage="Num不能为空")]
 		public int Num { get; set; }
+
+        /// <summary>
+        /// 中奖人Id
+        /// </summary>
+        public Guid? WinUserId { get; set; }
+
+        public DateTime CreationTime { get; set; }
     }
 }
