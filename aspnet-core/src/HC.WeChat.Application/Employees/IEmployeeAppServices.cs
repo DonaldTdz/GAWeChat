@@ -77,5 +77,18 @@ namespace HC.WeChat.Employees
         /// <param name="code"></param>
         /// <returns></returns>
         bool CheckCode(string code,Guid? id);
+
+        /// <summary>
+        /// 获取部门表
+        /// </summary>
+        /// <returns></returns>
+        Task<List<string>> GetEmployeeNameListAsyn();
+
+        /// <summary>
+        /// 获取部门下成员表
+        /// </summary>
+        /// <param name="deptName"></param>
+        /// <returns></returns>
+        Task<List<GetEmployeeDetailByDeptOutput>> GetSignListByDeptNameAsync(string deptName);
     }
 }
