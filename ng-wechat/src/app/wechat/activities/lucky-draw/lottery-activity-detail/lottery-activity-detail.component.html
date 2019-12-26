@@ -1,18 +1,4 @@
-<Page [ngClass]="'list'" [title]="'广安烟草'" [subTitle]="'中奖详情'" [spacing]="false">
-
-  <article class="weui-article">
-    <p>
-      <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=4152013619,854862305&fm=26&gp=0.jpg" alt="" />
-    </p>
-    <section>
-      <h3>中奖说明</h3>
-      <p>
-        前前往XXX处领取你的奖品吧！
-      </p>
-    </section>
-  </article>
-
-
+<Page [ngClass]="'list'" [title]="'广安烟草'" [subTitle]="'活动详情'" [spacing]="false">
   <div class="weui-cells__title">活动详情</div>
   <div class="weui-cells" >
     <div class="weui-cell">
@@ -34,6 +20,13 @@
         <p>结束时间</p>
       </div>
       <div class="weui-cell__ft">{{items.endTime | date:'yyyy-MM-dd HH:mm'}}</div>
+    </div>
+
+    <div class="weui-cell">
+      <div class="weui-cell__bd">
+        <p>是否公布</p>
+      </div>
+      <div class="weui-cell__ft">{{items.isPublish==true?"是":"否"}}</div>
     </div>
   </div>
 
@@ -66,6 +59,7 @@
           </div>
       </div>
       </div>
+      
+      <button weui-button (click)="publish()" *ngIf="!items.isPublish">发布</button>
 
-  
 </Page>

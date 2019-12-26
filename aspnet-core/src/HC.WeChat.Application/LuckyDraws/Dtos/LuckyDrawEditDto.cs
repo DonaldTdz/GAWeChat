@@ -1,9 +1,11 @@
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using HC.WeChat.LuckyDraws;
+using HC.WeChat.WechatEnums;
 
 namespace  HC.WeChat.LuckyDraws.Dtos
 {
@@ -49,4 +51,29 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 
         public DateTime CreationTime { get; set; }
     }
+
+	public class WeiXinCreateInput
+	{
+
+		public string Name { get; set; }
+
+		public DateTime? BeginTime { get; set; }
+
+		public DateTime? EndTime { get; set; }
+
+		public Boolean IsPublish { get; set; }
+
+		public List<WeiXinPriceInput> List { get; set; }
+
+	}
+	public class WeiXinPriceInput
+	{
+
+		public string Name { get; set; }
+
+		public PrizeType Type { get; set; }
+
+		public int Num { get; set; }
+
+	}
 }

@@ -18,6 +18,7 @@
                 </div>
                 <div class="weui-cell weui-cell_access">
                     <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:" *ngIf="!items.isPublish" (click)="publish(items.id)">发布</a>
+                    <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:" (click)="goToDetail(items.id)">点击查看</a>
                 </div>
             </div>
         </div>

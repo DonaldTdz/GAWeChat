@@ -14,14 +14,14 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class LotteryService {
     constructor(private http: HttpClient) { }
-    WXLuckyDrawCreateAsyn(input: any): Observable<any[]> {
-        return this.http.post('/api/services/app/LuckyDraw/WXLuckyDrawCreateAsyn', input).map(data => {
+    CreateWXLuckyDrawAsync(input: any): Observable<any[]> {
+        return this.http.post('/api/services/app/LuckyDraw/CreateWXLuckyDrawAsync', input).map(data => {
             return data.result;
         });
     }
 
-    GetWXLuckyDrawListAsyn(): Observable<any[]>{
-        return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListAsyn').map(data => {
+    GetWXLuckyDrawListAsync(): Observable<any[]>{
+        return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListAsync').map(data => {
             if (data.result) {
                 return data.result;
             } else {
@@ -49,6 +49,28 @@ export class LotteryService {
     //获取详细签到列表
     GetSignListByDeptNameAsync(deptName:string): Observable<any[]>{
         return this.http.get('/api/services/app/Employee/GetSignListByDeptNameAsync?deptName='+deptName).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return false;
+            }
+        });
+    }
+    
+
+    //admin 根据管理员获得活动详情
+    GetLuckyDrawDetailByIdAsync(Id:string): Observable<any[]>{
+        return this.http.get('/api/services/app/LuckyDraw/GetLuckyDrawDetailByIdAsync?Id='+Id).map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return false;
+            }
+        });
+    }
+    //内部员工获取活动列表
+    GetWXLuckyDrawListPublishedAsync(): Observable<any[]>{
+        return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListPublishedAsync').map(data => {
             if (data.result) {
                 return data.result;
             } else {

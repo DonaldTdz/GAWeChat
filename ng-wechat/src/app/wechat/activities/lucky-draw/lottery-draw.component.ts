@@ -86,10 +86,14 @@ export class LotteryDrawComponent implements OnInit {
     this.name="";
     this.num=0;
   }
+  closeMore(){
+    this.iSPriceButtonShow=false;
+  }
+
   //发布 --存储并公示
   publish(){
   
-    // this.submit(true);
+     this.submit(true);
   }
   loading:boolean;
   //保存表单
@@ -108,12 +112,12 @@ export class LotteryDrawComponent implements OnInit {
      param.list=this.items;
      param.isPublish=isPublish;
      console.log(param)
-     this.lotteryService.WXLuckyDrawCreateAsyn(param).subscribe(result => {
+     this.lotteryService.CreateWXLuckyDrawAsync(param).subscribe(result => {
        console.log(result);
 
 
        if(result["iSsuccess"]==1){
-        this.router.navigate(['/lottery-draw/lottery-activities-list']);
+        this.router.navigate(['/lotterys/lottery-activities-list']);
       }
      });
 

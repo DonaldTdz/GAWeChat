@@ -113,11 +113,17 @@
 
 
       <a
-        (click)="addMore()"
+        (click)="addMore()" *ngIf="!iSPriceButtonShow"
         class="weui-cell weui-cell_link"
       >
         <div class="weui-cell__bd">添加更多奖品</div>
       </a>
+
+      <a  (click)="closeMore()" *ngIf="iSPriceButtonShow"
+      class="weui-cell weui-cell_link"
+    >
+      <div class="weui-cell__bd">关闭添加奖品</div>
+    </a>
 
 
 

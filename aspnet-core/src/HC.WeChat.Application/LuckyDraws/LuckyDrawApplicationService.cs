@@ -23,6 +23,8 @@ using HC.WeChat.LuckyDraws.Dtos;
 using HC.WeChat.LuckyDraws.DomainService;
 using HC.WeChat.Prizes;
 using Abp.Auditing;
+using HC.WeChat.Dto;
+using HC.WeChat.LotteryDetails;
 
 namespace HC.WeChat.LuckyDraws
 {
@@ -37,6 +39,8 @@ namespace HC.WeChat.LuckyDraws
         private readonly ILuckyDrawManager _entityManager;
 
 		private readonly IRepository<Prize, Guid> _PrizeRepository;
+
+		private readonly IRepository<LotteryDetail, Guid> _LotteryDetailRepository;
 		/// <summary>
 		/// 构造函数 
 		///</summary>
@@ -44,11 +48,13 @@ namespace HC.WeChat.LuckyDraws
         IRepository<LuckyDraw, Guid> entityRepository
         ,ILuckyDrawManager entityManager
 			, IRepository<Prize, Guid> PrizeRepository
+			, IRepository<LotteryDetail, Guid> LotteryDetailRepository
 		)
         {
             _entityRepository = entityRepository; 
              _entityManager=entityManager;
 			_PrizeRepository = PrizeRepository;
+			_LotteryDetailRepository = LotteryDetailRepository;
 
 		}
 
@@ -202,8 +208,7 @@ LuckyDrawEditDto editDto;
 		/// </summary>
 		/// <returns></returns>
 		[AbpAllowAnonymous]
-		[DisableAuditing]
-		public async Task<ApiResultRef> WXLuckyDrawCreateAsyn(WeiXinCreateInput input) 
+		public async Task<APIResultDto> CreateWXLuckyDrawAsync(WeiXinCreateInput input) 
 		{
 			var entity = new LuckyDraw();
 			entity.BeginTime = input.BeginTime.Value;
@@ -212,19 +217,25 @@ LuckyDrawEditDto editDto;
 			entity.IsPublish = input.IsPublish;
 			entity.Name = input.Name;
 
+			if (input.IsPublish) entity.PublishTime = DateTime.Now;
+
 			var refEntity =await _entityRepository.InsertAsync(entity);
 
 			
 			foreach (var priceEn in input.List) {
-				Prize prize = new Prize();
-				prize.CreationTime = DateTime.Now;
-				prize.Name = priceEn.Name;
-				prize.LuckyDrawId = refEntity.Id;
-				prize.Num = priceEn.Num;
-				prize.Type = priceEn.Type;
-				await _PrizeRepository.InsertAsync(prize);
+
+				for(var i = 0; i < priceEn.Num; i++) 
+				{ 
+					Prize prize = new Prize();
+					prize.CreationTime = DateTime.Now;
+					prize.Name = priceEn.Name;
+					prize.LuckyDrawId = refEntity.Id;
+					prize.Num = 1;
+					prize.Type = priceEn.Type;
+					await _PrizeRepository.InsertAsync(prize);
+				}
 			}
-			return new ApiResultRef { iSsuccess=1};
+			return new APIResultDto { Code =0};
 
 		}
 
@@ -234,7 +245,7 @@ LuckyDrawEditDto editDto;
 		/// <returns></returns>
 		[AbpAllowAnonymous]
 		[DisableAuditing]
-		public async Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListAsyn() {
+		public async Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListAsync() {
 
 			var entities = from a in _entityRepository.GetAll()
 					 .OrderByDescending(v => v.CreationTime)
@@ -254,8 +265,7 @@ LuckyDrawEditDto editDto;
 		/// <param name="weiXinUpdatePubInput"></param>
 		/// <returns></returns>
 		[AbpAllowAnonymous]
-		[DisableAuditing]
-		public async Task<ApiResultRef> WXLuckyDrawUpdatePubStatusAsync (WeiXinUpdatePubInput weiXinUpdatePubInput) {
+		public async Task<APIResultDto> UpdateWXLuckyDrawPubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput) {
 
 			try
 			{
@@ -264,17 +274,82 @@ LuckyDrawEditDto editDto;
 				if (!entity.IsPublish)
 				{
 					entity.IsPublish = true;
-					return new ApiResultRef { iSsuccess = 1 };
+					entity.PublishTime = DateTime.Now;
+					return new APIResultDto { Code = 1 };
 				}
 				else
 				{
-					return new ApiResultRef { iSsuccess = 0 };
+					return new APIResultDto { Code = 0 };
 				}
 			}
 			catch (Exception ex) {
-				return new ApiResultRef { iSsuccess = 0 };
+				return new APIResultDto { Code = 0 };
 			}
 
+		}
+		/// <summary>
+		/// 根据ID获取一个活动的详细信息 Admin
+		/// </summary>
+		/// <returns></returns>
+		[AbpAllowAnonymous]
+		[DisableAuditing]
+		public async Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id) {
+
+			var entity = await _entityRepository.GetAll()
+				.Where(v=>v.Id==Id)
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
+
+			var prizes = await _PrizeRepository.GetAll().Where(v => v.LuckyDrawId == Id)
+						  .GroupBy(v => new { v.Name, v.Type, v.Num })
+						  .Select(m => new WeiXinPriceInput
+						  {
+							  Name = m.Key.Name,
+							  Type = m.Key.Type,
+							  Num = m.Sum(t => t.Num)
+
+						  }).ToListAsync();
+
+			return new WXLuckyDrawDetailIDOutput
+			{
+				Name=entity.Name,
+				BeginTime=entity.BeginTime,
+				EndTime=entity.EndTime,
+				IsPublish=entity.IsPublish,
+				List=prizes
+			};
+
+
+		}
+		/// <summary>
+		/// 内部员工获取开奖列表
+		/// </summary>
+		/// <returns></returns>
+		[AbpAllowAnonymous]
+		[DisableAuditing]
+		public async Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListPublishedAsync() {
+
+			var entities = await (from a in _entityRepository.GetAll().Where(v => v.IsPublish == true).OrderByDescending(v => v.CreationTime)
+								  select new WXLuckyDrawOutput
+								  {
+									  Name = a.Name,
+									  Id = a.Id,
+									  BeginTime = a.BeginTime,
+									  EndTime = a.EndTime,
+									  LotteryState = a.EndTime >= DateTime.Now && a.BeginTime <= DateTime.Now ? true : false
+								  }).ToListAsync();
+
+			for (var i = 0; i < entities.Count(); i++) {
+
+				var num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == entities[i].Id.Value);
+				var _num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == entities[i].Id.Value && v.IsLottery == true);
+				if (num == _num) { entities[i].LotteryState = entities[i].LotteryState || true; }
+				else { entities[i].LotteryState = entities[i].LotteryState || false; }
+
+			}
+			
+
+			return entities;
 		}
 
     }

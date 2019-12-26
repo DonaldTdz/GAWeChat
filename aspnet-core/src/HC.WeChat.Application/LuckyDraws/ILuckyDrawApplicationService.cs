@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.LuckyDraws.Dtos;
 using HC.WeChat.LuckyDraws;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.LuckyDraws
 {
@@ -77,13 +78,26 @@ namespace HC.WeChat.LuckyDraws
         /// </summary>
         /// <returns></returns>
         //Task<FileDto> GetToExcel();
-        Task<ApiResultRef> WXLuckyDrawCreateAsyn(WeiXinCreateInput input);
+        Task<APIResultDto> CreateWXLuckyDrawAsync(WeiXinCreateInput input);
 
 
-        Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListAsyn();
+        Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListAsync();
 
 
-        Task<ApiResultRef> WXLuckyDrawUpdatePubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput);
+        Task<APIResultDto> UpdateWXLuckyDrawPubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput);
+
+        /// <summary>
+        /// 通过ID获取活动详情
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id);
+
+        /// <summary>
+        /// 内部员工获取已发布活动列表
+        /// </summary>
+        /// <returns></returns>
+        Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListPublishedAsync();
 
     }
 }
