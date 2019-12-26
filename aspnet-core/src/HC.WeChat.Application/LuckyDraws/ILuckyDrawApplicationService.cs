@@ -72,11 +72,18 @@ namespace HC.WeChat.LuckyDraws
         Task BatchDelete(List<Guid> input);
 
 
-		/// <summary>
+        /// <summary>
         /// 导出LuckyDraw为excel表
         /// </summary>
         /// <returns></returns>
-		//Task<FileDto> GetToExcel();
+        //Task<FileDto> GetToExcel();
+        Task<ApiResultRef> WXLuckyDrawCreateAsyn(WeiXinCreateInput input);
+
+
+        Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListAsyn();
+
+
+        Task<ApiResultRef> WXLuckyDrawUpdatePubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput);
 
     }
 }

@@ -1,0 +1,26 @@
+<Page [ngClass]="'input'" [title]="'广安烟草'" [subTitle]="'抽奖活动列表'" [spacing]="false">
+  <div class="weui-cells__title">活动列表</div>
+  <div *ngIf="item.length != 0">
+    <weui-infiniteloader (loadmore)="onLoadMore($event)" #comp>
+        <div class="weui-panel weui-panel_access" *ngFor="let items of item">
+            <div class="weui-panel__bd">
+                <div href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+                    <div class="weui-cell__hd weui-cell_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.photoUrl +')'}">
+                    </div>
+                    <div class="weui-media-box__bd">
+                        <ul class="weui-media-box__info">
+                            <li class="weui-media-box__info__meta sp">{{items.name}}</li>
+                        </ul>
+                        <ul class="weui-media-box__info pc">
+                            <li class="weui-media-box__info__meta t">{{items.creationTime| date:'yyyy-MM-dd HH:mm'}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="weui-cell weui-cell_access">
+                    <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:" *ngIf="!items.isPublish" (click)="publish(items.id)">发布</a>
+                </div>
+            </div>
+        </div>
+    </weui-infiniteloader>
+</div>
+</Page>
