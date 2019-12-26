@@ -13,6 +13,7 @@ import { LotteryListComponent } from './lottery-list/lottery-list.component';
 import { LotteryPriceAddComponent } from './lottery-price-add/lottery-price-add.component';
 import { LotteryActivitiesListComponent } from './lottery-activities-list/lottery-activities-list.component';
 import { LotteryComponent } from './lottery.component';
+import { LotteryActivityDetailComponent } from './lottery-activity-detail/lottery-activity-detail.component';
 
 const COMPONENTS = [LotterySignInDetailComponent,
     LotterySignInComponent,
@@ -22,7 +23,11 @@ const COMPONENTS = [LotterySignInDetailComponent,
     LotteryListComponent,
     LotteryPriceAddComponent,
     LotteryComponent,
-    LotteryActivitiesListComponent,];
+    LotteryActivitiesListComponent,
+    LotteryComponent,
+    LotteryActivitiesListComponent,
+    LotteryActivityDetailComponent
+];
 
 const routes: Routes = [
     { path: '', redirectTo: 'lottery' },
@@ -33,7 +38,9 @@ const routes: Routes = [
     { path: 'lottery-sign-in-list', component: LotterySignInListComponent },
     { path: 'lottery-sign-in', component: LotterySignInComponent },
     { path: 'lottery-join', component: LotteryJoinComponent },
-    { path: 'lottery-sign-in-detail', component: LotterySignInDetailComponent }
+    { path: 'lottery-sign-in-detail', component: LotterySignInDetailComponent },
+    { path: 'lottery-detail', component: LotteryDetailComponent },
+    { path: 'lottery-activity-detail', component: LotteryActivityDetailComponent }
 ];
 @NgModule({
     imports: [
@@ -43,7 +50,7 @@ const routes: Routes = [
         RouterModule.forChild(routes)
     ],
     declarations: [
-        ...COMPONENTS
+        ...COMPONENTS,
     ],
     providers: [
         LotteryService

@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations;
 using HC.WeChat.LuckyDraws;
+using System.Collections.Generic;
 
 namespace HC.WeChat.LuckyDraws.Dtos
 {
@@ -51,4 +52,38 @@ namespace HC.WeChat.LuckyDraws.Dtos
 
         public DateTime CreationTime { get; set; }
     }
+
+
+	public class WXLuckyDrawOutput
+	{
+
+		public DateTime CreationTime { get; set; }
+
+		public string Name { get; set; }
+
+		public Guid? Id { get; set; }
+
+		public Boolean IsPublish { get; set; }
+
+		public DateTime BeginTime { get; set; }
+
+		public DateTime EndTime { get; set; }
+
+		public bool LotteryState { get; set; }
+	}
+
+	public class WXLuckyDrawDetailIDOutput
+	{
+
+		public string Name { get; set; }
+
+		public DateTime? BeginTime { get; set; }
+
+		public DateTime? EndTime { get; set; }
+
+		public Boolean IsPublish { get; set; }
+
+		public List<WeiXinPriceInput> List { get; set; }
+
+	}
 }

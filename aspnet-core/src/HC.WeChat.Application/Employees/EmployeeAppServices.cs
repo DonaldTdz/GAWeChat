@@ -377,7 +377,6 @@ namespace HC.WeChat.Employees
         /// </summary>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        [DisableAuditing]
         public async Task<List<string>> GetEmployeeNameListAsyn() 
         {
             var listStr =  _employeeRepository.GetAll().GroupBy(v => new { v.DeptName })
@@ -392,7 +391,6 @@ namespace HC.WeChat.Employees
         /// </summary>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        [DisableAuditing]
         public async Task<List<GetEmployeeDetailByDeptOutput>> GetSignListByDeptNameAsync(string deptName) 
         {
             var query = from e in _employeeRepository.GetAll().Where(v => v.DeptName == deptName)
