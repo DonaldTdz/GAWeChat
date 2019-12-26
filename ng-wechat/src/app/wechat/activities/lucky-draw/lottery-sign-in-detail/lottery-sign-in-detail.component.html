@@ -12,14 +12,12 @@
                 <div class="weui-cell__ft">签到</div>
             </a>
         </div>
-        <a *ngFor="let i of items" class="weui-cell weui-cell_access" (click)="goCustomerLeavel(i)">
+        <a *ngFor="let i of items" class="weui-cell weui-cell_title">
             <div class="weui-cell__hd">{{i.name}}</div>
             <div class="weui-cell__bd" style="text-align:center;">{{i.code}}</div>
             <div class="weui-cell__ft">{{i.isSign==true?"是":"否"}}</div>
         </a>
     </div>
-    <weui-loadmore type="line" *ngIf="(!items||items.length==0) && !value" [lineText]="'搜索并选择零售户'"></weui-loadmore>
-    <weui-loadmore type="line" *ngIf="items?.length === 0 && value" [lineText]="'没有符合的零售户信息'"></weui-loadmore>
     </article>
   </weui-infiniteloader>
 </Page>
