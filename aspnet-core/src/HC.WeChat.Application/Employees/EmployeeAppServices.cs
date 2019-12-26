@@ -25,6 +25,8 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using HC.WeChat.Dto;
 using Abp.Domain.Uow;
+using Abp.Auditing;
+using HC.WeChat.LuckySigns;
 
 namespace HC.WeChat.Employees
 {
@@ -40,17 +42,21 @@ namespace HC.WeChat.Employees
         private readonly IRepository<Employee, Guid> _employeeRepository;
         private readonly IEmployeeManager _employeeManager;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IRepository<LuckySign, Guid> _LuckySignRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public EmployeeAppService(IRepository<Employee, Guid> employeeRepository
             , IEmployeeManager employeeManager, IHostingEnvironment hostingEnvironment
+            , IRepository<LuckySign, Guid> LuckySignRepository
         )
         {
             _employeeRepository = employeeRepository;
             _employeeManager = employeeManager;
             _hostingEnvironment = hostingEnvironment;
+            _LuckySignRepository = LuckySignRepository;
+
         }
 
         /// <summary>
@@ -366,6 +372,44 @@ namespace HC.WeChat.Employees
                 return new APIResultDto() { Code = 901, Msg = "网络忙...请待会儿再试！" };
             }
         }
+        /// <summary>
+        /// 分组部门名字
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<List<string>> GetEmployeeNameListAsyn() 
+        {
+            var listStr =  _employeeRepository.GetAll().GroupBy(v => new { v.DeptName })
+                            .Select(m =>
+                                m.Key.DeptName
+                            );
+            return await listStr.ToListAsync();        
+        }
+
+        /// <summary>
+        /// 获取签到情况
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<List<GetEmployeeDetailByDeptOutput>> GetSignListByDeptNameAsync(string deptName) 
+        {
+            var query = from e in _employeeRepository.GetAll().Where(v => v.DeptName == deptName)
+                        join l in _LuckySignRepository.GetAll()
+                        on e.Id equals l.UserId into table
+                        from el in table.DefaultIfEmpty()
+                        select new GetEmployeeDetailByDeptOutput()
+                        {
+                            Name = e.Name,
+                            Code = e.Code,
+                            IsSign=el.Id==null?false:true
+                        };
+
+            return await query.ToListAsync();
+
+        }
+
 
         #endregion
     }

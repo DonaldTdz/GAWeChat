@@ -3,13 +3,13 @@ import { Observable } from 'rxjs';
 import { timer } from 'rxjs/observable/timer';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
-import { LotteryDrawService } from '../../../services/lottery-draw/lottery-draw.service';
+import { LotteryService } from '../../../services/article/lottery.service';
 
 
 
 @Component({
   selector: 'lottery-draw',
-  templateUrl: './lottery-draw.component.html',
+  templateUrl: 'lottery-draw.component.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class LotteryDrawComponent implements OnInit {
@@ -53,7 +53,7 @@ export class LotteryDrawComponent implements OnInit {
     ]
 
   constructor(private router: Router, private actRouter: ActivatedRoute
-    , private lotterydrawService: LotteryDrawService
+    , private lotteryService: LotteryService
     ) { 
   }
 
@@ -108,7 +108,7 @@ export class LotteryDrawComponent implements OnInit {
      param.list=this.items;
      param.isPublish=isPublish;
      console.log(param)
-     this.lotterydrawService.WXLuckyDrawCreateAsyn(param).subscribe(result => {
+     this.lotteryService.WXLuckyDrawCreateAsyn(param).subscribe(result => {
        console.log(result);
 
 

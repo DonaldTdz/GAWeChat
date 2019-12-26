@@ -2,7 +2,7 @@
   <weui-searchbar (search)="getStaff($event)" [(value)]="value" (cancel)="onCancel()" placeholder="请输入姓名、工号" (clear)="onClear()" [debounceTime]="500"></weui-searchbar>
   <weui-infiniteloader (loadmore)="onLoadMore($event)">
     <article class="weui-article">
-      <h1>XXXX部门人员列表</h1>
+      <h1>{{deptName}}部门人员列表</h1>
       <div class="weui-panel" style="margin-top: 0px;" *ngIf="items.length>0">
         <!-- <div class="weui-panel__hd">只显示符合【{{value}}】的前50条数据</div> -->
         <div class="weui-cells__title">
@@ -14,8 +14,8 @@
         </div>
         <a *ngFor="let i of items" class="weui-cell weui-cell_access" (click)="goCustomerLeavel(i)">
             <div class="weui-cell__hd">{{i.name}}</div>
-            <div class="weui-cell__bd" style="text-align:center;">{{i.telephone}}</div>
-            <div class="weui-cell__ft">{{i.licenseKey}}</div>
+            <div class="weui-cell__bd" style="text-align:center;">{{i.code}}</div>
+            <div class="weui-cell__ft">{{i.isSign==true?"是":"否"}}</div>
         </a>
     </div>
     <weui-loadmore type="line" *ngIf="(!items||items.length==0) && !value" [lineText]="'搜索并选择零售户'"></weui-loadmore>

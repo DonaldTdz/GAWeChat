@@ -3,7 +3,7 @@ import { HomeComponent } from './home/home.component';
 export const routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
-    { path: 'lottery-draws', loadChildren: './activities/lottery-draw/lottery-draw.module#LotteryDrawModule' },
+   
     { path: 'activities', loadChildren: './activities/activities.module#ActivitiesModule' },
     { path: 'shares', loadChildren: './activities/share/share.module#ShareModule' },
     { path: 'members', loadChildren: './personal-center/member-card/member-card.module#MemberCardModule' },

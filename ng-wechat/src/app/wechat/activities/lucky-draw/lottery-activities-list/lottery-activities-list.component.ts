@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { LotteryDrawService } from '../../../../services/lottery-draw/lottery-draw.service';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { LotteryService } from '../../../../services/article/lottery.service';
 
 @Component({
   selector: 'lottery-activities-list',
-  templateUrl: './lottery-activities-list.component.html',
-  styleUrls: ['./lottery-activities-list.component.less']
+  templateUrl: 'lottery-activities-list.component.html',
+  styleUrls: ['lottery-activities-list.component.less'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class LotteryActivitiesListComponent implements OnInit {
 
-  constructor(private lotterydrawService: LotteryDrawService) { }
+  constructor(private lotterydrawService: LotteryService) { }
 
   ngOnInit() {
     this.onload();

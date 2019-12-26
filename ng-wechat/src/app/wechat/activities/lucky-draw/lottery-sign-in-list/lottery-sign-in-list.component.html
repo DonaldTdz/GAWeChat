@@ -8,9 +8,9 @@
 
     </div>
       <div class="weui-cells">
-        <a *ngFor="let i of items" class="weui-cell weui-cell_access" href="javascript:;">
+        <a *ngFor="let i of items" class="weui-cell weui-cell_access" (click)="goToDetail(i)">
           <div class="weui-cell__bd">{{ i }}</div>
-          <div class="weui-cell__ft"></div>
+          <div class="weui-cell__ft" ></div>
         </a>
       </div>
     </article>

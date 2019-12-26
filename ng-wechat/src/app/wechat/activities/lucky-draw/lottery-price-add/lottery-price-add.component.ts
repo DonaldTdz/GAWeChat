@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'lottery-price-add',
-  templateUrl: './lottery-price-add.component.html',
-  styleUrls: ['./lottery-price-add.component.less']
+  templateUrl: 'lottery-price-add.component.html',
+  encapsulation: ViewEncapsulation.None,
 })
 export class LotteryPriceAddComponent implements OnInit {
 

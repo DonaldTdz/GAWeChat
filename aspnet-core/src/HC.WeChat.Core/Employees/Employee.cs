@@ -74,5 +74,11 @@ namespace HC.WeChat.Employees
         /// </summary>
         [StringLength(50)]
         public string VerificationCode { get; set; }
+
+        /// <summary>
+        /// 部门名字？
+        /// </summary>
+        [StringLength(50)]
+        public string DeptName { get; set; }
     }
 }

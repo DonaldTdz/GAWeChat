@@ -2,8 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'lottery-join',
-  templateUrl: './lottery-join.component.html',
-  styleUrls: ['./lottery-join.component.less'],
+  templateUrl: 'lottery-join.component.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class LotteryJoinComponent implements OnInit {
