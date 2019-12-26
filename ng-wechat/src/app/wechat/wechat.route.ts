@@ -3,7 +3,7 @@ import { HomeComponent } from './home/home.component';
 export const routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
-   
+
     { path: 'activities', loadChildren: './activities/activities.module#ActivitiesModule' },
     { path: 'shares', loadChildren: './activities/share/share.module#ShareModule' },
     { path: 'members', loadChildren: './personal-center/member-card/member-card.module#MemberCardModule' },
@@ -29,7 +29,7 @@ export const routes = [
     { path: 'questionnaires', loadChildren: './activities/questionnaire/questionnaire.module#QuestionnaireModule' },
     { path: 'demand-forecasts', loadChildren: './activities/demand-forecast/demand-forecast.module#DemandForecastModule' },
     { path: 'emp-retailers', loadChildren: './personal-center/retailer-manage/retailer-manage.module#RetailerManageModule' },
-    { path: 'lotterys', loadChildren: './activities/lucky-draw/lucky-draw.module#LuckyDrawModule' },
+    { path: 'lotterys', loadChildren: './activities/lucky-draw/lottery.module' },
     { path: '**', redirectTo: '' }
 ];
 

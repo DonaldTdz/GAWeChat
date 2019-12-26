@@ -360,7 +360,7 @@ namespace HC.WeChat.LotteryDetails
                 };
             }
             DateTime curTime = DateTime.Now;
-            var lottery = await _luckyDrawRepository.FirstOrDefaultAsync(v=>v.Id == luckyId && v.IsPublish == true);
+            var lottery = await _luckyDrawRepository.FirstOrDefaultAsync(v => v.Id == luckyId && v.IsPublish == true);
             if (lottery == null)
             {
                 return new APIResultDto()
@@ -369,7 +369,7 @@ namespace HC.WeChat.LotteryDetails
                     Msg = "未获取到本轮活动信息，请重新进入公众号"
                 };
             }
-            if (curTime > lottery.EndTime)
+            else if (curTime > lottery.EndTime)
             {
                 return new APIResultDto()
                 {
@@ -386,7 +386,15 @@ namespace HC.WeChat.LotteryDetails
                 };
             }
             var user = await _wechatuserRepository.FirstOrDefaultAsync(v => v.OpenId == openId);
-            if (user.UserType != WechatEnums.UserTypeEnum.内部员工)
+            if (user == null)
+            {
+                return new APIResultDto()
+                {
+                    Code = 403,
+                    Msg = "未获取到当前用户信息，请重新关注公众号"
+                };
+            }
+            else if (user.UserType != WechatEnums.UserTypeEnum.内部员工)
             {
                 return new APIResultDto()
                 {
@@ -394,7 +402,14 @@ namespace HC.WeChat.LotteryDetails
                     Msg = "非内部员工，请前往绑定！"
                 };
             }
-
+            else if (!user.UserId.HasValue)
+            {
+                return new APIResultDto()
+                {
+                    Code = 902,
+                    Msg = "内部员工信息获取异常，请重新绑定！"
+                };
+            }
             bool isSign = await _luckySignRepository.GetAll().AnyAsync(v => v.UserId == user.UserId && v.CreationTime.Date == DateTime.Today);
             if (!isSign)
             {
@@ -414,7 +429,7 @@ namespace HC.WeChat.LotteryDetails
                     Msg = "很遗憾，奖品与你擦肩而过"
                 };
             }
-            else if(luckyDetail.IsLottery == true)
+            else if (luckyDetail.IsLottery == true)
             {
                 return new APIResultDto()
                 {
