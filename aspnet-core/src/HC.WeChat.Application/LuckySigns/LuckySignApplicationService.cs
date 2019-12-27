@@ -25,6 +25,7 @@ using HC.WeChat.Prizes;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.Dto;
 using HC.WeChat.Employees;
+using Abp.Auditing;
 
 namespace HC.WeChat.LuckySigns
 {
@@ -37,7 +38,6 @@ namespace HC.WeChat.LuckySigns
         private readonly IRepository<LuckySign, Guid> _entityRepository;
         private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
         private readonly ILuckySignManager _entityManager;
-        IRepository<WeChatUser, Guid> _wechatuserRepository;
         private readonly IRepository<Employee, Guid> _employeeRepository;
 
         /// <summary>
@@ -47,14 +47,12 @@ namespace HC.WeChat.LuckySigns
         IRepository<LuckySign, Guid> entityRepository
         , ILuckySignManager entityManager
         , IRepository<WeChatUser, Guid> wechatuserRepository
-        ,IRepository<WeChatUser, Guid> wechatuserRepository
         , IRepository<Employee, Guid> employeeRepository
         )
         {
             _entityRepository = entityRepository;
             _wechatuserRepository = wechatuserRepository;
             _entityManager = entityManager;
-            _wechatuserRepository = wechatuserRepository;
             _employeeRepository = employeeRepository;
         }
 
@@ -263,11 +261,12 @@ namespace HC.WeChat.LuckySigns
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<GetLuckySignInfoDto> GetLuckySignInfoAsync(string openId) 
         {
             var userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
 
-            var entity = await _entityRepository.GetAll().Where(v => v.UserId == userId).FirstOrDefaultAsync();
+            bool isSing = await _entityRepository.GetAll().Where(v => v.UserId == userId).AnyAsync();
 
             var employee = await _employeeRepository.GetAll().Where(v => v.Id == userId).FirstOrDefaultAsync();
 
@@ -275,7 +274,7 @@ namespace HC.WeChat.LuckySigns
                 Name = employee.Name,
                 Code = employee.Code,
                 UserId = employee.Id,
-                LotteryState = entity == null ? false : true,
+                LotteryState = isSing,
                 DeptName=employee.DeptName
             };
         }
