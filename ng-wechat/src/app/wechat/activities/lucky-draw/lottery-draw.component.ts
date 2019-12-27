@@ -58,7 +58,7 @@ export class LotteryDrawComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.items.push({name:"姓名1",num:123,typeName:"一等奖",type:1});
+   
   }
 
 
@@ -115,10 +115,7 @@ export class LotteryDrawComponent implements OnInit {
      this.lotteryService.CreateWXLuckyDrawAsync(param).subscribe(result => {
        console.log(result);
 
-
-       if(result["iSsuccess"]==1){
-        this.router.navigate(['/lotterys/lottery-activities-list']);
-      }
+       this.router.navigate(['/lotterys/lottery-activities-list']);
      });
 
    }

@@ -24,6 +24,7 @@ using HC.WeChat.LuckySigns.DomainService;
 using HC.WeChat.Prizes;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.Employees;
+using Abp.Auditing;
 
 namespace HC.WeChat.LuckySigns
 {
@@ -205,21 +206,37 @@ namespace HC.WeChat.LuckySigns
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<GetLuckySignInfoDto> GetLuckySignInfoAsync(string openId) {
 
-            var userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync() ;
+            GetLuckySignInfoDto SignInfo = new GetLuckySignInfoDto();
+            if (openId != null)
+            {
+                var userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
+                if (userId != null)
+                {
+                    var isExsit = await _entityRepository.GetAll().Where(v => v.UserId == userId).AnyAsync();
 
-            var entity = await _entityRepository.GetAll().Where(v => v.UserId == userId).FirstOrDefaultAsync();
+                    var employee = await _employeeRepository.GetAll().Where(v => v.Id == userId).FirstOrDefaultAsync();
 
-            var employee = await _employeeRepository.GetAll().Where(v => v.Id == userId).FirstOrDefaultAsync();
+                    return new GetLuckySignInfoDto
+                    {
+                        Name = employee.Name,
+                        Code = employee.Code,
+                        LotteryState = isExsit,
+                        DeptName = employee.DeptName
+                    };
+                }
+                else 
+                {
+                    return SignInfo;
 
-            return new GetLuckySignInfoDto {
-                Name = employee.Name,
-                Code = employee.Code,
-                UserId = employee.Id,
-                LotteryState = entity == null ? false : true,
-                DeptName=employee.DeptName
-            };
+                }
+            }
+            else 
+            {
+                return SignInfo;
+            }
         }
 
     }

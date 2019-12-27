@@ -28,8 +28,6 @@ namespace HC.WeChat.LuckySigns.Dtos
     public class GetLuckySignInfoDto
     {
 
-        public Guid UserId { get; set; }
-
         public string Name { get; set; }
 
         public string Code { get; set; }

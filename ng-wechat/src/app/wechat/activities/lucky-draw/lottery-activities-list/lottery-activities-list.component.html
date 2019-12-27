@@ -1,11 +1,11 @@
 <Page [ngClass]="'input'" [title]="'广安烟草'" [subTitle]="'抽奖活动列表'" [spacing]="false">
   <div class="weui-cells__title">活动列表</div>
   <div *ngIf="item.length != 0">
-    <weui-infiniteloader (loadmore)="onLoadMore($event)" #comp>
+   
         <div class="weui-panel weui-panel_access" *ngFor="let items of item">
             <div class="weui-panel__bd">
-                <div href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
-                    <div class="weui-cell__hd weui-cell_img" [ngStyle]="{'background-image':'url('+ hostUrl + item.photoUrl +')'}">
+                <div class="weui-media-box weui-media-box_appmsg">
+                    <div class="weui-cell__hd weui-cell_img" >
                     </div>
                     <div class="weui-media-box__bd">
                         <ul class="weui-media-box__info">
@@ -22,6 +22,6 @@
                 </div>
             </div>
         </div>
-    </weui-infiniteloader>
+   
 </div>
 </Page>
