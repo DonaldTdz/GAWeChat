@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AngularSplitModule } from 'angular-split';
 import { SharedModule } from '../../../shared/shared.module';
 import { ComponentsModule } from '../../components/components.module';
-import { LotteryService } from '../../../services';
+import { LotteryService, SettingsService } from '../../../services';
 import { LotterySignInDetailComponent } from './lottery-sign-in-detail/lottery-sign-in-detail.component';
 import { LotterySignInComponent } from './lottery-sign-in/lottery-sign-in.component';
 import { LotterySignInListComponent } from './lottery-sign-in-list/lottery-sign-in-list.component';
@@ -51,7 +51,8 @@ const routes: Routes = [
         ...COMPONENTS,
     ],
     providers: [
-        LotteryService
+        LotteryService,
+        SettingsService
     ]
 })
 export class LuckyDrawModule {

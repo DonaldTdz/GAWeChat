@@ -24,7 +24,7 @@ export class LotterySignInListComponent implements OnInit {
   items: any[] = Array();
 
   loadlist(){
-    this.lotterydrawService.GetEmployeeNameListAsyn().subscribe(result => {
+    this.lotterydrawService.getEmployeeNameListAsyn().subscribe(result => {
      this.items=result;
     });
   }

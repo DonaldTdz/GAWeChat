@@ -20,7 +20,7 @@ export class LotteryActivitiesListComponent implements OnInit {
 
   onload(){
 
-    this.lotterydrawService.GetWXLuckyDrawListAsync().subscribe(result => {
+    this.lotterydrawService.getWXLuckyDrawListAsync().subscribe(result => {
        console.log(result);
        this.item=result;
      });
@@ -33,7 +33,7 @@ export class LotteryActivitiesListComponent implements OnInit {
   publish(id:string){
     var input:any={};
     input.id=id;
-    this.lotterydrawService.WXLuckyDrawUpdatePubStatusAsync(input).subscribe(result => {
+    this.lotterydrawService.updateWXLuckyDrawPubStatusAsync(input).subscribe(result => {
       this.onload()
     });
 

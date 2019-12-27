@@ -20,7 +20,7 @@ export class LotterySignInDetailComponent implements OnInit {
   //加载列表
   loadlistByName(){
     
-    this.lotterydrawService.GetSignListByDeptNameAsync(this.deptName).subscribe(result => {
+    this.lotterydrawService.getSignListByDeptNameAsync(this.deptName).subscribe(result => {
       this.items=result;
      });
 

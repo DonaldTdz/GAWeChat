@@ -19,7 +19,7 @@ export class LotteryListComponent implements OnInit {
 
   //加载列表
   onload(){
-    this.lotteryService.GetWXLuckyDrawListPublishedAsync().subscribe(result => {
+    this.lotteryService.getWXLuckyDrawListPublishedAsync().subscribe(result => {
       console.log(result);
       this.items=result;
     });

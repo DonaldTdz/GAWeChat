@@ -1,15 +1,44 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Injector } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { LotteryService } from '../../../../services/article/lottery.service';
+import { AppComponentBase } from '../../../components/app-component-base';
 
 @Component({
   selector: 'lottery-sign-in',
   templateUrl: 'lottery-sign-in.component.html',
   encapsulation: ViewEncapsulation.None,
 })
-export class LotterySignInComponent implements OnInit {
+export class LotterySignInComponent extends AppComponentBase  implements OnInit {
 
-  constructor() { }
+  items:any={};
 
-  ngOnInit() {
+  constructor(private router: Router, private actRouter: ActivatedRoute
+    , private lotteryService: LotteryService
+    ,injector: Injector,
+    ) {
+    super(injector);
   }
 
+  ngOnInit() {
+    this.onload();
+  }
+
+  //年会签到方法
+  signIn(){
+
+  //   this.lotteryService.getLuckySignInfoAsync(this.settingsService.openId).subscribe(result => {
+  //     console.log(result);
+  // }
+  //)
+}
+
+    ///加载个人信息
+  onload(){
+    this.settingsService.openId="oB4nYjnoHhuWrPVi2pYLuPjnCaU0";
+    this.lotteryService.getLuckySignInfoAsync(this.settingsService.openId).subscribe(result => {
+      console.log(result);
+      this.items=result;
+
+    })}
+  
 }

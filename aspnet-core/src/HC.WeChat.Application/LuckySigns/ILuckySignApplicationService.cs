@@ -71,12 +71,12 @@ namespace HC.WeChat.LuckySigns
         /// </summary>
         Task BatchDelete(List<Guid> input);
 
-
-		/// <summary>
-        /// 导出LuckySign为excel表
+        /// <summary>
+        /// 获取内部员工抽奖相关信息和状态
         /// </summary>
+        /// <param name="openId"></param>
         /// <returns></returns>
-		//Task<FileDto> GetToExcel();
+        Task<GetLuckySignInfoDto> GetLuckySignInfoAsync(string openId);
 
     }
 }
