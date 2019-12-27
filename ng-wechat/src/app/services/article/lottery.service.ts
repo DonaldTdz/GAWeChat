@@ -20,7 +20,7 @@ export class LotteryService {
         });
     }
 
-    GetWXLuckyDrawListAsync(): Observable<any[]>{
+    getWXLuckyDrawListAsync(): Observable<any[]>{
         return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListAsync').map(data => {
             if (data.result) {
                 return data.result;
@@ -30,13 +30,13 @@ export class LotteryService {
         });
     }
     
-    WXLuckyDrawUpdatePubStatusAsync(input: any): Observable<any[]> {
-        return this.http.post('/api/services/app/LuckyDraw/WXLuckyDrawUpdatePubStatusAsync', input).map(data => {
+    updateWXLuckyDrawPubStatusAsync(input: any): Observable<any[]> {
+        return this.http.post('/api/services/app/LuckyDraw/UpdateWXLuckyDrawPubStatusAsync', input).map(data => {
             return data.result;
         });
     }
 
-    GetEmployeeNameListAsyn(): Observable<any[]>{
+    getEmployeeNameListAsyn(): Observable<any[]>{
         return this.http.get('/api/services/app/Employee/GetEmployeeNameListAsyn').map(data => {
             if (data.result) {
                 return data.result;
@@ -47,7 +47,7 @@ export class LotteryService {
     }
     
     //获取详细签到列表
-    GetSignListByDeptNameAsync(deptName:string): Observable<any[]>{
+    getSignListByDeptNameAsync(deptName:string): Observable<any[]>{
         return this.http.get('/api/services/app/Employee/GetSignListByDeptNameAsync?deptName='+deptName).map(data => {
             if (data.result) {
                 return data.result;
@@ -59,7 +59,7 @@ export class LotteryService {
     
 
     //admin 根据管理员获得活动详情
-    GetLuckyDrawDetailByIdAsync(Id:string): Observable<any[]>{
+    getLuckyDrawDetailByIdAsync(Id:string): Observable<any[]>{
         return this.http.get('/api/services/app/LuckyDraw/GetLuckyDrawDetailByIdAsync?Id='+Id).map(data => {
             if (data.result) {
                 return data.result;
@@ -69,8 +69,19 @@ export class LotteryService {
         });
     }
     //内部员工获取活动列表
-    GetWXLuckyDrawListPublishedAsync(): Observable<any[]>{
+    getWXLuckyDrawListPublishedAsync(): Observable<any[]>{
         return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListPublishedAsync').map(data => {
+            if (data.result) {
+                return data.result;
+            } else {
+                return false;
+            }
+        });
+    }
+
+     //内部员工获取活动列表
+     getLuckySignInfoAsync(id:string): Observable<any[]>{
+        return this.http.get('/api/services/app/LuckySign/GetLuckySignInfoAsync?openId='+id).map(data => {
             if (data.result) {
                 return data.result;
             } else {

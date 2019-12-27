@@ -20,4 +20,23 @@ namespace HC.WeChat.LuckySigns.Dtos
 
         public DateTime CreationTime { get; set; }
     }
+
+    /// <summary>
+    /// 抽奖时查询签到状态的DTo
+    /// </summary>
+
+    public class GetLuckySignInfoDto
+    {
+
+        public Guid UserId { get; set; }
+
+        public string Name { get; set; }
+
+        public string Code { get; set; }
+
+        public bool LotteryState { get; set; }
+
+        public string DeptName { get; set; }
+
+    }
 }

@@ -3,21 +3,21 @@
     <div class="weui-form-preview__hd">
       <div class="weui-form-preview__item">
         <label class="weui-form-preview__label">签到情况</label>
-        <em class="weui-form-preview__value">未签到</em>
+        <em class="weui-form-preview__value">{{items.lotteryState==true?"已签到":"未签到"}}</em>
       </div>
     </div>
     <div class="weui-form-preview__bd">
       <div class="weui-form-preview__item">
         <label class="weui-form-preview__label">姓名</label>
-        <span class="weui-form-preview__value">杨杰</span>
+        <span class="weui-form-preview__value">{{items.name}}</span>
       </div>
       <div class="weui-form-preview__item">
         <label class="weui-form-preview__label">部门</label>
-        <span class="weui-form-preview__value">开发部</span>
+        <span class="weui-form-preview__value">{{items.deptName}}</span>
       </div>
       <div class="weui-form-preview__item">
         <label class="weui-form-preview__label">员工编号</label>
-        <span class="weui-form-preview__value">153020160</span>
+        <span class="weui-form-preview__value">{{items.code}}</span>
       </div>
       <div class="weui-form-preview__item">
         <label class="weui-form-preview__label">提醒信息</label>
@@ -26,8 +26,8 @@
         >
       </div>
     </div>
-    <div class="button-sp-area">
-      <button weui-button [weui-loading]="loading" (click)="loading = !loading">签到</button>
+    <div class="button-sp-area" *ngIf="!items.lotteryState">
+      <button weui-button [weui-loading]="loading" (click)="signIn()">签到</button>
     </div>
   </div>
 </Page>

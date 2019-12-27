@@ -22,7 +22,7 @@ export class LotteryActivityDetailComponent implements OnInit {
 
   //获取活动详情
   getDetail(){
-    this.lotteryService.GetLuckyDrawDetailByIdAsync(this.Id).subscribe(result => {
+    this.lotteryService.getLuckyDrawDetailByIdAsync(this.Id).subscribe(result => {
       console.log(result);
       this.items=result;
     });
@@ -31,7 +31,7 @@ export class LotteryActivityDetailComponent implements OnInit {
   publish(){
     var input:any={};
     input.id=this.Id;
-    this.lotteryService.WXLuckyDrawUpdatePubStatusAsync(input).subscribe(result => {
+    this.lotteryService.updateWXLuckyDrawPubStatusAsync(input).subscribe(result => {
       this.getDetail();
     });
   }

@@ -24,6 +24,7 @@ using HC.WeChat.LuckySigns.DomainService;
 using HC.WeChat.Prizes;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.Dto;
+using HC.WeChat.Employees;
 
 namespace HC.WeChat.LuckySigns
 {
@@ -36,6 +37,8 @@ namespace HC.WeChat.LuckySigns
         private readonly IRepository<LuckySign, Guid> _entityRepository;
         private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
         private readonly ILuckySignManager _entityManager;
+        IRepository<WeChatUser, Guid> _wechatuserRepository;
+        private readonly IRepository<Employee, Guid> _employeeRepository;
 
         /// <summary>
         /// 构造函数 
@@ -44,11 +47,15 @@ namespace HC.WeChat.LuckySigns
         IRepository<LuckySign, Guid> entityRepository
         , ILuckySignManager entityManager
         , IRepository<WeChatUser, Guid> wechatuserRepository
+        ,IRepository<WeChatUser, Guid> wechatuserRepository
+        , IRepository<Employee, Guid> employeeRepository
         )
         {
             _entityRepository = entityRepository;
             _wechatuserRepository = wechatuserRepository;
             _entityManager = entityManager;
+            _wechatuserRepository = wechatuserRepository;
+            _employeeRepository = employeeRepository;
         }
 
 
@@ -210,7 +217,7 @@ namespace HC.WeChat.LuckySigns
                     Code = 401,
                     Msg = "未获取到当前用户信息，请重新进入公众号"
                 };
-            }
+            }       
 
             var user = await _wechatuserRepository.FirstOrDefaultAsync(v => v.OpenId == openId);
             if (user == null)
@@ -247,6 +254,29 @@ namespace HC.WeChat.LuckySigns
             {
                 Code = 0,
                 Msg = "签到成功！"
+            };
+        }
+
+
+        /// 通过openId获取个人抽奖状态  --抽奖
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task<GetLuckySignInfoDto> GetLuckySignInfoAsync(string openId) 
+        {
+            var userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
+
+            var entity = await _entityRepository.GetAll().Where(v => v.UserId == userId).FirstOrDefaultAsync();
+
+            var employee = await _employeeRepository.GetAll().Where(v => v.Id == userId).FirstOrDefaultAsync();
+
+            return new GetLuckySignInfoDto {
+                Name = employee.Name,
+                Code = employee.Code,
+                UserId = employee.Id,
+                LotteryState = entity == null ? false : true,
+                DeptName=employee.DeptName
             };
         }
     }
