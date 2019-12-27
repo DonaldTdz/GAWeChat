@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { LotteryService } from '../../../../services/article/lottery.service';
 import { Router } from '@angular/router';
+import { ToptipsService } from 'ngx-weui';
 
 @Component({
   selector: 'lottery-activities-list',
@@ -11,6 +12,7 @@ export class LotteryActivitiesListComponent implements OnInit {
 
   constructor(private lotterydrawService: LotteryService
     ,private router: Router
+    , private srv: ToptipsService
     ) { }
 
   ngOnInit() {
@@ -22,7 +24,7 @@ export class LotteryActivitiesListComponent implements OnInit {
 
     this.lotterydrawService.getWXLuckyDrawListAsync().subscribe(result => {
        console.log(result);
-       this.item=result;
+  
      });
   }
   onLoadMore(){
@@ -34,6 +36,15 @@ export class LotteryActivitiesListComponent implements OnInit {
     var input:any={};
     input.id=id;
     this.lotterydrawService.updateWXLuckyDrawPubStatusAsync(input).subscribe(result => {
+      if(result.code==0){
+        this.srv['success'](result.msg);
+       }else if(result.code==901){
+        this.srv['warn'](result.msg);
+       }else if(result.code==902){
+        this.srv['warn'](result.msg);
+       }else{
+        this.srv['warn']('服务器错误');
+       }
       this.onload()
     });
 

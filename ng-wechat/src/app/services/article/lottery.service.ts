@@ -9,30 +9,32 @@ import 'rxjs/add/operator/catch';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '../httpclient';
 import { Observable } from 'rxjs';
+import { Questionnaire, QuestionOptions, AnswerRecords, ApiResult, QuestionRecord } from '../model/index';
+import { LuckyDraw } from '../model/lucky-draw';
 
 
 @Injectable()
 export class LotteryService {
     constructor(private http: HttpClient) { }
-    CreateWXLuckyDrawAsync(input: any): Observable<any[]> {
+    CreateWXLuckyDrawAsync(input: any): Observable<ApiResult<any>> {
         return this.http.post('/api/services/app/LuckyDraw/CreateWXLuckyDrawAsync', input).map(data => {
-            return data.result;
+            let result = new ApiResult<any>();
+            result=data.result;
+            return result;
         });
     }
 
-    getWXLuckyDrawListAsync(): Observable<any[]>{
+    getWXLuckyDrawListAsync(): Observable<LuckyDraw>{
         return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListAsync').map(data => {
-            if (data.result) {
-                return data.result;
-            } else {
-                return false;
-            }
+            return data.result;
         });
     }
     
-    updateWXLuckyDrawPubStatusAsync(input: any): Observable<any[]> {
+    updateWXLuckyDrawPubStatusAsync(input: any): Observable<ApiResult<any>> {
         return this.http.post('/api/services/app/LuckyDraw/ChangeWXLuckyDrawPubStatusAsync', input).map(data => {
-            return data.result;
+            let result = new ApiResult<any>();
+            result=data.result;
+            return result;
         });
     }
 

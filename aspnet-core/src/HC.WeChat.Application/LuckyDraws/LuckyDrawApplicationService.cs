@@ -290,15 +290,27 @@ LuckyDrawEditDto editDto;
 				{
 					entity.IsPublish = true;
 					entity.PublishTime = DateTime.Now;
-					return new APIResultDto { Code = 1 };
+					return new APIResultDto 
+					{
+						Code = 0 ,
+						Msg="发布成功！"
+					};
 				}
 				else
 				{
-					return new APIResultDto { Code = 0 };
+					return new APIResultDto 
+					{
+						Code = 901,
+						Msg="未获取到信息！"
+					};
 				}
 			}
 			catch (Exception ex) {
-				return new APIResultDto { Code = 0 };
+				return new APIResultDto 
+				{ 
+					Code = 902,
+					Msg="发布失败！"
+				};
 			}
 
 		}
@@ -311,10 +323,10 @@ LuckyDrawEditDto editDto;
 		public async Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id,string openId) {
 
 			var entity = await _entityRepository.GetAll()
-				.Where(v=>v.Id==Id)
+				.Where(v => v.Id == Id)
 				.AsNoTracking()
 				.FirstOrDefaultAsync();
-
+			//获取奖品列表
 			var prizes = await _PrizeRepository.GetAll().Where(v => v.LuckyDrawId == Id)
 						  .GroupBy(v => new { v.Name, v.Type, v.Num })
 						  .Select(m => new WeiXinPriceInput
@@ -324,56 +336,34 @@ LuckyDrawEditDto editDto;
 							  Num = m.Sum(t => t.Num)
 
 						  }).ToListAsync();
+			//所有人是否都已经开奖
+			var isAlllottery = entity.EndTime <= DateTime.Now ? true : false;
 
-			var lotteryState = entity.EndTime <= DateTime.Now ? true : false;
+			isAlllottery = isAlllottery || await _LotteryDetailRepository.GetAll().Where(v => v.LuckyDrawId == Id).AllAsync(v => v.IsLottery == true);
 
-			var num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == Id);
-			var _num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == Id && v.IsLottery == true);
-			if (num == _num) { lotteryState = lotteryState || true; }
-			else { lotteryState = lotteryState || false; }
-
-			List<LotteryDetailDto> lotterylist = new List<LotteryDetailDto>();
-			if (lotteryState) 
+			List<LotteryDetailDto> lotteryDetailoOut = new List<LotteryDetailDto>();
+			if (isAlllottery)
 			{
-				 lotterylist = await (from l in _LotteryDetailRepository.GetAll().Where(v => v.LuckyDrawId == Id)
-								  join e in _employeeRepository.GetAll()
-								  on l.UserId equals e.Id
-								  select new LotteryDetailDto
-								  {
-									  Name=e.Name,
-									  Num=1,
-									  PrizeName=l.PrizeName
-								  }).ToListAsync();
+				//获取相应的中奖列表
+				lotteryDetailoOut = await (from l in _LotteryDetailRepository.GetAll().Where(v => v.LuckyDrawId == Id)
+										   join e in _employeeRepository.GetAll()
+										   on l.UserId equals e.Id
+										   select new LotteryDetailDto
+										   {
+											   Name = e.Name,
+											   Num = 1,
+											   PrizeName = l.PrizeName
+										   }).ToListAsync();
 			}
-			var IsSignIn=false;
-			if (openId != null)
-			{
-
-				IsSignIn = await (from w in _wechatuserRepository.GetAll().Where(v => v.OpenId == openId)
-								  join l in _LuckySignRepository.GetAll()
-								  on w.UserId equals l.UserId
-								  select new
-								  {
-									  w.Id
-								  }).AnyAsync();
-
-			}
-			else 
-			{
-				IsSignIn = false;
-			}
-
-
 			return new WXLuckyDrawDetailIDOutput
 			{
-				Name = entity.Name,
+				Name = entity.Name,//活动名字
 				BeginTime = entity.BeginTime,
 				EndTime = entity.EndTime,
-				IsPublish = entity.IsPublish,
-				List = prizes,
-				LotteryState = lotteryState,
-				LotteryDetails = lotterylist,
-				IsSignIn = IsSignIn
+				IsPublish = entity.IsPublish,//是否公布
+				List = prizes,//奖品列表
+				LotteryState = isAlllottery,//是否开奖	当前时间超过截至日期或所有都点击了开奖
+				LotteryDetails = lotteryDetailoOut,//中奖名单
 			};
 
 
@@ -394,7 +384,8 @@ LuckyDrawEditDto editDto;
 									  Id = a.Id,
 									  BeginTime = a.BeginTime,
 									  EndTime = a.EndTime,
-									  LotteryState = a.EndTime <= DateTime.Now ? true : false
+									  LotteryState = a.EndTime <= DateTime.Now ? true : false,
+									  CreationTime=a.CreationTime
 								  }).ToListAsync();
 
 			for (var i = 0; i < entities.Count(); i++) {

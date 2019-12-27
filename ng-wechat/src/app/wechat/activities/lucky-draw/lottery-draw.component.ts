@@ -4,6 +4,7 @@ import { timer } from 'rxjs/observable/timer';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LotteryService } from '../../../services/article/lottery.service';
+import { ToptipsService } from 'ngx-weui';
 
 
 
@@ -14,68 +15,37 @@ import { LotteryService } from '../../../services/article/lottery.service';
 })
 export class LotteryDrawComponent implements OnInit {
   
+  iSPriceButtonShow:boolean=false;//奖品编辑按钮是否显示
+  type:number=0;//奖品等级
+  typeName:string="";//奖品名字
+  name:string="";//活动名字
+  num:number=0;//奖品数量
+  loading:boolean;//按钮加载
 
+  //表单数据
   input:any={
-    name:"",
-    beginTime:Date,
-    endTime:Date
+    name:"",//活动名字
+    beginTime:Date,//开始时间
+    endTime:Date//结束时间
   };
 
-    items: any[] = Array();
+  items: any[] = Array();//奖品列表
 
-    itemGroup: any = [
-      [
-        {
-          label: '一等奖',
-          value: 1,
-        },
-        {
-          label: '二等奖',
-          value: 2,
-        },
-        {
-          label: '三等奖',
-          value: 3,
-        },
-        {
-          label: '四等奖',
-          value: 4,
-        },
-        {
-          label: '安慰奖',
-          value: 5,
-        },
-        {
-          label: '参与奖',
-          value: 6,
-        },
-      ]
-    ]
 
   constructor(private router: Router, private actRouter: ActivatedRoute
     , private lotteryService: LotteryService
+    , private srv: ToptipsService
     ) { 
   }
 
   ngOnInit() {
    
   }
-
-
-  onSendCode(): Observable<boolean> {
-    return timer(1000).pipe(map(() => true));
-  }
-  
-
-  iSPriceButtonShow:boolean=false;
-  type:number=0;
-  typeName:string="";
-  name:string="";
-  num:number=0;
+ 
   //存储奖品
   savePrice(){
-      if(this.type!==0&&this.name!==""&&this.num!==0){
-    this.items.push({name:this.name,num:this.num,type:this.type});
+      if(this.name!==""&&this.num!==0){
+    this.items.push({name:this.name,num:this.num});
   }
   this.iSPriceButtonShow=false; 
   }
@@ -86,26 +56,26 @@ export class LotteryDrawComponent implements OnInit {
     this.name="";
     this.num=0;
   }
+  //关闭奖品添加
   closeMore(){
     this.iSPriceButtonShow=false;
   }
 
   //发布 --存储并公示
   publish(){
-  
      this.submit(true);
   }
-  loading:boolean;
+ 
   //保存表单
   onSave() {
     this.submit(false);
   }
+  //统一表单提交函数
   submit(isPublish:boolean){
 
     var param:any={};
     console.log("进入点击")
-    if(this.input.Name!==""&&this.input.endTime!==null&&this.input.beginTime!==null){
-
+    if(this.input.endTime!==null&&this.input.beginTime!==null){
      param.name=this.input.name;
      param.endTime=this.input.endTime;
      param.beginTime=this.input.beginTime;
@@ -113,12 +83,16 @@ export class LotteryDrawComponent implements OnInit {
      param.isPublish=isPublish;
      console.log(param)
      this.lotteryService.CreateWXLuckyDrawAsync(param).subscribe(result => {
-       console.log(result);
-
-       this.router.navigate(['/lotterys/lottery-activities-list']);
+       console.log(result)
+      if(result.code==0){
+        this.srv['success']('活动创建成功！');
+        this.router.navigate(['/lotterys/lottery-activities-list']); 
+      }else if(result.code=901){
+        this.srv['warn']('创建活动出错！请重试！');
+      }else{
+        this.srv['success']('服务器出错！');
+      }      
      });
-
    }
   }
-
 }

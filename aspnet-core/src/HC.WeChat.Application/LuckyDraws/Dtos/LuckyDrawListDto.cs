@@ -77,6 +77,11 @@ namespace HC.WeChat.LuckyDraws.Dtos
 	/// </summary>
 	public class WXLuckyDrawDetailIDOutput
 	{
+		public WXLuckyDrawDetailIDOutput() 
+		{
+			List = new List<WeiXinPriceInput>();
+			LotteryDetails = new List<LotteryDetailDto>();
+		}
 
 		public string Name { get; set; }
 
@@ -95,8 +100,6 @@ namespace HC.WeChat.LuckyDraws.Dtos
 
 
 		public List<LotteryDetailDto> LotteryDetails { get; set; }
-
-		public bool IsSignIn { get; set; }
 
 	}
 
