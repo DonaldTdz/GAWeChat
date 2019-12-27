@@ -72,6 +72,9 @@ namespace HC.WeChat.LuckyDraws.Dtos
 		public bool LotteryState { get; set; }
 	}
 
+	/// <summary>
+	/// 单个抽奖活动详情返回
+	/// </summary>
 	public class WXLuckyDrawDetailIDOutput
 	{
 
@@ -81,9 +84,29 @@ namespace HC.WeChat.LuckyDraws.Dtos
 
 		public DateTime? EndTime { get; set; }
 
-		public Boolean IsPublish { get; set; }
+		public bool IsPublish { get; set; }
 
 		public List<WeiXinPriceInput> List { get; set; }
 
+		/// <summary>
+		/// 开奖状态
+		/// </summary>
+		public bool LotteryState { get; set; }
+
+
+		public List<LotteryDetailDto> LotteryDetails { get; set; }
+
+		public bool IsSignIn { get; set; }
+
+	}
+
+	public class LotteryDetailDto
+	{ 
+	
+		public string Name { get; set; }
+
+		public string PrizeName { get; set; }
+
+		public int Num { get; set; }
 	}
 }

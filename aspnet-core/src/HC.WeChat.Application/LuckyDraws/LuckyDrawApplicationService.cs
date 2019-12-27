@@ -25,6 +25,9 @@ using HC.WeChat.Prizes;
 using Abp.Auditing;
 using HC.WeChat.Dto;
 using HC.WeChat.LotteryDetails;
+using HC.WeChat.Employees;
+using HC.WeChat.LuckySigns;
+using HC.WeChat.WeChatUsers;
 
 namespace HC.WeChat.LuckyDraws
 {
@@ -41,6 +44,12 @@ namespace HC.WeChat.LuckyDraws
 		private readonly IRepository<Prize, Guid> _PrizeRepository;
 
 		private readonly IRepository<LotteryDetail, Guid> _LotteryDetailRepository;
+
+		private readonly IRepository<Employee, Guid> _employeeRepository;
+
+		private readonly IRepository<LuckySign, Guid> _LuckySignRepository;
+
+		private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
 		/// <summary>
 		/// 构造函数 
 		///</summary>
@@ -49,12 +58,18 @@ namespace HC.WeChat.LuckyDraws
         ,ILuckyDrawManager entityManager
 			, IRepository<Prize, Guid> PrizeRepository
 			, IRepository<LotteryDetail, Guid> LotteryDetailRepository
+			, IRepository<Employee, Guid> employeeRepository
+			, IRepository<WeChatUser, Guid> wechatuserRepository
+			, IRepository<LuckySign, Guid> LuckySignRepository
 		)
         {
             _entityRepository = entityRepository; 
              _entityManager=entityManager;
 			_PrizeRepository = PrizeRepository;
 			_LotteryDetailRepository = LotteryDetailRepository;
+			_employeeRepository = employeeRepository;
+			_LuckySignRepository = LuckySignRepository;
+			_wechatuserRepository = wechatuserRepository;
 
 		}
 
@@ -265,7 +280,7 @@ LuckyDrawEditDto editDto;
 		/// <param name="weiXinUpdatePubInput"></param>
 		/// <returns></returns>
 		[AbpAllowAnonymous]
-		public async Task<APIResultDto> UpdateWXLuckyDrawPubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput) {
+		public async Task<APIResultDto> ChangeWXLuckyDrawPubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput) {
 
 			try
 			{
@@ -288,12 +303,12 @@ LuckyDrawEditDto editDto;
 
 		}
 		/// <summary>
-		/// 根据ID获取一个活动的详细信息 Admin
+		/// 根据ID获取一个活动的详细信息
 		/// </summary>
 		/// <returns></returns>
 		[AbpAllowAnonymous]
 		[DisableAuditing]
-		public async Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id) {
+		public async Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id,string openId) {
 
 			var entity = await _entityRepository.GetAll()
 				.Where(v=>v.Id==Id)
@@ -310,13 +325,55 @@ LuckyDrawEditDto editDto;
 
 						  }).ToListAsync();
 
+			var lotteryState = entity.EndTime <= DateTime.Now ? true : false;
+
+			var num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == Id);
+			var _num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == Id && v.IsLottery == true);
+			if (num == _num) { lotteryState = lotteryState || true; }
+			else { lotteryState = lotteryState || false; }
+
+			List<LotteryDetailDto> lotterylist = new List<LotteryDetailDto>();
+			if (lotteryState) 
+			{
+				 lotterylist = await (from l in _LotteryDetailRepository.GetAll().Where(v => v.LuckyDrawId == Id)
+								  join e in _employeeRepository.GetAll()
+								  on l.UserId equals e.Id
+								  select new LotteryDetailDto
+								  {
+									  Name=e.Name,
+									  Num=1,
+									  PrizeName=l.PrizeName
+								  }).ToListAsync();
+			}
+			var IsSignIn=false;
+			if (openId != null)
+			{
+
+				IsSignIn = await (from w in _wechatuserRepository.GetAll().Where(v => v.OpenId == openId)
+								  join l in _LuckySignRepository.GetAll()
+								  on w.UserId equals l.UserId
+								  select new
+								  {
+									  w.Id
+								  }).AnyAsync();
+
+			}
+			else 
+			{
+				IsSignIn = false;
+			}
+
+
 			return new WXLuckyDrawDetailIDOutput
 			{
-				Name=entity.Name,
-				BeginTime=entity.BeginTime,
-				EndTime=entity.EndTime,
-				IsPublish=entity.IsPublish,
-				List=prizes
+				Name = entity.Name,
+				BeginTime = entity.BeginTime,
+				EndTime = entity.EndTime,
+				IsPublish = entity.IsPublish,
+				List = prizes,
+				LotteryState = lotteryState,
+				LotteryDetails = lotterylist,
+				IsSignIn = IsSignIn
 			};
 
 
@@ -332,11 +389,12 @@ LuckyDrawEditDto editDto;
 			var entities = await (from a in _entityRepository.GetAll().Where(v => v.IsPublish == true).OrderByDescending(v => v.CreationTime)
 								  select new WXLuckyDrawOutput
 								  {
+									  IsPublish=true,
 									  Name = a.Name,
 									  Id = a.Id,
 									  BeginTime = a.BeginTime,
 									  EndTime = a.EndTime,
-									  LotteryState = a.EndTime >= DateTime.Now && a.BeginTime <= DateTime.Now ? true : false
+									  LotteryState = a.EndTime <= DateTime.Now ? true : false
 								  }).ToListAsync();
 
 			for (var i = 0; i < entities.Count(); i++) {

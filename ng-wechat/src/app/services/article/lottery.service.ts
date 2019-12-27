@@ -31,7 +31,7 @@ export class LotteryService {
     }
     
     updateWXLuckyDrawPubStatusAsync(input: any): Observable<any[]> {
-        return this.http.post('/api/services/app/LuckyDraw/UpdateWXLuckyDrawPubStatusAsync', input).map(data => {
+        return this.http.post('/api/services/app/LuckyDraw/ChangeWXLuckyDrawPubStatusAsync', input).map(data => {
             return data.result;
         });
     }
@@ -59,8 +59,8 @@ export class LotteryService {
     
 
     //admin 根据管理员获得活动详情
-    getLuckyDrawDetailByIdAsync(Id:string): Observable<any[]>{
-        return this.http.get('/api/services/app/LuckyDraw/GetLuckyDrawDetailByIdAsync?Id='+Id).map(data => {
+    getLuckyDrawDetailByIdAsync(Id:string,openId:string): Observable<any[]>{
+        return this.http.get('/api/services/app/LuckyDraw/GetLuckyDrawDetailByIdAsync?Id='+Id+'&openId='+openId).map(data => {
             if (data.result) {
                 return data.result;
             } else {

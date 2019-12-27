@@ -84,14 +84,14 @@ namespace HC.WeChat.LuckyDraws
         Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListAsync();
 
 
-        Task<APIResultDto> UpdateWXLuckyDrawPubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput);
+        Task<APIResultDto> ChangeWXLuckyDrawPubStatusAsync(WeiXinUpdatePubInput weiXinUpdatePubInput);
 
         /// <summary>
         /// 通过ID获取活动详情
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id);
+        Task<WXLuckyDrawDetailIDOutput> GetLuckyDrawDetailByIdAsync(Guid Id, string openId);
 
         /// <summary>
         /// 内部员工获取已发布活动列表

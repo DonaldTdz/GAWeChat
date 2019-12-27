@@ -8,7 +8,6 @@ import { LotterySignInDetailComponent } from './lottery-sign-in-detail/lottery-s
 import { LotterySignInComponent } from './lottery-sign-in/lottery-sign-in.component';
 import { LotterySignInListComponent } from './lottery-sign-in-list/lottery-sign-in-list.component';
 import { LotteryDetailComponent } from './lottery-detail/lottery-detail.component';
-import { LotteryJoinComponent } from './lottery-join/lottery-join.component';
 import { LotteryListComponent } from './lottery-list/lottery-list.component';
 import { LotteryPriceAddComponent } from './lottery-price-add/lottery-price-add.component';
 import { LotteryActivitiesListComponent } from './lottery-activities-list/lottery-activities-list.component';
@@ -18,7 +17,6 @@ import { LotteryActivityDetailComponent } from './lottery-activity-detail/lotter
 const COMPONENTS = [LotterySignInDetailComponent,
     LotterySignInComponent,
     LotterySignInListComponent,
-    LotteryJoinComponent,
     LotteryDetailComponent,
     LotteryListComponent,
     LotteryPriceAddComponent,
@@ -37,7 +35,6 @@ const routes: Routes = [
     { path: 'lottery-activities-list', component: LotteryActivitiesListComponent },
     { path: 'lottery-sign-in-list', component: LotterySignInListComponent },
     { path: 'lottery-sign-in', component: LotterySignInComponent },
-    { path: 'lottery-join', component: LotteryJoinComponent },
     { path: 'lottery-sign-in-detail', component: LotterySignInDetailComponent },
     { path: 'lottery-detail', component: LotteryDetailComponent },
     { path: 'lottery-activity-detail', component: LotteryActivityDetailComponent }
@@ -54,7 +51,6 @@ const routes: Routes = [
     ],
     providers: [
         LotteryService,
-        SettingsService
     ]
 })
 export class LotteryModule {

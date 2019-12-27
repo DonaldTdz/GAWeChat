@@ -34,7 +34,7 @@ export class LotterySignInComponent extends AppComponentBase  implements OnInit 
 
     ///加载个人信息
   onload(){
-    this.settingsService.openId="oB4nYjnoHhuWrPVi2pYLuPjnCaU0";
+    console.log(this.settingsService.openId)
     this.lotteryService.getLuckySignInfoAsync(this.settingsService.openId).subscribe(result => {
       console.log(result);
       this.items=result;

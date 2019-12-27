@@ -12,10 +12,10 @@
         </div>
         <div class="weui-media-box__bd">
           <span class="weui-media-box__title">{{i.name}}</span>
-          <span class="weui-media-box__ft" *ngIf="i.lotteryState" style="color: chartreuse;float:right;">
+          <span class="weui-media-box__ft" *ngIf="!i.lotteryState" style="color: chartreuse;float:right;">
             进行中
            </span>
-           <span class="weui-media-box__ft" *ngIf="!i.lotteryState" style="color:mediumvioletred;float:right;">
+           <span class="weui-media-box__ft" *ngIf="i.lotteryState" style="color:mediumvioletred;float:right;">
             查看名单
            </span>
           <p class="weui-media-box__desc">
