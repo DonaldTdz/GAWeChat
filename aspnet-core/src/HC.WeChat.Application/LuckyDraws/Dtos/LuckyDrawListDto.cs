@@ -112,4 +112,35 @@ namespace HC.WeChat.LuckyDraws.Dtos
 
 		public int Num { get; set; }
 	}
+
+	/// <summary>
+	///部门抽奖人员详情
+	/// </summary>
+	public class LotteryJoinDeptDetailOutput
+	{
+
+		public string Name { get; set; }
+
+		public string Code { get; set; }
+
+		public bool IsJoin { get; set; }
+	}
+
+	/// <summary>
+	/// 抽奖统计数字
+	/// </summary>
+	public class GetLuckyDrawPersonCountDto 
+	{
+		public int Num_Total { get; set; }
+
+		public int Num_Lottery { get; set; }
+	}
+	/// <summary>
+	/// 分部门显示抽奖人数
+	/// </summary>
+	public class GetLuckyDeptmentLotteryPersonDto : GetLuckyDrawPersonCountDto
+	{ 
+		public string Name { get; set; }
+	
+	}
 }

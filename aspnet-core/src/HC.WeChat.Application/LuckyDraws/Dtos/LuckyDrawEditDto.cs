@@ -68,6 +68,8 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 
 		public List<WeiXinPriceInput> List { get; set; }
 
+		public string OpenId { get; set; }
+
 	}
 	/// <summary>
 	/// 奖品

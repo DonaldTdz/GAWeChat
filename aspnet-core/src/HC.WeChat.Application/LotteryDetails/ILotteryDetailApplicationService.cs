@@ -74,5 +74,12 @@ namespace HC.WeChat.LotteryDetails
 
 
         Task<APIResultDto> GetCurLotteryDetailAsync(string openId, Guid luckyId);
+
+        /// <summary>
+        /// 发布方法
+        /// </summary>
+        /// <param name="luckyId"></param>
+        /// <returns></returns>
+        Task<APIResultDto> GetLotteryLogicAsync(Guid luckyId);
     }
 }

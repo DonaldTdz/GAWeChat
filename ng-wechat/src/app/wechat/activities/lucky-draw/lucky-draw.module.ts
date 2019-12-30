@@ -12,6 +12,8 @@ import { LotteryListComponent } from './lottery-list/lottery-list.component';
 import { LotteryDrawComponent } from './lottery-draw.component';
 import { LotteryActivitiesListComponent } from './lottery-activities-list/lottery-activities-list.component';
 import { LotteryActivityDetailComponent } from './lottery-activity-detail/lottery-activity-detail.component';
+import { LotteryActivityJoinListComponent } from './lottery-activity-join-list/lottery-activity-join-list.component';
+import { LotteryActivityJoinDetailComponent } from './lottery-activity-join-detail/lottery-activity-join-detail.component';
 
 const COMPONENTS = [ LotterySignInDetailComponent,
     LotterySignInComponent,
@@ -20,7 +22,10 @@ const COMPONENTS = [ LotterySignInDetailComponent,
     LotteryListComponent,
     LotteryDrawComponent,
     LotteryActivitiesListComponent,
-    LotteryActivityDetailComponent
+    LotteryActivityDetailComponent,
+    LotteryActivityJoinListComponent,
+    LotteryActivityJoinDetailComponent,
+
 ];
 
 const routes: Routes = [
@@ -32,7 +37,9 @@ const routes: Routes = [
     { path: 'lottery-sign-in', component: LotterySignInComponent },
     { path: 'lottery-sign-in-detail', component: LotterySignInDetailComponent },
     { path: 'lottery-detail', component: LotteryDetailComponent },
-    { path: 'lottery-activity-detail', component: LotteryActivityDetailComponent }
+    { path: 'lottery-activity-detail', component: LotteryActivityDetailComponent },
+    { path: 'lottery-activity-join-list', component:LotteryActivityJoinListComponent},
+    { path: 'lottery-activity-join-detail', component:LotteryActivityJoinDetailComponent},
 ];
 @NgModule({
     imports: [

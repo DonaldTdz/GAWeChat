@@ -37,4 +37,15 @@ namespace HC.WeChat.LuckySigns.Dtos
         public string DeptName { get; set; }
 
     }
+
+    /// <summary>
+    /// 签到人员数量统计
+    /// </summary>
+    public class SignInPeronNumDto 
+    { 
+        public int Num_Total { get; set; }
+
+        public int Num_UnSign { get; set; }
+    
+    }
 }

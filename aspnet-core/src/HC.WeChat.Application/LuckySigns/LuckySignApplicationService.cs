@@ -25,6 +25,7 @@ using HC.WeChat.Prizes;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.Employees;
 using Abp.Auditing;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.LuckySigns
 {
@@ -201,13 +202,13 @@ namespace HC.WeChat.LuckySigns
         }
 
         /// <summary>
-        /// 通过openId获取个人抽奖状态  --抽奖
+        /// 通过openId获取个人签到状态 
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
-        public async Task<GetLuckySignInfoDto> GetLuckySignInfoAsync(string openId) {
+        public async Task<APIResultDto> GetLuckySignInfoAsync(string openId) {
 
             GetLuckySignInfoDto SignInfo = new GetLuckySignInfoDto();
             if (openId != null)
@@ -215,28 +216,110 @@ namespace HC.WeChat.LuckySigns
                 var userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
                 if (userId != null)
                 {
-                    var isExsit = await _entityRepository.GetAll().Where(v => v.UserId == userId).AnyAsync();
+                    var isExsit = await _entityRepository.GetAll().Where(v => v.UserId == userId&&v.CreationTime.ToString("yyyyMMdd")==DateTime.Today.ToString("yyyyMMdd")).AnyAsync();
 
                     var employee = await _employeeRepository.GetAll().Where(v => v.Id == userId).FirstOrDefaultAsync();
 
-                    return new GetLuckySignInfoDto
+                    return new APIResultDto
                     {
-                        Name = employee.Name,
-                        Code = employee.Code,
-                        LotteryState = isExsit,
-                        DeptName = employee.DeptName
+                        Code = 0,
+                        Msg = "Success",
+                        Data= new GetLuckySignInfoDto
+                        {
+                            Name = employee.Name,
+                            Code = employee.Code,
+                            LotteryState = isExsit,
+                            DeptName = employee.DeptName
+                        }
                     };
                 }
                 else 
                 {
-                    return SignInfo;
-
+                    return new APIResultDto
+                    {
+                        Code = 902,
+                        Msg = "未获取到个人信息，请重新关注公众号！"
+                    };
                 }
             }
             else 
             {
-                return SignInfo;
+                return new APIResultDto
+                {
+                    Code = 901,
+                    Msg = "未获取到个人信息，请重新进入公众号！"
+                };
             }
+        }
+        /// <summary>
+        /// 微信端签到
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<APIResultDto> GetCreateWXLuckyDrawAsync(string openId) 
+        {
+            var wechatEn = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
+
+            if (wechatEn != null)
+            {
+                var employee = await _employeeRepository.GetAll().Where(v => v.Id == wechatEn.UserId).FirstOrDefaultAsync();
+                if (employee != null)
+                {
+                    await _entityRepository.InsertAsync(new LuckySign { 
+                    UserId= employee.Id
+                    });
+                    return new APIResultDto
+                    {
+                        Msg = "签到成功",
+                        Code = 0
+                    };
+                }
+                else 
+                {
+                    return new APIResultDto
+                    {
+                        Code = 902,
+                        Msg = "你不是内部员工!无法参与此次抽奖!请绑定工号"
+                    };
+                }
+            }
+            else 
+            {
+                return new APIResultDto
+                {
+                    Code = 901,
+                    Msg = "你还未关注微信公众号!"
+                };
+            }
+
+        }
+        /// <summary>
+        /// 获取签到人员数量和总数量
+        /// </summary>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<APIResultDto> GetSignInPeronNumAsync() 
+        {
+            //总人数
+            var num_Total =await  _employeeRepository.CountAsync();
+
+            var employeelist= await _employeeRepository.GetAll().Select(v=>v.Id).ToListAsync();
+
+            //已签到人数
+            var num_Signed =await _entityRepository.CountAsync(v=>employeelist.Contains(v.UserId)&&v.CreationTime.ToString("yyyyMMdd")==DateTime.Today.ToString("yyyyMMdd"));
+
+            return new APIResultDto
+            {
+                Code = 0,
+                Msg="获取成功!",
+                Data=new SignInPeronNumDto 
+                {
+                    Num_Total=num_Total,
+                    Num_UnSign= num_Signed
+                }
+            };            
         }
 
     }

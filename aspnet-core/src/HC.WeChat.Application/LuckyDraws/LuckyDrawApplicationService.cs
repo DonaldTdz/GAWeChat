@@ -28,28 +28,26 @@ using HC.WeChat.LotteryDetails;
 using HC.WeChat.Employees;
 using HC.WeChat.LuckySigns;
 using HC.WeChat.WeChatUsers;
+using HC.WeChat.LotteryDetails.DomainService;
 
 namespace HC.WeChat.LuckyDraws
 {
-    /// <summary>
-    /// LuckyDraw应用层服务的接口实现方法  
-    ///</summary>
-    [AbpAuthorize]
-    public class LuckyDrawAppService : WeChatAppServiceBase, ILuckyDrawAppService
-    {
-        private readonly IRepository<LuckyDraw, Guid> _entityRepository;
+	/// <summary>
+	/// LuckyDraw应用层服务的接口实现方法  
+	///</summary>
+	[AbpAuthorize]
+	public class LuckyDrawAppService : WeChatAppServiceBase, ILuckyDrawAppService
+	{
+		private readonly IRepository<LuckyDraw, Guid> _entityRepository;
 
-        private readonly ILuckyDrawManager _entityManager;
+		private  readonly ILuckyDrawManager _entityManager;
+		private  readonly IRepository<Prize, Guid> _PrizeRepository;
+		private  readonly IRepository<LotteryDetail, Guid> _LotteryDetailRepository;
+		private  readonly IRepository<Employee, Guid> _employeeRepository;
+		private  readonly IRepository<LuckySign, Guid> _LuckySignRepository;
+		private  readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
 
-		private readonly IRepository<Prize, Guid> _PrizeRepository;
 
-		private readonly IRepository<LotteryDetail, Guid> _LotteryDetailRepository;
-
-		private readonly IRepository<Employee, Guid> _employeeRepository;
-
-		private readonly IRepository<LuckySign, Guid> _LuckySignRepository;
-
-		private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
 		/// <summary>
 		/// 构造函数 
 		///</summary>
@@ -226,23 +224,23 @@ LuckyDrawEditDto editDto;
 		public async Task<APIResultDto> CreateWXLuckyDrawAsync(WeiXinCreateInput input) 
 		{
 			var entity = new LuckyDraw();
+			APIResultDto result = new APIResultDto();
 			entity.BeginTime = input.BeginTime.Value;
-			entity.CreationTime = DateTime.Now;
 			entity.EndTime = input.EndTime.Value;
 			entity.IsPublish = input.IsPublish;
 			entity.Name = input.Name;
-
-			if (input.IsPublish) entity.PublishTime = DateTime.Now;
-
+			if (input.IsPublish)
+			{ 
+				entity.PublishTime = DateTime.Now;
+				
+			}
 			var refEntity =await _entityRepository.InsertAsync(entity);
 
-			
-			foreach (var priceEn in input.List) {
 
+			foreach (var priceEn in input.List) {
 				for(var i = 0; i < priceEn.Num; i++) 
 				{ 
 					Prize prize = new Prize();
-					prize.CreationTime = DateTime.Now;
 					prize.Name = priceEn.Name;
 					prize.LuckyDrawId = refEntity.Id;
 					prize.Num = 1;
@@ -250,7 +248,13 @@ LuckyDrawEditDto editDto;
 					await _PrizeRepository.InsertAsync(prize);
 				}
 			}
-			return new APIResultDto { Code =0};
+
+			return new APIResultDto
+			{
+				Code = 0,
+				Data = refEntity.Id
+			};
+
 
 		}
 
@@ -266,7 +270,7 @@ LuckyDrawEditDto editDto;
 					 .OrderByDescending(v => v.CreationTime)
 						   select new WXLuckyDrawOutput
 						   {
-							   CreationTime=a.CreationTime,
+							   CreationTime=a.EndTime,
 							   Name=a.Name,
 							   Id=a.Id,
 							   IsPublish=a.IsPublish
@@ -388,20 +392,90 @@ LuckyDrawEditDto editDto;
 									  CreationTime=a.CreationTime
 								  }).ToListAsync();
 
-			for (var i = 0; i < entities.Count(); i++) {
-
+			for (var i = 0; i < entities.Count(); i++)
+			{
 				var num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == entities[i].Id.Value);
 				var _num = await _LotteryDetailRepository.CountAsync(v => v.LuckyDrawId == entities[i].Id.Value && v.IsLottery == true);
-				if (num == _num) { entities[i].LotteryState = entities[i].LotteryState || true; }
+				if (num == _num&&num>0) { entities[i].LotteryState = entities[i].LotteryState || true; }
 				else { entities[i].LotteryState = entities[i].LotteryState || false; }
-
 			}
-			
-
 			return entities;
 		}
 
-    }
+		/// <summary>
+		/// 展示参与抽奖活动的部门和人员详情列表 
+		/// </summary>
+		/// <returns></returns>
+		[AbpAllowAnonymous]
+		[DisableAuditing]
+		public async Task<List<LotteryJoinDeptDetailOutput>> GetLotteryJoinDeptDetailAsync(Guid Id,string DeptName) 
+		{
+			return await (from e in _employeeRepository.GetAll().Where(v => v.DeptName == DeptName)
+						  join l in _LotteryDetailRepository.GetAll().Where(v => v.LuckyDrawId == Id&&v.IsLottery==true)
+						  on e.Id equals l.UserId into table
+						  from tb in table.DefaultIfEmpty()
+						  select new LotteryJoinDeptDetailOutput
+						  {
+							  Name = e.Name,
+							  Code = e.Code,
+							  IsJoin = tb!=null?true:false
+						  }).ToListAsync();
+		}
+
+		/// <summary>
+		/// 获取参与抽奖活动的人员统计数字
+		/// </summary>
+		/// <returns></returns>
+		[AbpAllowAnonymous]
+		[DisableAuditing]
+		public async Task<GetLuckyDrawPersonCountDto> GetLuckyDrawPersonCountAsync(Guid luckyId) 
+		{
+			//获取员工总人数
+			var num_total = await _employeeRepository.CountAsync();
+
+			//获取所有员工ID
+			var employeeList = await _employeeRepository.GetAll().Select(v => v.Id).ToListAsync();
+			//获取已参与抽奖
+			var num_lottery = await _LotteryDetailRepository.GetAll().CountAsync(v => employeeList.Contains(v.UserId)&&v.LuckyDrawId==luckyId&&v.IsLottery==true);
+
+			return new GetLuckyDrawPersonCountDto
+			{
+				Num_Lottery=num_lottery,
+				Num_Total=num_total
+			};
+		}
+		/// <summary>
+		/// 分部门显示抽奖人数
+		/// </summary>
+		/// <param name="luckyId"></param>
+		/// <returns></returns>
+		[AbpAllowAnonymous]
+		[DisableAuditing]
+		public async Task<List<GetLuckyDeptmentLotteryPersonDto>> GetLuckyDeptmentLotteryPersonAsync(Guid luckyId) 
+		{
+			var query = from e in _employeeRepository.GetAll()
+						join d in _LotteryDetailRepository.GetAll().Where(v => v.LuckyDrawId == luckyId)
+						on e.Id equals d.UserId into table
+						from tb in table.DefaultIfEmpty()
+						select new
+						{
+							e.DeptName,
+							tb.IsLottery
+						};
+
+			return await (from c in query
+						  group c by c.DeptName into tB
+						  select new GetLuckyDeptmentLotteryPersonDto
+						  {
+							  Name=tB.Key,
+							  Num_Lottery=tB.Count(v=>v.IsLottery==true),
+							  Num_Total=tB.Count()
+						  }
+						  ).ToListAsync();
+						   
+						   
+		}
+	}
 }
 
 

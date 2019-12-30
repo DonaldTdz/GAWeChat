@@ -20,6 +20,7 @@ using Abp.Application.Services.Dto;
 
 using HC.WeChat.LuckySigns.Dtos;
 using HC.WeChat.LuckySigns;
+using HC.WeChat.Dto;
 
 namespace HC.WeChat.LuckySigns
 {
@@ -76,7 +77,20 @@ namespace HC.WeChat.LuckySigns
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
-        Task<GetLuckySignInfoDto> GetLuckySignInfoAsync(string openId);
+        Task<APIResultDto> GetLuckySignInfoAsync(string openId);
+
+        /// <summary>
+        /// 获取签到人数
+        /// </summary>
+        /// <returns></returns>
+        Task<APIResultDto> GetSignInPeronNumAsync();
+
+        /// <summary>
+        /// 进行当天的签到
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        Task<APIResultDto> GetCreateWXLuckyDrawAsync(string openId);
 
     }
 }

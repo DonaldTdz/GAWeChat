@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { timer } from 'rxjs/observable/timer';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LotteryService } from '../../../services/article/lottery.service';
 import { ToptipsService } from 'ngx-weui';
+import { AppComponentBase } from '../../components/app-component-base';
 
 
 
@@ -13,7 +14,7 @@ import { ToptipsService } from 'ngx-weui';
   templateUrl: 'lottery-draw.component.html',
   encapsulation: ViewEncapsulation.None,
 })
-export class LotteryDrawComponent implements OnInit {
+export class LotteryDrawComponent extends AppComponentBase implements OnInit {
   
   iSPriceButtonShow:boolean=false;//奖品编辑按钮是否显示
   type:number=0;//奖品等级
@@ -33,9 +34,11 @@ export class LotteryDrawComponent implements OnInit {
 
 
   constructor(private router: Router, private actRouter: ActivatedRoute
+    , injector: Injector
     , private lotteryService: LotteryService
     , private srv: ToptipsService
     ) { 
+      super(injector);
   }
 
   ngOnInit() {
@@ -76,21 +79,32 @@ export class LotteryDrawComponent implements OnInit {
     var param:any={};
     console.log("进入点击")
     if(this.input.endTime!==null&&this.input.beginTime!==null){
-     param.name=this.input.name;
-     param.endTime=this.input.endTime;
-     param.beginTime=this.input.beginTime;
-     param.list=this.items;
-     param.isPublish=isPublish;
+     param.name=this.input.name;//活动名字
+     param.endTime=this.input.endTime;//结束时间
+     param.beginTime=this.input.beginTime;//开始时间
+     param.list=this.items;//奖品列表
+     param.isPublish=isPublish;//是否公布
+     param.openId=this.settingsService.openId;//创建者ID
      console.log(param)
      this.lotteryService.CreateWXLuckyDrawAsync(param).subscribe(result => {
        console.log(result)
       if(result.code==0){
-        this.srv['success']('活动创建成功！');
-        this.router.navigate(['/lotterys/lottery-activities-list']); 
+       
+        if(isPublish){//并且发布活动
+          console.log(result.data)
+          this.lotteryService.getLotteryLogicAsync(result.data).subscribe(onSuccess => {
+            if(onSuccess.code==0){
+              this.srv['success'](onSuccess.msg);
+              this.router.navigate(['/lotterys/lottery-activities-list']); 
+            }else{
+              this.srv['warn'](onSuccess.msg);
+            }
+          })
+        }
       }else if(result.code=901){
         this.srv['warn']('创建活动出错！请重试！');
       }else{
-        this.srv['success']('服务器出错！');
+        this.srv['warn']('服务器出错！');
       }      
      });
    }

@@ -64,6 +64,7 @@ namespace HC.WeChat.Employees
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
+        [AbpAllowAnonymous]
         public async Task<PagedResultDto<EmployeeListDto>> GetPagedEmployees(GetEmployeesInput input)
         {
             var mid = UserManager.GetControlEmployeeId();
@@ -373,17 +374,31 @@ namespace HC.WeChat.Employees
             }
         }
         /// <summary>
-        /// 分组部门名字
+        /// 分组部门名字和签到 未签到人数
         /// </summary>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        public async Task<List<string>> GetEmployeeNameListAsyn() 
+        [DisableAuditing]
+        public async Task<List<EmployeeTotalDto>> GetEmployeeNameListAsyn() 
         {
-            var listStr =  _employeeRepository.GetAll().GroupBy(v => new { v.DeptName })
-                            .Select(m =>
-                                m.Key.DeptName
-                            );
-            return await listStr.ToListAsync();        
+            var listStr = from e in _employeeRepository.GetAll()
+                          join l in _LuckySignRepository.GetAll().Where(v=>v.CreationTime.Year==DateTime.Today.Year&&v.CreationTime.Month==DateTime.Today.Month&&v.CreationTime.Day==DateTime.Today.Day)
+                          on e.Id equals l.UserId into table
+                          from tb in table.DefaultIfEmpty()
+                          select new 
+                          {
+                            Name= e.DeptName,
+                            IsSign= tb.UserId==null?false:true
+                          };
+
+            return await (from n in listStr
+                          group n by n.Name into tB
+                          select new EmployeeTotalDto
+                          {
+                              Name = tB.Key,
+                              Total = tB.Count(),
+                              Signed = tB.Count(v => v.IsSign==true)
+                          }).ToListAsync();
         }
 
         /// <summary>
@@ -391,24 +406,20 @@ namespace HC.WeChat.Employees
         /// </summary>
         /// <returns></returns>
         [AbpAllowAnonymous]
+        [DisableAuditing]
         public async Task<List<GetEmployeeDetailByDeptOutput>> GetSignListByDeptNameAsync(string deptName) 
         {
-            var query = from e in _employeeRepository.GetAll().Where(v => v.DeptName == deptName)
-                        join l in _LuckySignRepository.GetAll()
-                        on e.Id equals l.UserId into table
-                        from el in table.DefaultIfEmpty()
-                        select new GetEmployeeDetailByDeptOutput()
-                        {
-                            Name = e.Name,
-                            Code = e.Code,
-                            IsSign=el.Id==null?false:true
-                        };
+            var signList = await _LuckySignRepository.GetAll().Where(v => v.CreationTime.Year == DateTime.Today.Year && v.CreationTime.Month == DateTime.Today.Month && v.CreationTime.Day == DateTime.Today.Day).Select(v => v.UserId).ToListAsync();
 
-            return await query.ToListAsync();
-
+            return await (from e in _employeeRepository.GetAll().Where(v => v.DeptName == deptName)
+                                  select new GetEmployeeDetailByDeptOutput
+                                  {
+                                      Name = e.Name,
+                                      Code = e.Code,
+                                      IsSign = signList.Contains(e.Id)
+                                  }).ToListAsync();
+            //return await query.ToListAsync();
         }
-
-
         #endregion
     }
 }

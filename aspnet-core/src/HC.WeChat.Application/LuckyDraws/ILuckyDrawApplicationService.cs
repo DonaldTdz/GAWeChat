@@ -99,5 +99,27 @@ namespace HC.WeChat.LuckyDraws
         /// <returns></returns>
         Task<List<WXLuckyDrawOutput>> GetWXLuckyDrawListPublishedAsync();
 
+        /// <summary>
+        /// 获取参与活动抽奖的部门下员工抽奖情况
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="DeptName"></param>
+        /// <returns></returns>
+        Task<List<LotteryJoinDeptDetailOutput>> GetLotteryJoinDeptDetailAsync(Guid Id, string DeptName);
+
+        /// <summary>
+        /// 根据活动ID获取当前参与人的数量
+        /// </summary>
+        /// <param name="luckyId"></param>
+        /// <returns></returns>
+        Task<GetLuckyDrawPersonCountDto> GetLuckyDrawPersonCountAsync(Guid luckyId);
+
+        /// <summary>
+        /// 根据活动ID获取部门详情
+        /// </summary>
+        /// <param name="luckyId"></param>
+        /// <returns></returns>
+        Task<List<GetLuckyDeptmentLotteryPersonDto>> GetLuckyDeptmentLotteryPersonAsync(Guid luckyId);
+
     }
 }
