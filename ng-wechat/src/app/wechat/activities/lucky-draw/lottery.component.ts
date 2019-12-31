@@ -7,6 +7,7 @@ import { AppComponentBase } from '../../components/app-component-base';
 
 
 @Component({
+  moduleId: module.id,
   selector: 'lottery',
   templateUrl: 'lottery.component.html',
   encapsulation: ViewEncapsulation.None,

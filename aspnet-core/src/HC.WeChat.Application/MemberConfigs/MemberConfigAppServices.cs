@@ -453,7 +453,9 @@ namespace HC.WeChat.MemberConfigs
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
-        public async Task<bool> IsLotteryAdminAsync(string openId)
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<bool> GetIsLotteryAdminAsync(string openId)
         {
             if (string.IsNullOrEmpty(openId))
             {

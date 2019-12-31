@@ -90,8 +90,8 @@ export class WechatUserService {
     });
   }
 
-  getIsLotteryAdmin(params: any): Observable<boolean> {
-    return this.http.post('/api/services/app/MemberConfig/IsLotteryAdminAsync', params).map(data => {
+  getIsLotteryAdmin(openId: string): Observable<boolean> {
+    return this.http.get('/api/services/app/MemberConfig/GetIsLotteryAdminAsync?openId=' + openId).map(data => {
       return <boolean>data.result;
     });
   }

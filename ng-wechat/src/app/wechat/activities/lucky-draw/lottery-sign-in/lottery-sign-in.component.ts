@@ -68,9 +68,12 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
   ///加载个人信息
   onload() {
     this.lotteryService.getLuckySignInfoAsync(this.settingsService.openId).subscribe(result => {
-      if (result.code == 0) {//成功
+      if (result.code === 0) {//成功
         this.items = result.data;
-      } else {
+      } else if (result.code === 801) {
+        this.bindJobNumber();
+      }
+      else {
         this.srv['warn'](result.msg);
       }
     });
@@ -96,8 +99,4 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
       //res.result 输入文字
     });
   }
-
-
-
-
 }

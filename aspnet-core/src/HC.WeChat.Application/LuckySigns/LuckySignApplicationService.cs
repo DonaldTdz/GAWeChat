@@ -26,7 +26,6 @@ using HC.WeChat.WeChatUsers;
 using HC.WeChat.Dto;
 using HC.WeChat.Employees;
 using Abp.Auditing;
-using HC.WeChat.Dto;
 
 namespace HC.WeChat.LuckySigns
 {
@@ -216,7 +215,7 @@ namespace HC.WeChat.LuckySigns
                     Code = 401,
                     Msg = "未获取到当前用户信息，请重新进入公众号"
                 };
-            }       
+            }
 
             var user = await _wechatuserRepository.FirstOrDefaultAsync(v => v.OpenId == openId);
             if (user == null)
@@ -264,15 +263,16 @@ namespace HC.WeChat.LuckySigns
         /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
-        public async Task<APIResultDto> GetLuckySignInfoAsync(string openId) {
+        public async Task<APIResultDto> GetLuckySignInfoAsync(string openId)
+        {
 
             GetLuckySignInfoDto SignInfo = new GetLuckySignInfoDto();
             if (openId != null)
             {
-                var userId = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
+                var userId = await _wechatuserRepository.GetAll().Where(v => v.UserType == WechatEnums.UserTypeEnum.内部员工 && v.OpenId == openId).Select(v => v.UserId).FirstOrDefaultAsync();
                 if (userId != null)
                 {
-                    var isExsit = await _entityRepository.GetAll().Where(v => v.UserId == userId&&v.CreationTime.ToString("yyyyMMdd")==DateTime.Today.ToString("yyyyMMdd")).AnyAsync();
+                    bool isExsit = await _entityRepository.GetAll().Where(v => v.UserId == userId && v.CreationTime.Date == DateTime.Today).AnyAsync();
 
                     var employee = await _employeeRepository.GetAll().Where(v => v.Id == userId).FirstOrDefaultAsync();
 
@@ -280,7 +280,7 @@ namespace HC.WeChat.LuckySigns
                     {
                         Code = 0,
                         Msg = "查询成功",
-                        Data= new GetLuckySignInfoDto
+                        Data = new GetLuckySignInfoDto
                         {
                             Name = employee.Name,
                             Code = employee.Code,
@@ -289,16 +289,16 @@ namespace HC.WeChat.LuckySigns
                         }
                     };
                 }
-                else 
+                else
                 {
                     return new APIResultDto
                     {
-                        Code = 902,
-                        Msg = "未获取到个人信息，请关注公众号!"
+                        Code = 801,
+                        Msg = "非内部员工，请前往绑定！"
                     };
                 }
             }
-            else 
+            else
             {
                 return new APIResultDto
                 {
@@ -313,7 +313,7 @@ namespace HC.WeChat.LuckySigns
         /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
-        public async Task<APIResultDto> GetCreateWXLuckyDrawAsync(string openId) 
+        public async Task<APIResultDto> GetCreateWXLuckyDrawAsync(string openId)
         {
             var wechatEn = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
 
@@ -322,8 +322,9 @@ namespace HC.WeChat.LuckySigns
                 var employee = await _employeeRepository.GetAll().Where(v => v.Id == wechatEn.UserId).FirstOrDefaultAsync();
                 if (employee != null)
                 {
-                    await _entityRepository.InsertAsync(new LuckySign { 
-                    UserId= employee.Id
+                    await _entityRepository.InsertAsync(new LuckySign
+                    {
+                        UserId = employee.Id
                     });
                     return new APIResultDto
                     {
@@ -331,7 +332,7 @@ namespace HC.WeChat.LuckySigns
                         Code = 0
                     };
                 }
-                else 
+                else
                 {
                     return new APIResultDto
                     {
@@ -340,7 +341,7 @@ namespace HC.WeChat.LuckySigns
                     };
                 }
             }
-            else 
+            else
             {
                 return new APIResultDto
                 {
@@ -356,26 +357,26 @@ namespace HC.WeChat.LuckySigns
         /// <returns></returns>
         [AbpAllowAnonymous]
         [DisableAuditing]
-        public async Task<APIResultDto> GetSignInPeronNumAsync() 
+        public async Task<APIResultDto> GetSignInPeronNumAsync()
         {
             //总人数
-            var num_Total =await  _employeeRepository.CountAsync();
+            var num_Total = await _employeeRepository.CountAsync();
 
-            var employeelist= await _employeeRepository.GetAll().Select(v=>v.Id).ToListAsync();
+            var employeelist = await _employeeRepository.GetAll().Select(v => v.Id).ToListAsync();
 
             //已签到人数
-            var num_Signed =await _entityRepository.CountAsync(v=>employeelist.Contains(v.UserId)&&v.CreationTime.ToString("yyyyMMdd")==DateTime.Today.ToString("yyyyMMdd"));
+            var num_Signed = await _entityRepository.CountAsync(v => employeelist.Contains(v.UserId) && v.CreationTime.ToString("yyyyMMdd") == DateTime.Today.ToString("yyyyMMdd"));
 
             return new APIResultDto
             {
                 Code = 0,
-                Msg="获取成功!",
-                Data=new SignInPeronNumDto 
+                Msg = "获取成功!",
+                Data = new SignInPeronNumDto
                 {
-                    Num_Total=num_Total,
-                    Num_UnSign= num_Signed
+                    Num_Total = num_Total,
+                    Num_UnSign = num_Signed
                 }
-            };            
+            };
         }
     }
 }

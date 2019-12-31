@@ -15,7 +15,7 @@ import { LotteryActivityDetailComponent } from './lottery-activity-detail/lotter
 import { LotteryActivityJoinListComponent } from './lottery-activity-join-list/lottery-activity-join-list.component';
 import { LotteryActivityJoinDetailComponent } from './lottery-activity-join-detail/lottery-activity-join-detail.component';
 import { LotteryActivityEditComponent } from './lottery-activity-edit/lottery-activity-edit.component';
-import { LotteryComponent } from './lottery-draw.component';
+import { LotteryComponent } from './lottery.component';
 
 const COMPONENTS = [LotterySignInDetailComponent,
     LotteryComponent,

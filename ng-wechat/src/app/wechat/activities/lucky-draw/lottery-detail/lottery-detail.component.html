@@ -46,7 +46,6 @@
       <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
     </div>
   </div>
-
   <div class="weui-cell" *ngFor="let i of items.list">
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">{{i.name}}</label></div>
@@ -54,11 +53,7 @@
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">{{i.num}}</label></div>
     </div>
-
   </div>
-
-
-
 
 
   <div class="weui-cells__title" *ngIf="items.lotteryState">中奖者</div>
@@ -104,4 +99,6 @@
       <div class="button-sp-area">
         <button weui-button>加入抽奖</button>
       </div>
+    </div>
+  </div>
 </Page>

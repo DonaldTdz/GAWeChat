@@ -113,7 +113,7 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
 
     //创建新的抽奖
     creatNewLottery() {
-        this.router.navigate(['/lotterys/lottery-draw']);
+        this.router.navigate(['/lotterys/lottery']);
     }
     //查看抽奖活动列表
     showLotteryList() {
@@ -122,7 +122,6 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
 
     //查看签到部门页 admin
     showSignInPeople() {
-
         this.router.navigate(['/lotterys/lottery-sign-in-list']);
     }
     //去签到
@@ -137,7 +136,7 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
 
     //是否为抽奖活动管理员
     getIsLotteryAdmin() {
-        this.wechatUserService.getIsLotteryAdmin({ openId: this.user.openId }).subscribe(data => {
+        this.wechatUserService.getIsLotteryAdmin(this.user.openId).subscribe(data => {
             this.isLotteryAdmin = data;
         });
     }
