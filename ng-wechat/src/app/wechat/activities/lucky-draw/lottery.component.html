@@ -40,11 +40,7 @@
         </div>
       </div>
     </div>
-    <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
-    <div class="weui-cell__bd">
-      <input class="weui-input" type="number" [(ngModel)]="num" name="num" placeholder="请输入奖品数量" weui-input="num"
-        weui-required />
-    </div>
+  
     <div class="button-sp-area" *ngIf="iSPriceButtonShow">
       <button weui-button [disabled]="!f.form.valid" (click)="savePrice()">保存奖品</button>
     </div>
