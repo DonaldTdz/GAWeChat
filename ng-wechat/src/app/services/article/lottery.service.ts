@@ -177,8 +177,8 @@ export class LotteryService {
     }
 
     //绑定工号
-    bindJobNumberAync(openId: string, jobNumber: string): Observable<ApiResult<any>> {
-        return this.http.get('/api/services/app/Employee/BindJobNumberAync?openId=' + openId + '&jobNumber=' + jobNumber).map(data => {
+    loterryBindWeChatUserAsync(input: any): Observable<ApiResult<any>> {
+        return this.http.post('/api/services/app/WeChatUser/LoterryBindWeChatUserAsync', input).map(data => {
             let result = new ApiResult<any>();
             result = data.result;
             return result;

@@ -96,7 +96,19 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
     } as DialogConfig;
 
     this.src.show(cog).subscribe((res: any) => {
-      //res.result 输入文字
+    });
+  }
+
+  bingUser() {
+    let input: any = {};
+    input.openId = this.settingsService.openId;
+    input.code = "";
+    this.lotteryService.loterryBindWeChatUserAsync(input).subscribe(result => {
+      if (result && result.data.code == 0) {
+        //todo
+      } else {
+        this.srv['warn'](result.data.msg);
+      }
     });
   }
 }
