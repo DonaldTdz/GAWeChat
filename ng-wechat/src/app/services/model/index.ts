@@ -31,3 +31,4 @@ export * from './demand-forecast';
 export * from './demand-detail';
 export * from './forecast-record-dto';
 export * from './questionnaire-fill-record';
+export * from './lucky-draw';

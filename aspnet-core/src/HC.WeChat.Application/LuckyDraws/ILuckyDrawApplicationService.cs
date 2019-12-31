@@ -121,5 +121,12 @@ namespace HC.WeChat.LuckyDraws
         /// <returns></returns>
         Task<List<GetLuckyDeptmentLotteryPersonDto>> GetLuckyDeptmentLotteryPersonAsync(Guid luckyId);
         Task<string> GetAuthorizationUrl(string host);
+        /// <summary>
+        /// 更新一个抽奖活动
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task<APIResultDto> RenewWXLuckyDrawAsync(WeiXinCreateInput input);
+
     }
 }

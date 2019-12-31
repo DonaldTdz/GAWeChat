@@ -16,6 +16,7 @@ import { LuckyDraw, WXLuckyDrawDetailIDOutput, LotteryJoinDeptDetailOutput } fro
 @Injectable()
 export class LotteryService {
     constructor(private http: HttpClient) { }
+    //创建新的活动
     CreateWXLuckyDrawAsync(input: any): Observable<ApiResult<any>> {
         return this.http.post('/api/services/app/LuckyDraw/CreateWXLuckyDrawAsync', input).map(data => {
             let result = new ApiResult<any>();
@@ -24,11 +25,21 @@ export class LotteryService {
         });
     }
 
+    //更新一个活动
+    updateWXLuckyDrawAsync(input: any): Observable<ApiResult<any>> {
+        return this.http.post('/api/services/app/LuckyDraw/RenewWXLuckyDrawAsync', input).map(data => {
+            let result = new ApiResult<any>();
+            result = data.result;
+            return result;
+        });
+    }
+    //获得活动列表
     getWXLuckyDrawListAsync(): Observable<LuckyDraw[]> {
         return this.http.get('/api/services/app/LuckyDraw/GetWXLuckyDrawListAsync').map(data => {
             return data.result;
         });
     }
+
 
     updateWXLuckyDrawPubStatusAsync(input: any): Observable<ApiResult<any>> {
         return this.http.post('/api/services/app/LuckyDraw/ChangeWXLuckyDrawPubStatusAsync', input).map(data => {
@@ -152,6 +163,25 @@ export class LotteryService {
             } else {
                 return null;
             }
+        });
+    }
+
+
+    //查询工号信息
+    getJobNumberInfoAsync(jobNumber: string): Observable<ApiResult<any>> {
+        return this.http.get('/api/services/app/Employee/GetJobNumberInfoAsync?jobNumber=' + jobNumber).map(data => {
+            let result = new ApiResult<any>();
+            result = data.result;
+            return result;
+        });
+    }
+
+    //绑定工号
+    bindJobNumberAync(openId: string, jobNumber: string): Observable<ApiResult<any>> {
+        return this.http.get('/api/services/app/Employee/BindJobNumberAync?openId=' + openId + '&jobNumber=' + jobNumber).map(data => {
+            let result = new ApiResult<any>();
+            result = data.result;
+            return result;
         });
     }
 }

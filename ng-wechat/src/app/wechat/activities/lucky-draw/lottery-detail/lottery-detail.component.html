@@ -88,13 +88,20 @@
       <div class="weui-cell__hd">
         <label class="weui-label">{{p.num}}</label>
       </div>
-    </div>
-  </div>
-
-  <div class="button-sp-area">
-    <!-- <button weui-button [weui-loading]="loading" (click)="loading = !loading" *ngIf="items.isSignIn&&!items.lotteryState">加入抽奖</button> -->
-    <!-- <button weui-button disabled *ngIf="!items.isSignIn&&!items.lotteryState">未签到无抽奖资格</button> -->
-  </div>
-
-
+      <div class="weui-cell" *ngFor="let p of items.lotteryDetails">
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">{{p.name}}</label></div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd"><label class="weui-label">{{p.prizeName}}</label></div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">{{p.num}}</label>
+          </div>
+        </div>
+      </div>
+      <div class="button-sp-area">
+        <button weui-button>加入抽奖</button>
+      </div>
 </Page>

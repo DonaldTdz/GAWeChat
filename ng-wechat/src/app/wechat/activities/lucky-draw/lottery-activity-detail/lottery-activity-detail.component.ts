@@ -12,6 +12,8 @@ import { WXLuckyDrawDetailIDOutput } from '../../../../services/model/lucky-draw
 export class LotteryActivityDetailComponent extends AppComponentBase implements OnInit {
   @Input() id: string;//活动详情Id
   items:WXLuckyDrawDetailIDOutput=new WXLuckyDrawDetailIDOutput();//用于接收抽奖活动详细信息的类
+  num_Total:number;//总人数
+  num_Lottery:number;//抽奖人数
 
   constructor(private actRouter: ActivatedRoute
     ,private lotteryService: LotteryService
@@ -23,6 +25,7 @@ export class LotteryActivityDetailComponent extends AppComponentBase implements 
 
   ngOnInit() {
     this.getDetail();
+
   }
 
 
@@ -32,6 +35,7 @@ export class LotteryActivityDetailComponent extends AppComponentBase implements 
       console.log(result);
       this.items=result;
     });
+    this.showLotteryCount();
   }
 
   //公布该活动
@@ -48,6 +52,15 @@ export class LotteryActivityDetailComponent extends AppComponentBase implements 
   shoWLotteryJoinList(){
 
      this.router.navigate(['/lotterys/lottery-activity-join-list',{id:this.id,name:this.items.name}]);
+  }
+
+  //显示人数统计
+  showLotteryCount(){
+    this.lotteryService.getLuckyDrawPersonCountAsync(this.id).subscribe(result => {
+      this.num_Total=result.num_Total;
+      this.num_Lottery=result.num_Lottery;
+      
+    });
   }
 
 }

@@ -279,7 +279,7 @@ namespace HC.WeChat.LuckySigns
                     return new APIResultDto
                     {
                         Code = 0,
-                        Msg = "Success",
+                        Msg = "查询成功",
                         Data= new GetLuckySignInfoDto
                         {
                             Name = employee.Name,
@@ -294,7 +294,7 @@ namespace HC.WeChat.LuckySigns
                     return new APIResultDto
                     {
                         Code = 902,
-                        Msg = "未获取到个人信息，请重新关注公众号！"
+                        Msg = "未获取到个人信息，请关注公众号!"
                     };
                 }
             }
@@ -317,7 +317,7 @@ namespace HC.WeChat.LuckySigns
         {
             var wechatEn = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).FirstOrDefaultAsync();
 
-            if (wechatEn != null)
+            if (wechatEn != null)//
             {
                 var employee = await _employeeRepository.GetAll().Where(v => v.Id == wechatEn.UserId).FirstOrDefaultAsync();
                 if (employee != null)
@@ -345,7 +345,7 @@ namespace HC.WeChat.LuckySigns
                 return new APIResultDto
                 {
                     Code = 901,
-                    Msg = "你还未关注微信公众号!"
+                    Msg = "你还未关注微信公众号!请先关注"
                 };
             }
 

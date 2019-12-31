@@ -9,16 +9,17 @@
                     </div>
                     <div class="weui-media-box__bd">
                         <ul class="weui-media-box__info">
-                            <li class="weui-media-box__info__meta sp">{{items.name}}</li>
+                            <li class="weui-media-box__info__meta sp">活动名字：{{items.name}}</li>
                         </ul>
                         <ul class="weui-media-box__info pc">
-                            <li class="weui-media-box__info__meta t">{{items.creationTime| date:'yyyy-MM-dd HH:mm'}}</li>
+                            <li class="weui-media-box__info__meta t">开始时间：{{items.beginTime| date:'yyyy-MM-dd HH:mm'}}</li>
+                            <li class="weui-media-box__info__meta t">截至时间：{{items.endTime| date:'yyyy-MM-dd HH:mm'}}</li>
+                            <li class="weui-media-box__info__meta t">是否发布: {{items.isPublish==true?"是":"否"}}</li>
                         </ul>
                     </div>
                 </div>
                 <div class="weui-cell weui-cell_access">
-                    <a class="weui-form-preview__btn weui-form-preview__btn_primary" (click)="goToDetail(items.id)">点击查看</a>
-                    <a class="weui-form-preview__btn weui-form-preview__btn_primary" *ngIf="!items.isPublish" (click)="goToDetail(items.id)">点击编辑</a>
+                    <a class="weui-form-preview__btn weui-form-preview__btn_primary" (click)="goToDetail(items.id,items.isPublish)">点击查看</a>
                 </div>
             </div>
         </div>

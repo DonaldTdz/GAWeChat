@@ -24,7 +24,7 @@ export class LotteryActivitiesListComponent implements OnInit {
 
     this.lotterydrawService.getWXLuckyDrawListAsync().subscribe(result => {
       this.item=result;
-  
+      console.log(result)
      });
   }
   onLoadMore(){
@@ -49,7 +49,12 @@ export class LotteryActivitiesListComponent implements OnInit {
     });
 
   }
-  goToDetail(id:string){
-    this.router.navigate(['/lotterys/lottery-activity-detail',{id:id}]);
+  goToDetail(id:string,isPublish:boolean){
+    if(isPublish){
+      this.router.navigate(['/lotterys/lottery-activity-detail',{id:id}]);
+    }else{
+      this.router.navigate(['/lotterys/lottery-activity-edit',{id:id}]);
+    }
+    
   }
 }

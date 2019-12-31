@@ -24,7 +24,7 @@
 
     <div class="weui-cell">
       <div class="weui-cell__bd">
-        <p>是否公布</p>
+        <p>是否发布</p>
       </div>
       <div class="weui-cell__ft">{{items.isPublish==true?"是":"否"}}</div>
     </div>
@@ -42,6 +42,13 @@
       </div>
       <div class="weui-cell__ft"></div>
     </a>
+  </div>
+  <a class="weui-cell weui-cell_access" (click)="shoWLotteryJoinList()" *ngIf="items.isPublish">
+    <div class="weui-cell__bd">
+      <p>参与列表</p>
+    </div>
+    <div class="weui-cell__ft">{{num_Lottery}}/{{num_Total}}</div>
+  </a>
   </div>
 
   <div class="weui-cells__title">奖品详情</div>
@@ -82,6 +89,23 @@
     </div>
   </div>
 
-  <button weui-button (click)="publish()" *ngIf="!items.isPublish">发布</button>
+  <div class="weui-cells__title" *ngIf="items.isPublish&&items.lotteryState">中奖人</div>
+  <div class="weui-cell">
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">中奖人</label></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">奖品</label></div>
+    </div>
+  </div>
+  <div class="weui-cell" *ngFor="let i of items.lotteryDetails">
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">{{i.name}}</label></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">{{i.prizeName}}</label></div>
+    </div>
+  </div>
+  <div class="weui-cells__title" *ngIf="!items.lotteryState&&items.isPublish">未开奖</div>
 
 </Page>

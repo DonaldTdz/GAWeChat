@@ -75,13 +75,13 @@ export interface ILuckyDraw {
 }
 
 //抽奖情况详细信息
-export class WXLuckyDrawDetailIDOutput {
+export class WXLuckyDrawDetailIDOutput implements IWXLuckyDrawDetailIDOutput{
 
     name:string;
     beginTime: Date;
     endTime:Date;
     isPublish:boolean;
-    lotteryState:Date;
+    lotteryState:boolean;
     list:WeiXinPriceInput[];
     lotteryDetails:LotteryDetailDto[];
     constructor(data?: ILotteryDetailDto) { 
@@ -140,31 +140,20 @@ export class WXLuckyDrawDetailIDOutput {
         return result;
     }
 }
-export interface WXLuckyDrawDetailIDOutput{
+export interface IWXLuckyDrawDetailIDOutput{
     name:string;
     beginTime: Date;
     endTime:Date;
     isPublish:boolean;
-    lotteryState:Date;
+    lotteryState:boolean;
     list:WeiXinPriceInput[];
 } 
 
-//奖品等级枚举
-export enum PrizeType{
-    一等奖 = 1,
-    二等奖 = 2,
-    三等奖 = 3,
-    四等奖 = 4,
-    安慰奖 = 5,
-    参与奖 = 6
-}
-
 //输出子类
-export class WeiXinPriceInput {
+export class WeiXinPriceInput implements IWeiXinPriceInput{
 
     name:string;
     num: number;
-    type:PrizeType;
     constructor(data?: IWeiXinPriceInput) { 
         if (data) {
             for (var property in data) {
@@ -178,7 +167,6 @@ export class WeiXinPriceInput {
         if (data) {
             this.name = data["name"];
             this.num = data["num"];
-            this.type = data["type"];
         }
     }
 
@@ -202,7 +190,6 @@ export class WeiXinPriceInput {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["num"] = this.num;
-        data["type"] = this.type;
         return data;
     }
 
@@ -218,10 +205,9 @@ export interface IWeiXinPriceInput {
    
     name:string;
     num: number;
-    type:PrizeType;
 }
 
-export class LotteryDetailDto {
+export class LotteryDetailDto implements ILotteryDetailDto{
     name:string;
     num: number;
     prizeName:string;
@@ -280,7 +266,7 @@ export interface ILotteryDetailDto {
     prizeName: string;
 }
 
-export class LotteryJoinDeptDetailOutput {
+export class LotteryJoinDeptDetailOutput implements ILotteryJoinDeptDetailOutput{
     name:string;
     code: string;
     isJoin:boolean;
@@ -339,7 +325,7 @@ export interface ILotteryJoinDeptDetailOutput {
     isJoin: boolean;
 }
 
-export class GetEmployeeDetailByDeptOutput {
+export class GetEmployeeDetailByDeptOutput implements IGetEmployeeDetailByDeptOutput{
     name:string;
     code: string;
     isSign:boolean;
