@@ -129,16 +129,16 @@ namespace HC.WeChat.MemberConfigs
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public async Task CreateOrUpdateMemberConfig(CreateOrUpdateMemberConfigInput input)
+        public async Task CreateOrUpdateMemberConfig(MemberConfigEditDto input)
         {
 
-            if (input.MemberConfig.Id.HasValue)
+            if (input.Id.HasValue)
             {
-                await UpdateMemberConfigAsync(input.MemberConfig);
+                await UpdateMemberConfigAsync(input);
             }
             else
             {
-                await CreateMemberConfigAsync(input.MemberConfig);
+                await CreateMemberConfigAsync(input);
             }
         }
 
@@ -434,6 +434,17 @@ namespace HC.WeChat.MemberConfigs
             {
                 return Convert.ToInt32(limitFrequency);
             }
+        }
+
+
+        /// <summary>
+        /// 获取抽奖活动管理员
+        /// </summary>
+        /// <returns></returns>
+        public async Task<MemberConfigListDto> GetLotteryConfigAsync()
+        {
+            var entity = await _memberconfigRepository.GetAll().Where(v=>v.Type == DeployTypeEnum.抽奖配置 && v.Code == DeployCodeEnum.抽奖活动管理员).FirstOrDefaultAsync();
+            return entity.MapTo<MemberConfigListDto>();
         }
     }
 }

@@ -211,7 +211,8 @@ namespace HC.WeChat.WechatEnums
         通知配置 = 2,
         job配置 = 3,
         预设商品配置 = 4,
-        扫码限制配置 =5
+        扫码限制配置 =5,
+        抽奖配置 = 6
     }
     /// <summary>
     /// 配置代码
@@ -227,7 +228,8 @@ namespace HC.WeChat.WechatEnums
         预设商品搜索 = 7,
         次数限制 = 8,
         时间限制 = 9,
-        店铺距离 = 10
+        店铺距离 = 10,
+        抽奖活动管理员 = 11
     }
     /// <summary>
     /// 文章发布状态

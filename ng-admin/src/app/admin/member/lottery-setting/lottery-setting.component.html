@@ -1,105 +1,49 @@
-<!--component html goes here -->
-
-<nz-tabset [nzSize]="'default'">
+<nz-tabset>
     <nz-tab>
-        <ng-template #nzTabHeading>积分抽奖设置</ng-template>
-        <!-- <div nz-row [nzGutter]="16">
-            <div nz-col [nzMd]="24"> -->
+        <ng-template #nzTabHeading>
+            抽奖配置
+        </ng-template>
         <nz-card>
-            <form nz-form [formGroup]="form" (ngSubmit)="save()">
-                <fieldset>
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSm]="4">
-                            <label for="name" nz-form-item-required>
-                                <span> 抽奖活动</span>
-                            </label>
+            <form nz-form [formGroup]="form" id="frm_create_role">
+                <div nz-row>
+                    <div nz-col [nzSpan]="16">
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="rcValue"> 当前抽奖活动管理员</label>
+                            </div>
+                            <div nz-col [nzSm]="4">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="button"
+                                    (click)="employee()">
+                                    选择抽奖活动管理员
+                                </button>
+                            </div>
                         </div>
-                        <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('name')">
-                            <nz-input formControlName="name" nzPlaceHolder="奖品名称" [nzId]="'name'" [(ngModel)]="luckyDraw.name" ></nz-input>
-                            <!-- <ng-container *ngIf="name.dirty || name.touched">
-                                <p nz-form-explain *ngIf="name.errors?.required">请输入抽奖活动名称</p>
-                                <p nz-form-explain *ngIf="name.errors?.maxLength">字符长度小于200</p>
-                            </ng-container> -->
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">请输入抽奖活动名称</div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('maxlength')">字符长度小于200</div>
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="5">
+                                <label for="user">已选择抽奖活动管理员</label>
+                            </div>
+                            <div nz-form-control nz-col [nzSm]="19">
+                                <nz-tag *ngFor="let item of usersDto" nzClosable
+                                    (nzClose)="onClose($event, item.openId)">
+                                    {{item.userName}}</nz-tag>
+                            </div>
                         </div>
-                    </div>
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSm]="4">
-                            <label for="consume" nz-form-item-required>消耗积分</label>
-                        </div>
-                        <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('consume')">
-                            <nz-input-number formControlName="consume" [(ngModel)]="luckyDraw.consume" [nzMin]="0"  [nzStep]="1"  ></nz-input-number>
-                        </div>
-                    </div>
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSm]="4">
-                            <label for="frequency" nz-form-item-required>每日抽奖次数</label>
-                        </div>
-                        <div nz-form-control nz-col [nzSm]="20" nzHasFeedback [nzValidateStatus]="getFormControl('frequency')">
-                            <!-- <nz-input formControlName="frequency" [nzId]="'frequency'"></nz-input> -->
-                            <nz-input-number formControlName="frequency" [(ngModel)]="luckyDraw.frequency" [nzMin]="0"  [nzStep]="1"  ></nz-input-number>
-                        </div>
-                    </div>
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="4" [nzSm]="5">
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit" [nzLoading]="isConfirmLoading">
-                                {{l("保存")}}
-                            </button>
+                        <div nz-form-item nz-row>
+                            <div nz-form-label nz-col [nzSm]="9">
+                                <button nz-button *ngIf="usersDto.length!=0" [nzType]="'default'" [nzSize]="'large'"
+                                    type="button" (click)="cancel()">
+                                    清空
+                                </button>
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="button"
+                                    (click)="saveConfig()" [nzLoading]="wxloading">
+                                    保存
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </fieldset>
+                </div>
             </form>
-        </nz-card>
-        <!-- </div>
-        </div> -->
-    </nz-tab>
-    <nz-tab>
-        <ng-template #nzTabHeading>中奖记录</ng-template>
-        <nz-card>
-            <nz-table #nzTable1 [nzAjaxData]="winningRecords" [nzTotal]="query.total" [(nzPageIndex)]="query.pageIndex" [(nzPageSize)]="query.pageSize"
-                [nzLoading]="loading" [nzShowTotal]="'true'" [nzShowSizeChanger]="true" (nzPageIndexChange)="refreshData()" (nzPageSizeChange)="refreshData()">
-                <thead nz-thead>
-                    <tr>
-                        <th nz-th>
-                            <span>微信用户名</span>
-                        </th>
-                        <th nz-th>
-                            <span>奖品</span>
-                        </th>
-                        <th nz-th>
-                            <span>中奖时间</span>
-                        </th>
-                        <th nz-th>
-                            <span>中奖数量</span>
-                        </th>
-                        <th nz-th>
-                            <span>申领时间</span>
-                        </th>
-                        <th nz-th>
-                            <span>过期时间</span>
-                        </th>
-                        <th nz-th>
-                            <span>兑换时间</span>
-                        </th>
-                        <th nz-th>
-                            <span>操作</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody nz-tbody>
-                    <tr nz-tbody-tr *ngFor="let winningRecord of nzTable1.data">
-                        <td nz-td>{{winningRecord.userName}}</td>
-                        <td nz-td>{{winningRecord.prizeName}}</td>
-                        <td nz-td>{{winningRecord.winningTime}}</td>
-                        <td nz-td>{{winningRecord.num}}</td>
-                        <td nz-td>{{winningRecord.applyTime}}</td>
-                        <td nz-td>{{winningRecord.expiryTime}}</td>
-                        <td nz-td>{{winningRecord.completeTime}}</td>
-                        <td nz-td> <a (click)="detail(retail)">详情</a></td>
-                    </tr>
-                </tbody>
-            </nz-table>
         </nz-card>
     </nz-tab>
 </nz-tabset>
+<message-employee-modal #selectsEmployeeModal (modalSelect)="getSelectData($event)"></message-employee-modal>

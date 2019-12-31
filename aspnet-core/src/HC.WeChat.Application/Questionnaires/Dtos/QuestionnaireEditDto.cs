@@ -9,13 +9,13 @@ using HC.WeChat.WechatEnums;
 namespace  HC.WeChat.Questionnaires.Dtos
 {
     [AutoMapTo(typeof(Questionnaire))]
-    public class QuestionnaireEditDto: FullAuditedEntity<Guid>
+    public class QuestionnaireEditDto: FullAuditedEntity<Guid?>
     {
 
         /// <summary>
         /// Id
         /// </summary>
-        public Guid? Id { get; set; }
+        //public Guid? Id { get; set; }
 
 
 

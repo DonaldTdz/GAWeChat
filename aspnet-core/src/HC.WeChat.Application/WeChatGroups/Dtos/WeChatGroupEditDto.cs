@@ -6,11 +6,11 @@ using Abp.Domain.Entities.Auditing;
 
 namespace HC.WeChat.WeChatGroups.Dtos
 {
-    public class WeChatGroupEditDto : AuditedEntity
+    public class WeChatGroupEditDto : AuditedEntity<int?>
     {
         ////BCC/ BEGIN CUSTOM CODE SECTION
         ////ECC/ END CUSTOM CODE SECTION
-        public int? Id { get; set; }
+        //public int? Id { get; set; }
         /// <summary>
         /// 用户类型code
         /// </summary>
