@@ -17,6 +17,8 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
 
   hostUrl: string = AppConsts.remoteServiceBaseUrl;
   items: GetLuckySignInfoDto = new GetLuckySignInfoDto();//个人签到信息实体
+  isBind: boolean = true;//是否已经绑定
+  isSigned: boolean;//是否签到
 
   //弹窗信息设置
   private DEFCONFIG: DialogConfig = {
@@ -60,7 +62,7 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
         this.srv['success']('签到成功');
         this.onload();
       } else {
-        this.srv['success'](result.msg);
+        this.srv['warn'](result.msg);
       }
     });
   }
@@ -70,7 +72,9 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
     this.lotteryService.getLuckySignInfoAsync(this.settingsService.openId).subscribe(result => {
       if (result.code === 0) {//成功
         this.items = result.data;
+        this.isSigned = result.data.lotteryState
       } else if (result.code === 801) {
+        this.isBind = false;
         this.bindJobNumber();
       }
       else {
@@ -96,18 +100,21 @@ export class LotterySignInComponent extends AppComponentBase implements OnInit {
     } as DialogConfig;
 
     this.src.show(cog).subscribe((res: any) => {
-    });
-  }
-
-  bingUser() {
-    let input: any = {};
-    input.openId = this.settingsService.openId;
-    input.code = "";
-    this.lotteryService.loterryBindWeChatUserAsync(input).subscribe(result => {
-      if (result && result.data.code == 0) {
-        //todo
-      } else {
-        this.srv['warn'](result.data.msg);
+      if (res.value == true) {
+        //点击确认按钮
+        var param: any = {};
+        param.openId = this.settingsService.openId;
+        param.code = res.result;
+        this.lotteryService.loterryBindWeChatUserAsync(param).subscribe(result => {
+          if (result.code === 0) {
+            this.srv['success']('绑定成功');
+            this.isBind = true;
+            this.onload();
+          } else {
+            this.srv['warn'](result.msg);
+          }
+        })
+      } else {//取消按钮
       }
     });
   }

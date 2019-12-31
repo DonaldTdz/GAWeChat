@@ -24,9 +24,9 @@
         <span class="weui-form-preview__value">未签到的员工无法参与年会的抽奖</span>
       </div>
     </div>
-    <div class="button-sp-area" *ngIf="!items.lotteryState">
-      <button weui-button [weui-loading]="loading" (click)="signIn()">签到</button>
-      <button weui-button [weui-loading]="loading" (click)="bindJobNumber()">测试</button>
+    <div class="button-sp-area">
+      <button weui-button [weui-loading]="loading" (click)="signIn()" *ngIf="!isSigned&&isBind">签到</button>
+      <button weui-button [weui-loading]="loading" (click)="bindJobNumber()" *ngIf="!isBind">绑定</button>
     </div>
   </div>
 </Page>
