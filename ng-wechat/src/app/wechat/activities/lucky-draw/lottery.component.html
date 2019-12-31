@@ -22,11 +22,11 @@
       <div class="weui-cell">
         <div class="weui-cell__hd"><label for="" class="weui-label">开始时间</label></div>
         <div class="weui-cell__bd">
-          <input class="weui-input" type="datetime-local" [(ngModel)]="input.beginTime" name="beginTime" value="" placeholder="" />
+          <input class="weui-input" type="datetime-local" [(ngModel)]="input.beginTime" name="beginTime" weui-required />
         </div>
       </div>
       <div class="weui-cell">
-        <div class="weui-cell__hd"><label for="" class="weui-label">结束时间</label></div>
+        <div class="weui-cell__hd"><label for="" class="weui-label">截止时间</label></div>
         <div class="weui-cell__bd">
           <input class="weui-input" type="datetime-local" [(ngModel)]="input.endTime" name="endTime" value="" placeholder="" />
         </div>
@@ -41,11 +41,11 @@
       <div class="weui-cell">
         <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
       </div>
-        <div class="weui-cell">
+        <!-- <div class="weui-cell">
           <div class="weui-cell__hd">
             <label class="weui-label">奖品等级</label>
           </div>
-      </div>
+      </div> -->
       </div>
 
       <div class="weui-cell" *ngFor="let i of items">
@@ -55,11 +55,11 @@
         <div class="weui-cell">
           <div class="weui-cell__hd"><label class="weui-label">{{i.num}}</label></div>
         </div>
-          <div class="weui-cell">
+          <!-- <div class="weui-cell">
             <div class="weui-cell__hd">
               <label class="weui-label">{{i.type}}</label>
             </div>
-        </div>
+        </div> -->
         </div>
 
         <div class="weui-cell" *ngIf="iSPriceButtonShow">
@@ -90,26 +90,11 @@
             weui-required
           />
         </div>
+        <div class="button-sp-area" *ngIf="iSPriceButtonShow">
+          <button weui-button [disabled]="!f.form.valid"  (click)="savePrice()">保存奖品</button>
       </div>
-        <div class="weui-cell" *ngIf="iSPriceButtonShow">
-          <div class="weui-cell__hd">
-            <label class="weui-label">奖品等级</label>
-          </div>
-          <div class="weui-cell__bd">
-            <weui-picker
-              placeholder="选择奖品等级"
-              required
-              [groups]="itemGroup"
-              [(ngModel)]="type"
-              name="type"
-            ></weui-picker>
-          </div>
-     
-      <br>
-      <div class="button-sp-area" *ngIf="iSPriceButtonShow">
-        <button weui-button  (click)="savePrice()">保存奖品</button>
-    </div>
-  </div>
+      </div>
+      
 
 
       <a
@@ -122,7 +107,7 @@
       <a  (click)="closeMore()" *ngIf="iSPriceButtonShow"
       class="weui-cell weui-cell_link"
     >
-      <div class="weui-cell__bd">关闭添加奖品</div>
+      <div class="weui-cell__bd">关闭</div>
     </a>
 
 
@@ -130,13 +115,13 @@
     <div class="button-sp-area">
       <button
         class="weui-btn weui-btn_primary"
-        [disabled]=""
+        [disabled]="!f.form.valid"
         [ngClass]="default"
         (click)="publish()"
       >
         发布
       </button>
-      <button weui-button [weui-plain]="true" (click)="onSave()">保存</button>
+      <button weui-button [weui-plain]="true" [disabled]="!f.form.valid" (click)="onSave()">保存</button>
     </div>
   </form>
   <!--将对话框组件放在底部-->

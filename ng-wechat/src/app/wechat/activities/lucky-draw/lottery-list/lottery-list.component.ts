@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { LotteryService } from '../../../../services/article/lottery.service';
+import { LuckyDraw } from '../../../../services/model/lucky-draw';
 
 @Component({
   selector: 'lottery-list',
@@ -8,27 +9,22 @@ import { LotteryService } from '../../../../services/article/lottery.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class LotteryListComponent implements OnInit {
-
+  items:LuckyDraw[]=[];//内部员工获取抽奖列表实体集合
   constructor(private lotteryService: LotteryService
     ,private router: Router) { }
-
+  
   ngOnInit() {
     this.onload();
   }
-  items:any=[];
-
   //加载列表
   onload(){
     this.lotteryService.getWXLuckyDrawListPublishedAsync().subscribe(result => {
-      console.log(result);
-      this.items=result;
+    this.items=result;
     });
   }
 
   //进入抽奖详情页并参与抽奖
   goToJoin(id:string){
-    console.log("11")
     this.router.navigate(['/lotterys/lottery-detail',{id:id}]);
   }
-
 }

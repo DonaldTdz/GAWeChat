@@ -1,16 +1,14 @@
-<Page [ngClass]="'article'" [title]="'广安烟草'" [subTitle]="'签到情况查看'" [spacing]="false">
-
+<Page [ngClass]="'article'" [title]="'广安烟草'" [subTitle]="'抽奖情况查看'" [spacing]="false">
     <article class="weui-article">
       <h1>部门列表</h1>
       <div class="weui-cells">
-      <div class="weui-cells__title">签到人数：{{num_UnSign}}/{{num_Total}}</div>
+      <div class="weui-cells__title">抽奖人数：{{num_Lottery}}/{{num_Total}}</div>
 
     </div>
       <div class="weui-cells">
         <a *ngFor="let i of items" class="weui-cell weui-cell_access" (click)="goToDetail(i.name)">
           <div class="weui-cell__bd">{{ i.name }}</div>
-          <div class="weui-cell__ft">{{ i.signed }}/{{i.total}}</div>
-          <!-- <div class="weui-cell__ft" ></div> -->
+          <div class="weui-cell__ft" >{{i.num_Lottery}}/{{i.num_Total}}</div>
         </a>
       </div>
     </article>

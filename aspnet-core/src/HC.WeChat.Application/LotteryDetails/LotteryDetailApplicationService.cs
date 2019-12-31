@@ -201,7 +201,7 @@ namespace HC.WeChat.LotteryDetails
         /// <param name="luckyId"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        private async Task<APIResultDto> GetLotteryLogicAsync(Guid luckyId)
+        public async Task<APIResultDto> GetLotteryLogicAsync(Guid luckyId)
         {
             var empList = await _luckySignRepository.GetAll().Where(v => v.CreationTime.Date == DateTime.Today).Select(v => v.UserId).ToArrayAsync();
             int empTotal = empList.Length;
@@ -237,7 +237,7 @@ namespace HC.WeChat.LotteryDetails
                 var winEmpList = empList.OrderBy(v => Guid.NewGuid()).Take(prizeTotal).ToList();
                 var prizeList = await _prizeRepository.GetAll().Where(v => v.LuckyDrawId == luckyId).Select(v => new { v.Id, v.Name }).ToListAsync();
                 int i = 0;
-                foreach (var item in winEmpList)
+                foreach (var item in winEmpList) 
                 {
                     LotteryDetail entity = new LotteryDetail();
                     entity.LuckyDrawId = luckyId;

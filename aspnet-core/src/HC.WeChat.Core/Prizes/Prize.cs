@@ -33,7 +33,6 @@ namespace HC.WeChat.Prizes
         /// <summary>
         /// 类型
         /// </summary>
-        [Required]
         public virtual PrizeType Type { get; set; }
 
         /// <summary>

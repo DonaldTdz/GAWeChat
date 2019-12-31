@@ -52,6 +52,9 @@ namespace  HC.WeChat.LuckyDraws.Dtos
         public DateTime CreationTime { get; set; }
     }
 
+	/// <summary>
+	/// 微信新建一个抽奖活动 输入
+	/// </summary>
 	public class WeiXinCreateInput
 	{
 
@@ -65,7 +68,12 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 
 		public List<WeiXinPriceInput> List { get; set; }
 
+		public string OpenId { get; set; }
+
 	}
+	/// <summary>
+	/// 奖品
+	/// </summary>
 	public class WeiXinPriceInput
 	{
 

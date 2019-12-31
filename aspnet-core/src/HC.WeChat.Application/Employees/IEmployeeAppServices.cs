@@ -82,7 +82,7 @@ namespace HC.WeChat.Employees
         /// 获取部门表
         /// </summary>
         /// <returns></returns>
-        Task<List<string>> GetEmployeeNameListAsyn();
+        Task<List<EmployeeTotalDto>> GetEmployeeNameListAsyn();
 
         /// <summary>
         /// 获取部门下成员表

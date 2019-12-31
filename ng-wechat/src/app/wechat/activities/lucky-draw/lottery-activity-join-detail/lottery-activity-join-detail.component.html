@@ -7,13 +7,13 @@
             <a class="weui-cell weui-cells__title">
                 <div class="weui-cell__hd">姓名</div>
                 <div class="weui-cell__bd" style="text-align:center;">工号</div>
-                <div class="weui-cell__ft">签到</div>
+                <div class="weui-cell__ft">抽奖</div>
             </a>
         </div>
         <a *ngFor="let i of items" class="weui-cell weui-cell_title">
             <div class="weui-cell__hd">{{i.name}}</div>
             <div class="weui-cell__bd" style="text-align:center;">{{i.code}}</div>
-            <div class="weui-cell__ft">{{i.isSign==true?"是":"否"}}</div>
+            <div class="weui-cell__ft">{{i.isJoin==true?"是":"否"}}</div>
         </a>
     </div>
     </article>

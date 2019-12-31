@@ -12,6 +12,9 @@ namespace HC.WeChat.Employees.Dtos
         public EmployeeEditDto Employee { get; set; }
 
 }
+    /// <summary>
+    /// 部门下人员详细输出表
+    /// </summary>
     public class GetEmployeeDetailByDeptOutput { 
     
         public string Name { get; set; }
@@ -19,6 +22,19 @@ namespace HC.WeChat.Employees.Dtos
         public string Code { get; set; }
 
         public bool IsSign { get; set; }
+
+    }
+
+    /// <summary>
+    /// 返回部门列表信息菜单
+    /// </summary>
+    public class EmployeeTotalDto
+    {
+        public int Total { get; set; }
+
+        public int Signed { get; set; }
+
+        public string Name { get; set; }
 
     }
 }

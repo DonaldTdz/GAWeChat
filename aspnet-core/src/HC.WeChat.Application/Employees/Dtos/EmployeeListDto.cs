@@ -41,5 +41,7 @@ namespace HC.WeChat.Employees.Dtos
                 return verCode.Substring(verCode.Length - 6);
             }
         }
+       
+
     }
 }

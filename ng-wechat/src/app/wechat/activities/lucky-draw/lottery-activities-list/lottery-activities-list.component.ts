@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { LotteryService } from '../../../../services/article/lottery.service';
 import { Router } from '@angular/router';
+import { ToptipsService } from 'ngx-weui';
+import { LuckyDraw } from '../../../../services/model/lucky-draw';
 
 @Component({
   selector: 'lottery-activities-list',
@@ -9,20 +11,20 @@ import { Router } from '@angular/router';
 })
 export class LotteryActivitiesListComponent implements OnInit {
 
+  item:LuckyDraw[]=[];//管理员活动列表
   constructor(private lotterydrawService: LotteryService
     ,private router: Router
+    , private srv: ToptipsService
     ) { }
 
   ngOnInit() {
     this.onload();
   }
-  item:any[]=Array();
-
   onload(){
 
     this.lotterydrawService.getWXLuckyDrawListAsync().subscribe(result => {
-       console.log(result);
-       this.item=result;
+      this.item=result;
+  
      });
   }
   onLoadMore(){
@@ -34,6 +36,15 @@ export class LotteryActivitiesListComponent implements OnInit {
     var input:any={};
     input.id=id;
     this.lotterydrawService.updateWXLuckyDrawPubStatusAsync(input).subscribe(result => {
+      if(result.code==0){
+        this.srv['success'](result.msg);
+       }else if(result.code==901){
+        this.srv['warn'](result.msg);
+       }else if(result.code==902){
+        this.srv['warn'](result.msg);
+       }else{
+        this.srv['warn']('服务器错误');
+       }
       this.onload()
     });
 
