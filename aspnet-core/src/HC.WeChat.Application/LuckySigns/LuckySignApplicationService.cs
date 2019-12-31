@@ -23,6 +23,7 @@ using HC.WeChat.LuckySigns.Dtos;
 using HC.WeChat.LuckySigns.DomainService;
 using HC.WeChat.Prizes;
 using HC.WeChat.WeChatUsers;
+using HC.WeChat.Dto;
 using HC.WeChat.Employees;
 using Abp.Auditing;
 using HC.WeChat.Dto;
@@ -36,8 +37,8 @@ namespace HC.WeChat.LuckySigns
     public class LuckySignAppService : WeChatAppServiceBase, ILuckySignAppService
     {
         private readonly IRepository<LuckySign, Guid> _entityRepository;
+        private readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
         private readonly ILuckySignManager _entityManager;
-        IRepository<WeChatUser, Guid> _wechatuserRepository;
         private readonly IRepository<Employee, Guid> _employeeRepository;
 
         /// <summary>
@@ -46,13 +47,13 @@ namespace HC.WeChat.LuckySigns
         public LuckySignAppService(
         IRepository<LuckySign, Guid> entityRepository
         , ILuckySignManager entityManager
-        ,IRepository<WeChatUser, Guid> wechatuserRepository
-          , IRepository<Employee, Guid> employeeRepository
+        , IRepository<WeChatUser, Guid> wechatuserRepository
+        , IRepository<Employee, Guid> employeeRepository
         )
         {
             _entityRepository = entityRepository;
-            _entityManager = entityManager;
             _wechatuserRepository = wechatuserRepository;
+            _entityManager = entityManager;
             _employeeRepository = employeeRepository;
         }
 
@@ -202,6 +203,61 @@ namespace HC.WeChat.LuckySigns
         }
 
         /// <summary>
+        /// 抽奖活动签到
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        public async Task<APIResultDto> LuckySignByIdAsync(string openId)
+        {
+            if (string.IsNullOrEmpty(openId))
+            {
+                return new APIResultDto()
+                {
+                    Code = 401,
+                    Msg = "未获取到当前用户信息，请重新进入公众号"
+                };
+            }       
+
+            var user = await _wechatuserRepository.FirstOrDefaultAsync(v => v.OpenId == openId);
+            if (user == null)
+            {
+                return new APIResultDto()
+                {
+                    Code = 403,
+                    Msg = "未获取到当前用户信息，请重新关注公众号"
+                };
+            }
+
+            else if (user.UserType != WechatEnums.UserTypeEnum.内部员工)
+            {
+                return new APIResultDto()
+                {
+                    Code = 901,
+                    Msg = "非内部员工，请前往绑定！"
+                };
+            }
+
+            else if (!user.UserId.HasValue)
+            {
+                return new APIResultDto()
+                {
+                    Code = 902,
+                    Msg = "内部员工信息获取异常，请重新绑定！"
+                };
+            }
+
+            LuckySign entity = new LuckySign();
+            entity.UserId = user.UserId.Value;
+            await _entityRepository.InsertAsync(entity);
+            return new APIResultDto()
+            {
+                Code = 0,
+                Msg = "签到成功！"
+            };
+        }
+
+
+        /// 通过openId获取个人抽奖状态  --抽奖
         /// 通过openId获取个人签到状态 
         /// </summary>
         /// <param name="openId"></param>
@@ -321,8 +377,5 @@ namespace HC.WeChat.LuckySigns
                 }
             };            
         }
-
     }
 }
-
-

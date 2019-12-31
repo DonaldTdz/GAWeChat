@@ -24,6 +24,7 @@ namespace HC.WeChat.Web.Host.Controllers
         //private string host = "http://wx.photostory.top";
         //private string host = "http://hcwx.sayequ.me";
         //private string host = "http://ga.hechuangcd.com";
+        //private string host = "http://gy.hechuangcd.com";
         private int? tenantId;
 
         private string UserOpenId
@@ -292,6 +293,16 @@ namespace HC.WeChat.Web.Host.Controllers
                         //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
                     }
                     break;
+                case GAAuthorizationPageEnum.Lottery:
+                    {
+                        if (!string.IsNullOrEmpty(UserOpenId))
+                        {
+                            return Redirect(string.Format(GAAuthorizationPageUrl.LotteryUrl, param));
+                        }
+                        url = host + "/GAWX/Lottery";
+                        //ViewBag.PageUrl = _weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base);
+                    }
+                    break;
                 default:
                     {
                         return Redirect("/gawechat/index.html");
@@ -467,6 +478,14 @@ namespace HC.WeChat.Web.Host.Controllers
             return Redirect(string.Format(GAAuthorizationPageUrl.QuestionnaireUrl, state));
         }
 
+        public IActionResult Lottery(string code, string state)
+        {
+            //存储openId 避免重复提交
+            SetUserOpenId(code);
+
+            return Redirect(string.Format(GAAuthorizationPageUrl.LotteryUrl, state));
+        }
+
         public IActionResult Login(string openId)
         {
             UserOpenId = openId;
@@ -553,6 +572,7 @@ namespace HC.WeChat.Web.Host.Controllers
         ExhibitionDetailUrl = 304,
         Questionnaire = 104,
         DemandForecast = 105,
+        Lottery = 106
     }
 
     public class GAAuthorizationPageUrl
@@ -577,5 +597,6 @@ namespace HC.WeChat.Web.Host.Controllers
         public static string ExhibitionDetailUrl = "/gawechat/index.html#/exhibitions/exhibition-detail;shopId={0}";
         public static string QuestionnaireUrl = "/gawechat/index.html#/questionnaires/questionnaire";
         public static string DemandForecastUrl = "/gawechat/index.html#/demand-forecasts/demand-forecast";
+        public static string LotteryUrl = "/gawechat/index.html#/lotterys/lucky-draw";
     }
 }

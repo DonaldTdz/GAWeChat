@@ -11,12 +11,13 @@ import { LotteryDetailComponent } from './lottery-detail/lottery-detail.componen
 import { LotteryListComponent } from './lottery-list/lottery-list.component';
 import { LotteryDrawComponent } from './lottery-draw.component';
 import { LotteryActivitiesListComponent } from './lottery-activities-list/lottery-activities-list.component';
+import { LotteryComponent } from './lottery.component';
 import { LotteryActivityDetailComponent } from './lottery-activity-detail/lottery-activity-detail.component';
 import { LotteryActivityJoinListComponent } from './lottery-activity-join-list/lottery-activity-join-list.component';
 import { LotteryActivityJoinDetailComponent } from './lottery-activity-join-detail/lottery-activity-join-detail.component';
 import { LotteryActivityEditComponent } from './lottery-activity-edit/lottery-activity-edit.component';
 
-const COMPONENTS = [ LotterySignInDetailComponent,
+const COMPONENTS = [LotterySignInDetailComponent,
     LotterySignInComponent,
     LotterySignInListComponent,
     LotteryDetailComponent,
@@ -58,5 +59,5 @@ const routes: Routes = [
         LotteryService,
     ]
 })
-export class LuckyDrawModule {
+export class LotteryModule {
 }

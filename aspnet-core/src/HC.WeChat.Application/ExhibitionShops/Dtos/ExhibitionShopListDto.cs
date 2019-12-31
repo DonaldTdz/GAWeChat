@@ -79,11 +79,11 @@ namespace HC.WeChat.ExhibitionShops.Dtos
         ////ECC/ END CUSTOM CODE SECTION
     }
 
-    public class ExhibitionWechatDto : EntityDto<Guid>
+    public class ExhibitionWechatDto : EntityDto<Guid?>
     {
         public DateTime CreateTime { get; set; }
 
-        public Guid? Id { get; set; }
+        //public Guid? Id { get; set; }
 
         public string ShopName { get; set; }
 

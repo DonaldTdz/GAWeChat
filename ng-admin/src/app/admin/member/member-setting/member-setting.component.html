@@ -12,9 +12,13 @@
                             <div nz-form-label nz-col [nzSm]="5">
                                 <label for="rcValue">店铺扫码</label>
                             </div>
-                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('rcValue')">
-                                <nz-input formControlName="rcValue" [(ngModel)]="configCode.rcValue" [nzId]="'rcId'"></nz-input>
-                                <div nz-form-explain *ngIf="getFormControl('rcValue').dirty&&getFormControl('rcValue').hasError('pattern')">兑换比例必须为正数</div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback
+                                [nzValidateStatus]="getFormControl('rcValue')">
+                                <nz-input formControlName="rcValue" [(ngModel)]="configCode.rcValue" [nzId]="'rcId'">
+                                </nz-input>
+                                <div nz-form-explain
+                                    *ngIf="getFormControl('rcValue').dirty&&getFormControl('rcValue').hasError('pattern')">
+                                    兑换比例必须为正数</div>
                                 <div nz-form-control nz-col [nzSm]="19">
                                     给消费者兑换商品金额1元店铺管理员可获赠{{configCode.rcValue}}积分
                                 </div>
@@ -24,9 +28,13 @@
                             <div nz-form-label nz-col [nzSm]="5">
                                 <label for="cValue">购买商品</label>
                             </div>
-                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('cValue')">
-                                <nz-input formControlName="cValue" [(ngModel)]="configCode.cValue" [nzId]="'cValue'"></nz-input>
-                                <div nz-form-explain *ngIf="getFormControl('cValue').dirty&&getFormControl('cValue').hasError('pattern')">兑换比例必须为正数</div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback
+                                [nzValidateStatus]="getFormControl('cValue')">
+                                <nz-input formControlName="cValue" [(ngModel)]="configCode.cValue" [nzId]="'cValue'">
+                                </nz-input>
+                                <div nz-form-explain
+                                    *ngIf="getFormControl('cValue').dirty&&getFormControl('cValue').hasError('pattern')">
+                                    兑换比例必须为正数</div>
                                 <div nz-form-control nz-col [nzSm]="19">
                                     消费者消费商品金额1元可获得{{configCode.cValue}}积分
                                 </div>
@@ -36,9 +44,13 @@
                             <div nz-form-label nz-col [nzSm]="5">
                                 <label for="eValue">店铺评价</label>
                             </div>
-                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('eValue')">
-                                <nz-input formControlName="eValue" [(ngModel)]="configCode.eValue" [nzId]="'eValue'"></nz-input>
-                                <div nz-form-explain *ngIf="getFormControl('eValue').dirty&&getFormControl('eValue').hasError('pattern')">兑换比例必须为正数</div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback
+                                [nzValidateStatus]="getFormControl('eValue')">
+                                <nz-input formControlName="eValue" [(ngModel)]="configCode.eValue" [nzId]="'eValue'">
+                                </nz-input>
+                                <div nz-form-explain
+                                    *ngIf="getFormControl('eValue').dirty&&getFormControl('eValue').hasError('pattern')">
+                                    兑换比例必须为正数</div>
                                 <div nz-form-control nz-col [nzSm]="19">
                                     店铺评价1次可获得{{configCode.eValue}}积分
                                 </div>
@@ -48,9 +60,13 @@
                             <div nz-form-label nz-col [nzSm]="5">
                                 <label for="fValue">首次注册</label>
                             </div>
-                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback [nzValidateStatus]="getFormControl('fValue')">
-                                <nz-input formControlName="fValue" [(ngModel)]="configCode.fValue" [nzId]="'fValue'"></nz-input>
-                                <div nz-form-explain *ngIf="getFormControl('fValue').dirty&&getFormControl('fValue').hasError('pattern')">兑换比例必须为正数</div>
+                            <div nz-form-control nz-col [nzSm]="19" nzHasFeedback
+                                [nzValidateStatus]="getFormControl('fValue')">
+                                <nz-input formControlName="fValue" [(ngModel)]="configCode.fValue" [nzId]="'fValue'">
+                                </nz-input>
+                                <div nz-form-explain
+                                    *ngIf="getFormControl('fValue').dirty&&getFormControl('fValue').hasError('pattern')">
+                                    兑换比例必须为正数</div>
                                 <div nz-form-control nz-col [nzSm]="19">
                                     首次注册可获得{{configCode.fValue}}积分
                                 </div>
@@ -66,7 +82,8 @@
                         </div>
                         <div nz-form-item nz-row class="mb0">
                             <div nz-form-label nz-col [nzSm]="5">
-                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit" [nzLoading]="loading">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="submit"
+                                    [nzLoading]="loading">
                                     {{l("保存")}}
                                 </button>
                             </div>
@@ -89,7 +106,8 @@
                                 <label for="rcValue"> 选择店铺审核人员</label>
                             </div>
                             <div nz-col [nzSm]="4">
-                                <button nz-button style="width: 145px" [nzType]="'primary'" [nzSize]="'large'" type="button" (click)="employee()">
+                                <button nz-button style="width: 145px" [nzType]="'primary'" [nzSize]="'large'"
+                                    type="button" (click)="employee()">
                                     选择店铺审核人员
                                 </button>
                             </div>
@@ -106,16 +124,19 @@
                                 <nz-tag *ngFor="let item of users" nzClosable (nzClose)="onClose($event, item.openId)">{{item.userName}}</nz-tag>
                             </div> -->
                             <div nz-form-control nz-col [nzSm]="19">
-                                <nz-tag *ngFor="let item of usersDto" nzClosable (nzClose)="onClose($event, item.openId)">{{item.userName}}</nz-tag>
+                                <nz-tag *ngFor="let item of usersDto" nzClosable
+                                    (nzClose)="onClose($event, item.openId)">{{item.userName}}</nz-tag>
                             </div>
                         </div>
                         <!-- {{employeeIds}} <br>{{employeeOpenId}} -->
                         <div nz-form-item nz-row>
                             <div nz-form-label nz-col [nzSm]="9">
-                                <button nz-button *ngIf="usersDto.length!=0" [nzType]="'default'" [nzSize]="'large'" type="button" (click)="cancel()">
-                                            清空
-                                        </button>
-                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="button" (click)="saveWXInfo()" [nzLoading]="wxloading">
+                                <button nz-button *ngIf="usersDto.length!=0" [nzType]="'default'" [nzSize]="'large'"
+                                    type="button" (click)="cancel()">
+                                    清空
+                                </button>
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" type="button"
+                                    (click)="saveWXInfo()" [nzLoading]="wxloading">
                                     {{l("保存")}}
                                 </button>
                             </div>

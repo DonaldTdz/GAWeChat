@@ -43,7 +43,7 @@ namespace HC.WeChat.MemberConfigs
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CreateOrUpdateMemberConfig(CreateOrUpdateMemberConfigInput input);
+        Task CreateOrUpdateMemberConfig(MemberConfigEditDto input);
 
         /// <summary>
         /// 删除MemberConfig信息的方法
@@ -73,5 +73,6 @@ namespace HC.WeChat.MemberConfigs
         Task CreateOrUpdatePreProductConfig(MemberConfigEditDto input);
         Task<string> GetWXPreProductConfigAsync(int? tenantId);
         Task<int> GetLimitFrequencyAsync();
+        Task<MemberConfigListDto> GetLotteryConfigAsync();
     }
 }

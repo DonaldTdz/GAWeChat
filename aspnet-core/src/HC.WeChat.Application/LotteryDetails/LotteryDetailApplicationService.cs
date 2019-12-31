@@ -360,7 +360,7 @@ namespace HC.WeChat.LotteryDetails
                 };
             }
             DateTime curTime = DateTime.Now;
-            var lottery = await _luckyDrawRepository.FirstOrDefaultAsync(v=>v.Id == luckyId && v.IsPublish == true);
+            var lottery = await _luckyDrawRepository.FirstOrDefaultAsync(v => v.Id == luckyId && v.IsPublish == true);
             if (lottery == null)
             {
                 return new APIResultDto()
@@ -369,7 +369,7 @@ namespace HC.WeChat.LotteryDetails
                     Msg = "未获取到本轮活动信息，请重新进入公众号"
                 };
             }
-            if (curTime > lottery.EndTime)
+            else if (curTime > lottery.EndTime)
             {
                 return new APIResultDto()
                 {
@@ -386,7 +386,15 @@ namespace HC.WeChat.LotteryDetails
                 };
             }
             var user = await _wechatuserRepository.FirstOrDefaultAsync(v => v.OpenId == openId);
-            if (user.UserType != WechatEnums.UserTypeEnum.内部员工)
+            if (user == null)
+            {
+                return new APIResultDto()
+                {
+                    Code = 403,
+                    Msg = "未获取到当前用户信息，请重新关注公众号"
+                };
+            }
+            else if (user.UserType != WechatEnums.UserTypeEnum.内部员工)
             {
                 return new APIResultDto()
                 {
@@ -394,7 +402,14 @@ namespace HC.WeChat.LotteryDetails
                     Msg = "非内部员工，请前往绑定！"
                 };
             }
-
+            else if (!user.UserId.HasValue)
+            {
+                return new APIResultDto()
+                {
+                    Code = 902,
+                    Msg = "内部员工信息获取异常，请重新绑定！"
+                };
+            }
             bool isSign = await _luckySignRepository.GetAll().AnyAsync(v => v.UserId == user.UserId && v.CreationTime.Date == DateTime.Today);
             if (!isSign)
             {
@@ -414,7 +429,7 @@ namespace HC.WeChat.LotteryDetails
                     Msg = "很遗憾，奖品与你擦肩而过"
                 };
             }
-            else if(luckyDetail.IsLottery == true)
+            else if (luckyDetail.IsLottery == true)
             {
                 return new APIResultDto()
                 {
@@ -441,30 +456,50 @@ namespace HC.WeChat.LotteryDetails
         }
 
 
+        #region 测试方法
+        //[AbpAllowAnonymous]
+        //public List<int> TestRadomNum()
+        //{
+        //    var prizeIndex = Enumerable.Range(0, 399).OrderBy(v => Guid.NewGuid()).Take(30).ToList().OrderBy(v => v).ToList();
+        //    return prizeIndex;
+        //}
 
-        [AbpAllowAnonymous]
-        public List<int> TestRadomNum()
-        {
-            var prizeIndex = Enumerable.Range(0, 399).OrderBy(v => Guid.NewGuid()).Take(30).ToList().OrderBy(v => v).ToList();
-            return prizeIndex;
-        }
+        //[AbpAllowAnonymous]
+        //public List<int> TestRadom2Num()
+        //{
+        //    var num = Enumerable.Range(0, 399).Select(x => new { v = x, k = Guid.NewGuid().ToString() }).ToList().OrderBy(x => x.k).Select(x => x.v).Take(30).ToList();
+        //    return num;
+        //}
 
-        [AbpAllowAnonymous]
-        public List<int> TestRadom2Num()
-        {
-            var num = Enumerable.Range(0, 399).Select(x => new { v = x, k = Guid.NewGuid().ToString() }).ToList().OrderBy(x => x.k).Select(x => x.v).Take(30).ToList();
-            return num;
-        }
+        //[AbpAllowAnonymous]
+        //public async Task TestAddSign()
+        //{
+        //    for (int i = 1; i <= 400; i++)
+        //    {
+        //        var sign = new LuckySign();
+        //        sign.UserId = Guid.NewGuid();
+        //        await _luckySignRepository.InsertAsync(sign);
+        //    }
+        //}
 
-        [AbpAllowAnonymous]
-        public async Task TestAddSign()
-        {
-            for (int i = 1; i <= 400; i++)
-            {
-                var sign = new LuckySign();
-                sign.UserId = Guid.NewGuid();
-                await _luckySignRepository.InsertAsync(sign);
-            }
-        }
+        //[AbpAllowAnonymous]
+        //public async Task UploadHCEmployee(string nameIds,string deptIds)
+        //{
+        //    var name = nameIds.Split(',');
+        //    var dept = deptIds.Split(',');
+        //    int i = 0;
+        //    foreach (var item in name)
+        //    {
+        //        Employee entity = new Employee();
+        //        entity.Name = item;
+        //        entity.DeptName = dept[i];
+        //        entity.Code = i.ToString().PadLeft(6, '0');
+        //        entity.Position = WechatEnums.UserPositionEnum.营销中心;
+        //        entity.IsDeleted = true;
+        //        await _employeeRepository.InsertAsync(entity);
+        //        i++;
+        //    }
+        //}
+        #endregion
     }
 }

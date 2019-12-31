@@ -1,11 +1,12 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Route } from '@angular/compiler/src/core';
-import { Router } from '@angular/router';
-import { LotterySettingServiceProxy, WinningRecordServiceProxy, PagedResultDtoOfWinningRecord } from '@shared/service-proxies/member';
-import { LuckyDraw, WinningRecord } from '@shared/entity/member';
-import { Parameter } from '@shared/service-proxies/entity';
+import { MessageEmployeeModalComponent } from '../member-setting/message-employee-modal/message-employee-modal.component';
+import { MemberConfigs } from '@shared/entity/member/memberconfig';
+import { ConfigCode } from '@shared/entity/member/configcode';
+import { WechatUser, WechatUserDto } from '@shared/entity/wechat';
+import { NzModalService } from 'ng-zorro-antd';
+import { MemberConfigsServiceProxy } from '@shared/service-proxies/member/memberconfigs-service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
     moduleId: module.id,
@@ -13,92 +14,116 @@ import { Parameter } from '@shared/service-proxies/entity';
     templateUrl: 'lottery-setting.component.html',
 })
 export class LotterySettingComponent extends AppComponentBase implements OnInit {
-
+    @ViewChild('selectsEmployeeModal') selectsEmployeeModal: MessageEmployeeModalComponent;
+    employeeOpenId: string[] = [];
+    stringOpenId: string = '';
+    stringName: string = '';
+    employeeIds: string[] = [];
     form: FormGroup;
-    name = '';
-    qty = '';
-    luckyDraw = new LuckyDraw();
-    isConfirmLoading = false;
-
-    winningRecords: WinningRecord[]=[];
-    loading=false;
-    search: any = { status: 2};
-
-    constructor(injector: Injector, private fb: FormBuilder, private router: Router, private lotterySettingService: LotterySettingServiceProxy,
-    private winningRecordService:WinningRecordServiceProxy) {
+    config: MemberConfigs = new MemberConfigs();
+    users: WechatUser[] = [];
+    usersDto: WechatUserDto[] = [];
+    wxloading = false;
+    constructor(injector: Injector
+        , private fb: FormBuilder
+        , private memberconfigsService: MemberConfigsServiceProxy
+    ) {
         super(injector);
     }
     ngOnInit(): void {
-        this.form = this.fb.group({
-            name: [null, Validators.compose([Validators.required, Validators.maxLength(200)])],
-            consume: [null],
-            frequency: [null],
-        });
-        this.getSingleLotterySetting();
-        this.refreshData();
-
+        this.form = this.fb.group({});
+        this.getLotteryConfigs();
     }
-    //#region  抽奖设置
-    getSingleLotterySetting() {
-        this.lotterySettingService.get().subscribe(data => {
-            this.luckyDraw = data;
-            console.log(data);
-            if (!this.luckyDraw.id) {
-                console.log('aa')
-                this.luckyDraw.init({ consume: 20, frequency: 5 });
-                // this.luckyDraw.frequency = 5;
+
+    getLotteryConfigs() {
+        this.memberconfigsService.getLotteryConfigs().subscribe((result: MemberConfigs) => {
+            this.config = result;
+            this.usersDto = [];
+            let splOpenId = [];
+            let splName = [];
+            if (this.config.desc != null && this.config.value.length != 0) {
+                splOpenId = this.config.value.split(',');
+                splName = this.config.desc.split(',');
+            }
+            splOpenId.forEach((v, index) => {
+                this.usersDto.push({
+                    openId: splOpenId[index],
+                    userName: splName[index]
+                })
+            })
+        });
+    }
+
+    /**
+     * 保存微信用户
+     */
+    saveConfig() {
+        this.stringName = '';
+        this.stringOpenId = '';
+
+        this.usersDto.forEach(v => {
+            this.stringOpenId += v.openId + ',';
+        });
+        this.usersDto.forEach(v => {
+            this.stringName += v.userName + ',';
+        });
+        if (this.stringOpenId != null || this.stringOpenId.length >= 0) {
+            this.config.value = this.stringOpenId.substring(0, this.stringOpenId.length - 1);
+        }
+        if (this.stringName != null || this.stringName.length != 0) {
+            this.config.desc = this.stringName.substring(0, this.stringName.length - 1);
+        }
+        this.config.type = 6;
+        this.config.code = 11;
+        this.wxloading = true;
+        this.memberconfigsService.updateLotteryConfig(this.config).subscribe(() => {
+            this.notify.success('保存成功！');
+            this.getLotteryConfigs();
+            this.wxloading = false;
+        });
+    }
+
+    /**
+ * 显示员工列表模态框
+ */
+    employee(): void {
+        this.selectsEmployeeModal.show();
+    }
+
+    cancel() {
+        this.usersDto = [];
+        this.users = [];
+        this.stringName = '';
+        this.stringOpenId = '';
+    }
+
+    existsEmployee(openId: string): boolean {
+        let bo = false;
+        this.usersDto.forEach(element => {
+            if (element.openId == openId) {
+                bo = true;
+                return;
+            }
+        });
+        return bo;
+    }
+
+    getSelectData = (employees?: WechatUser[]) => {
+        employees.forEach(element => {
+            if (!this.existsEmployee(element.openId)) {
+                this.usersDto.push({ openId: element.openId, userName: element.userName });
             }
         });
     }
 
-    save() {
-        //检查form验证
-        for (const i in this.form.controls) {
-            this.form.controls[i].markAsDirty();
-        }
-        if (this.form.valid) {
-            this.isConfirmLoading = true;
-            this.lotterySettingService.update(this.luckyDraw)
-                .finally(() => { this.isConfirmLoading = false; })
-                .subscribe(data => {
-                    this.luckyDraw = data;
-                    this.notify.info(this.l('保存成功！'));
-                });
-        }
-
+    onClose(event: Event, openId: string): void {
+        let i = 0;
+        this.usersDto.forEach(element => {
+            if (element.openId == openId) {
+                this.usersDto.splice(i, 1);
+                return;
+            }
+            i++;
+        });
     }
-    getFormControl(name: string) {
-        return this.form.controls[name];
-    }
-    //#endregion
-    refreshData(reset = false, search?: boolean){
-        if (reset) {
-            this.query.pageIndex = 1;
-            this.search = { status: 2 };
-        }
-        if (search) {
-            this.query.pageIndex = 1;
-        }
-        this.loading = true;
-        this.winningRecordService.getAll(this.query.skipCount(), this.query.pageSize, this.getParameter()).subscribe((result: PagedResultDtoOfWinningRecord) => {
-            this.loading = false;
-            this.winningRecords = result.items;
-            this.query.total = result.totalCount;
-        })
-    }
-
-    getParameter(): Parameter[] {
-        var arry = [];
-        arry.push(Parameter.fromJS({ key: 'Name', value: this.search.name }));
-        arry.push(Parameter.fromJS({ key: 'Author', value: this.search.author }));
-        arry.push(Parameter.fromJS({ key: 'Status', value: this.search.status === 2 ? null : this.search.status }));
-        return arry;
-    }
-    //#region  中奖记录
-
-    //#endregion
-    detail(id: string) {
-        this.router.navigate(["admin/member/lottery-record-detail", { id: id }])
-    }
-
 }
