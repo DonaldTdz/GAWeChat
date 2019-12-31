@@ -57,7 +57,7 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 	/// </summary>
 	public class WeiXinCreateInput
 	{
-
+		public Guid? Id { get; set; }
 		public string Name { get; set; }
 
 		public DateTime? BeginTime { get; set; }
@@ -66,7 +66,7 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 
 		public Boolean IsPublish { get; set; }
 
-		public List<WeiXinPriceInput> List { get; set; }
+		public  WeiXinPriceInput List { get; set; }
 
 		public string OpenId { get; set; }
 
@@ -78,8 +78,6 @@ namespace  HC.WeChat.LuckyDraws.Dtos
 	{
 
 		public string Name { get; set; }
-
-		public PrizeType Type { get; set; }
 
 		public int Num { get; set; }
 

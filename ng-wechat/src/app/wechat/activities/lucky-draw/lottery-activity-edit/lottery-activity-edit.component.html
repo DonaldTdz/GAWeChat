@@ -1,4 +1,4 @@
-<Page [ngClass]="'input'" [title]="'广安烟草'" [subTitle]="'创建新抽奖'" [spacing]="false">
+<Page [ngClass]="'input'" [title]="'广安烟草'" [subTitle]="'编辑活动'" [spacing]="false">
   <form #f="ngForm">
     <div class="weui-cells weui-cells_form">
 
@@ -65,7 +65,7 @@
 
 
     <div class="button-sp-area" *ngIf="isSave">
-      <button weui-button [weui-plain]="true" [disabled]="!f.form.valid" (click)="onSave()">保存</button>
+      <button weui-button [weui-plain]="true" [disabled]="!f.form.valid" (click)="update()">保存</button>
       <button
       weui-button
         class="weui-btn weui-btn_primary"
@@ -75,7 +75,7 @@
       >
         发布
       </button>
-   
+     
     </div>
   </form>
   <!--将对话框组件放在底部-->

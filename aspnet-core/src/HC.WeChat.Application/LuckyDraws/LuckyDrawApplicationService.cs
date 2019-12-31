@@ -236,26 +236,57 @@ LuckyDrawEditDto editDto;
 			}
 			var refEntity =await _entityRepository.InsertAsync(entity);
 
-
-			foreach (var priceEn in input.List) {
-				for(var i = 0; i < priceEn.Num; i++) 
+				for(var i = 0; i < input.List.Num; i++) 
 				{ 
 					Prize prize = new Prize();
-					prize.Name = priceEn.Name;
+					prize.Name = input.List.Name;
 					prize.LuckyDrawId = refEntity.Id;
 					prize.Num = 1;
-					prize.Type = priceEn.Type;
 					await _PrizeRepository.InsertAsync(prize);
 				}
-			}
 
 			return new APIResultDto
 			{
 				Code = 0,
 				Data = refEntity.Id
 			};
+		}
+		/// <summary>
+		/// 更新一个活动
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		[AbpAllowAnonymous]
+		public async Task<APIResultDto> RenewWXLuckyDrawAsync(WeiXinCreateInput input) 
+		{
+			var entity = new LuckyDraw();
+			APIResultDto result = new APIResultDto();
+			entity.BeginTime = input.BeginTime.Value;
+			entity.EndTime = input.EndTime.Value;
+			entity.IsPublish = input.IsPublish;
+			entity.Name = input.Name;
+			entity.Id = input.Id.Value;
+			if (input.IsPublish)
+			{
+				entity.PublishTime = DateTime.Now;
+			}
+			var refEntity = await _entityRepository.UpdateAsync(entity);//更新
 
+			await _PrizeRepository.DeleteAsync(v=>v.LuckyDrawId==refEntity.Id);//删除原有的奖品
 
+				for (var i = 0; i < input.List.Num; i++)
+				{
+					Prize prize = new Prize();
+					prize.Name = input.List.Name;
+					prize.LuckyDrawId = refEntity.Id;
+					prize.Num = 1;
+					await _PrizeRepository.InsertAsync(prize);
+				}
+			return new APIResultDto
+			{
+				Code = 0,
+				Data = refEntity.Id
+			};
 		}
 
 		/// <summary>
@@ -273,7 +304,9 @@ LuckyDrawEditDto editDto;
 							   CreationTime=a.EndTime,
 							   Name=a.Name,
 							   Id=a.Id,
-							   IsPublish=a.IsPublish
+							   IsPublish=a.IsPublish,
+							   BeginTime=a.BeginTime,
+							   EndTime=a.EndTime
 						   };
 			return await entities.ToListAsync();
 
@@ -336,7 +369,6 @@ LuckyDrawEditDto editDto;
 						  .Select(m => new WeiXinPriceInput
 						  {
 							  Name = m.Key.Name,
-							  Type = m.Key.Type,
 							  Num = m.Sum(t => t.Num)
 
 						  }).ToListAsync();
