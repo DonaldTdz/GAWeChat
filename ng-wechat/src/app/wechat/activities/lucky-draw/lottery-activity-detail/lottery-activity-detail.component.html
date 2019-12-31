@@ -88,23 +88,7 @@
     </div>
   </div>
 
-  <div class="weui-cells__title" *ngIf="items.isPublish&&items.lotteryState">中奖人</div>
-  <div class="weui-cell">
-    <div class="weui-cell">
-      <div class="weui-cell__hd"><label class="weui-label">中奖人</label></div>
-    </div>
-    <div class="weui-cell">
-      <div class="weui-cell__hd"><label class="weui-label">奖品</label></div>
-    </div>
-  </div>
-  <div class="weui-cell" *ngFor="let i of items.lotteryDetails">
-    <div class="weui-cell">
-      <div class="weui-cell__hd"><label class="weui-label">{{i.name}}</label></div>
-    </div>
-    <div class="weui-cell">
-      <div class="weui-cell__hd"><label class="weui-label">{{i.prizeName}}</label></div>
-    </div>
-  </div>
+
   <div class="weui-cells__title" *ngIf="!items.lotteryState&&items.isPublish">未开奖</div>
 
 </Page>
