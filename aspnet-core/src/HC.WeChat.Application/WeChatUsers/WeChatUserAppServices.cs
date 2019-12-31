@@ -417,7 +417,6 @@ namespace HC.WeChat.WeChatUsers
             {
                 Logger.ErrorFormat("TagForWechatAsync-打标签失败:{0},Exception:{1}", e.Message, e);
             }
-
         }
 
         [AbpAllowAnonymous]
@@ -1139,9 +1138,9 @@ namespace HC.WeChat.WeChatUsers
             //var weChat = _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注);
             //var retail = _retailerRepository.GetAll();
             var query = (from w in _wechatuserRepository.GetAll().Where(w => w.UserType != UserTypeEnum.取消关注)
-                        join r in _retailerRepository.GetAll() on w.UserId equals r.Id into g
-                        from wr in g.DefaultIfEmpty()
-                        select new { wr.BranchCompany });
+                         join r in _retailerRepository.GetAll() on w.UserId equals r.Id into g
+                         from wr in g.DefaultIfEmpty()
+                         select new { wr.BranchCompany });
             //group new { wr.BranchCompany } by wr.BranchCompany into m
             //select new WeChatUserStatisticDto
             //{
@@ -1177,7 +1176,7 @@ namespace HC.WeChat.WeChatUsers
         [DisableAuditing]
         public async Task<bool> GetWeChatUserIsExsit(string openId)
         {
-            return await _wechatuserRepository.GetAll().AnyAsync(w => w.OpenId == openId && w.UserType!=UserTypeEnum.取消关注);
+            return await _wechatuserRepository.GetAll().AnyAsync(w => w.OpenId == openId && w.UserType != UserTypeEnum.取消关注);
         }
 
 
@@ -1190,7 +1189,7 @@ namespace HC.WeChat.WeChatUsers
         [DisableAuditing]
         public async Task<bool> GetIsAttentionByOpenIdAsync(string openId)
         {
-            int weChat = await _wechatuserRepository.GetAll().Where(v=>v.OpenId == openId && v.UserType!= UserTypeEnum.取消关注).CountAsync();
+            int weChat = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId && v.UserType != UserTypeEnum.取消关注).CountAsync();
             if (weChat == 0)
             {
                 return false;
@@ -1221,7 +1220,7 @@ namespace HC.WeChat.WeChatUsers
                          join r in _retailerRepository.GetAll() on w.UserId equals r.Id into g
                          from wr in g.DefaultIfEmpty()
                          select new { w.UserType });
-            var list = await query.GroupBy(q => q.UserType).Select(g => new WeChatUserStatiPieDto() {  TypeName= g.Key.ToString(), Count = g.Count() }).ToListAsync();
+            var list = await query.GroupBy(q => q.UserType).Select(g => new WeChatUserStatiPieDto() { TypeName = g.Key.ToString(), Count = g.Count() }).ToListAsync();
             var total = list.Sum(l => l.Count);
             var result = new WeChatUserStatiPieListDto();
             result.WechatUserStaDto = list;
@@ -1290,7 +1289,7 @@ namespace HC.WeChat.WeChatUsers
         {
             var total = openIds.Count();
             using (CurrentUnitOfWork.SetTenantId(null))
-            { 
+            {
                 if (total <= 100)
                 {
                     var uopenids = openIds.Select(o => new BatchGetUserInfoData() { openid = o, lang = "zh-CN", LangEnum = Senparc.Weixin.Language.zh_CN }).ToList();
@@ -1307,7 +1306,7 @@ namespace HC.WeChat.WeChatUsers
                     }
                 }
             }
-            return new APIResultDto() { Code = 0, Msg = "同步数据成功"};
+            return new APIResultDto() { Code = 0, Msg = "同步数据成功" };
         }
 
 
@@ -1334,7 +1333,7 @@ namespace HC.WeChat.WeChatUsers
         public async Task<bool> GetIsRetailerByIdAsync(string openId)
         {
             var userType = await _wechatuserRepository.GetAll().Where(v => v.OpenId == openId).Select(v => v.UserType).FirstOrDefaultAsync();
-            if(userType == UserTypeEnum.零售客户)
+            if (userType == UserTypeEnum.零售客户)
             {
                 return true;
             }
@@ -1343,6 +1342,77 @@ namespace HC.WeChat.WeChatUsers
                 return false;
             }
         }
+
+
+
+        /// <summary>
+        /// 抽奖活动内部员工绑定
+        /// </summary>
+        [AbpAllowAnonymous]
+        public async Task<APIResultDto> LoterryBindWeChatUserAsync(LotteryUserBindDto input)
+        {
+            if (string.IsNullOrEmpty(input.OpenId))
+            {
+                return new APIResultDto()
+                {
+                    Code = 401,
+                    Msg = "未获取到当前用户信息,请重新进入公众号"
+                };
+            }
+            var entity = await _wechatuserRepository.GetAll().Where(w => w.OpenId == input.OpenId).FirstOrDefaultAsync();
+            if (entity == null)
+            {
+                return new APIResultDto() { Code = 902, Msg = "未获取到当前用户信息,请重新关注公众号" };
+            }
+
+            var employee = await _employeeRepository.GetAll().Where(e => e.IsAction && e.Code == input.Code).FirstOrDefaultAsync();
+            var employeeDto = employee.MapTo<EmployeeListDto>();
+            if (employeeDto == null)
+            {
+                return new APIResultDto() { Code = 904, Msg = "内部员工不存在,请联系管理员" };
+            }
+
+            //验证该内部员工是否被绑定过 2018-6-4
+            if (await _wechatuserRepository.GetAll().AnyAsync(w => w.UserId == employeeDto.Id && w.UserType == UserTypeEnum.内部员工))
+            {
+                return new APIResultDto() { Code = 905, Msg = "该员工账号已被绑定,请核实信息" };
+            }
+
+            entity.UserId = employee.Id;
+            entity.UserName = employee.Name;
+            entity.UserType = UserTypeEnum.内部员工;
+            entity.BindStatus = BindStatusEnum.已绑定;
+            entity.BindTime = DateTime.Now;
+            entity.OpenId = input.OpenId;
+            var result = await _wechatuserManager.BindWeChatUserAsync(entity);
+
+            //绑定成功后打标签
+            if (result.BindStatus == BindStatusEnum.已绑定)
+            {
+                await TagForWechatByNameAsync(entity);
+            }
+            return new APIResultDto() { Code = 0, Msg = "绑定成功", Data = entity.MapTo<WeChatUserListDto>() };
+        }
+
+        /// <summary>
+        /// 微信用户绑定成功后根据参数打标签(抽奖活动用）
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        public async Task TagForWechatByNameAsync(WeChatUser entity)
+        {
+            try
+            {
+                List<string> openId_list = new List<string>();
+                openId_list.Add(entity.OpenId);
+                var tagId = await _wechatGroupAppService.GetTagIdByNameAsync("内部抽奖活动", 999);
+                await UserTagApi.BatchTaggingAsync(AppConfig.AppId, tagId, openId_list);
+            }
+            catch (Exception e)
+            {
+                Logger.ErrorFormat("GetTagIdByNameAsync-打标签失败:{0},Exception:{1}", e.Message, e);
+            }
+        }
     }
 }
-

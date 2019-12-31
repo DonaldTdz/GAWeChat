@@ -89,4 +89,10 @@ export class WechatUserService {
       return data.result;
     });
   }
+
+  getIsLotteryAdmin(params: any): Observable<boolean> {
+    return this.http.post('/api/services/app/MemberConfig/IsLotteryAdminAsync', params).map(data => {
+      return <boolean>data.result;
+    });
+  }
 }

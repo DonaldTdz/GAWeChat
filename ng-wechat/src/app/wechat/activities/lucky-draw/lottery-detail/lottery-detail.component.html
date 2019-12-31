@@ -14,7 +14,7 @@
 
 
   <div class="weui-cells__title">活动详情</div>
-  <div class="weui-cells" >
+  <div class="weui-cells">
     <div class="weui-cell">
       <div class="weui-cell__bd">
         <p>活动名称</p>
@@ -39,12 +39,12 @@
 
   <div class="weui-cells__title">奖品详情</div>
   <div class="weui-cell">
-  <div class="weui-cell">
-    <div class="weui-cell__hd"><label class="weui-label">奖品名称</label></div>
-  </div>
-  <div class="weui-cell">
-    <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
-  </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">奖品名称</label></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">奖品数量</label></div>
+    </div>
   </div>
 
   <div class="weui-cell" *ngFor="let i of items.list">
@@ -54,47 +54,47 @@
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">{{i.num}}</label></div>
     </div>
-  
+
+  </div>
+
+
+
+
+
+  <div class="weui-cells__title" *ngIf="items.lotteryState">中奖者</div>
+  <div class="weui-cells__title" *ngIf="">暂无数据</div>
+
+  <div class="weui-cell" *ngIf="items.lotteryState">
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">中奖者</label></div>
     </div>
-
-
-
-   
-
-      <div class="weui-cells__title" *ngIf="items.lotteryState">中奖者</div>
-      <div class="weui-cells__title" *ngIf="">暂无数据</div>
-      
-      <div class="weui-cell" *ngIf="items.lotteryState">
-        <div class="weui-cell">
-          <div class="weui-cell__hd"><label class="weui-label">中奖者</label></div>
-        </div>
-        <div class="weui-cell">
-          <div class="weui-cell__hd"><label class="weui-label">奖品</label></div>
-        </div>
-          <div class="weui-cell">
-            <div class="weui-cell__hd">
-              <label class="weui-label">数量</label>
-            </div>
-        </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">奖品</label></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd">
+        <label class="weui-label">数量</label>
       </div>
-      <div class="weui-cell" *ngFor="let p of items.lotteryDetails">
-        <div class="weui-cell">
-          <div class="weui-cell__hd"><label class="weui-label">{{p.name}}</label></div>
-        </div>
-        <div class="weui-cell">
-          <div class="weui-cell__hd"><label class="weui-label">{{p.prizeName}}</label></div>
-        </div>
-          <div class="weui-cell">
-            <div class="weui-cell__hd">
-              <label class="weui-label">{{p.num}}</label>
-            </div>
-        </div>
-        </div>
+    </div>
+  </div>
+  <div class="weui-cell" *ngFor="let p of items.lotteryDetails">
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">{{p.name}}</label></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">{{p.prizeName}}</label></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd">
+        <label class="weui-label">{{p.num}}</label>
+      </div>
+    </div>
+  </div>
 
-        <div class="button-sp-area">
-          <button weui-button [weui-loading]="loading" (click)="loading = !loading" *ngIf="items.isSignIn&&!items.lotteryState">加入抽奖</button>
-          <button weui-button disabled *ngIf="!items.isSignIn&&!items.lotteryState">未签到无抽奖资格</button>
-        </div>
+  <div class="button-sp-area">
+    <!-- <button weui-button [weui-loading]="loading" (click)="loading = !loading" *ngIf="items.isSignIn&&!items.lotteryState">加入抽奖</button> -->
+    <!-- <button weui-button disabled *ngIf="!items.isSignIn&&!items.lotteryState">未签到无抽奖资格</button> -->
+  </div>
 
-  
+
 </Page>

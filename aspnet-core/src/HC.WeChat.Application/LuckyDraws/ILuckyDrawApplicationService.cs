@@ -120,6 +120,6 @@ namespace HC.WeChat.LuckyDraws
         /// <param name="luckyId"></param>
         /// <returns></returns>
         Task<List<GetLuckyDeptmentLotteryPersonDto>> GetLuckyDeptmentLotteryPersonAsync(Guid luckyId);
-
+        Task<string> GetAuthorizationUrl(string host);
     }
 }

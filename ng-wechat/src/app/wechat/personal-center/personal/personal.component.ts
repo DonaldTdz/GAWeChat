@@ -13,11 +13,12 @@ import { PurchaserecordService, WechatUserService } from '../../../services';
 export class PersonalComponent extends AppComponentBase implements OnInit {
 
     user: WechatUser;
-    islotteryadmin:boolean=true;
+    isLotteryAdmin: boolean = true;//是否为抽奖活动管理员
     isShowRetailer: boolean = false;
     accountTitle: string = '我的台账';
     countNotEvaluation: number;
     noCheckShopEmployeeCount: number;
+    is
     constructor(injector: Injector, private router: Router, private purchaserecordService: PurchaserecordService,
         private wechatUserService: WechatUserService) {
         super(injector);
@@ -30,6 +31,7 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
                 this.isShowRetailer = true;
                 this.accountTitle = '我的台账';
             } else if (this.user.userType == UserType.Staff) {//内部员工
+                this.getIsLotteryAdmin();
                 this.isShowRetailer = true;
                 this.accountTitle = '台账查询';
             }
@@ -110,26 +112,33 @@ export class PersonalComponent extends AppComponentBase implements OnInit {
     }
 
     //创建新的抽奖
-    creatNewLottery(){
+    creatNewLottery() {
         this.router.navigate(['/lotterys/lottery-draw']);
     }
     //查看抽奖活动列表
-    showLotteryList(){
+    showLotteryList() {
         this.router.navigate(['/lotterys/lottery-activities-list']);
     }
 
     //查看签到部门页 admin
-    showSignInPeople(){
+    showSignInPeople() {
 
-    this.router.navigate(['/lotterys/lottery-sign-in-list']);
+        this.router.navigate(['/lotterys/lottery-sign-in-list']);
     }
     //去签到
-    gotoSigin(){
-        this.router.navigate(['/lotterys/lottery-sign-in']); 
+    gotoSigin() {
+        this.router.navigate(['/lotterys/lottery-sign-in']);
     }
 
     //去抽奖
-    goToLuckyDraw(){
-        this.router.navigate(['/lotterys/lottery-list']); 
+    goToLuckyDraw() {
+        this.router.navigate(['/lotterys/lottery-list']);
+    }
+
+    //是否为抽奖活动管理员
+    getIsLotteryAdmin() {
+        this.wechatUserService.getIsLotteryAdmin({ openId: this.user.openId }).subscribe(data => {
+            this.isLotteryAdmin = data;
+        });
     }
 } 

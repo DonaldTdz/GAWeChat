@@ -151,5 +151,6 @@ namespace HC.WeChat.WeChatUsers
         Task<APIResultDto> SynchronouWechatUserByOpenIds(string[] openIds);
         Task<WeChatUserListDto> GetMemberBarCodeAsync(string openId);
         Task<bool> GetIsRetailerByIdAsync(string openId);
+        Task<APIResultDto> LoterryBindWeChatUserAsync(LotteryUserBindDto input);
     }
 }

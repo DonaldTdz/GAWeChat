@@ -29,7 +29,7 @@ export const routes = [
     { path: 'questionnaires', loadChildren: './activities/questionnaire/questionnaire.module#QuestionnaireModule' },
     { path: 'demand-forecasts', loadChildren: './activities/demand-forecast/demand-forecast.module#DemandForecastModule' },
     { path: 'emp-retailers', loadChildren: './personal-center/retailer-manage/retailer-manage.module#RetailerManageModule' },
-    { path: 'lotterys', loadChildren: './activities/lucky-draw/lottery.module' },
+    { path: 'lotterys', loadChildren: './activities/lucky-draw/lottery.module#LotteryModule' },
     { path: '**', redirectTo: '' }
 ];
 

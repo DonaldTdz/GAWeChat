@@ -29,6 +29,8 @@ using HC.WeChat.Employees;
 using HC.WeChat.LuckySigns;
 using HC.WeChat.WeChatUsers;
 using HC.WeChat.LotteryDetails.DomainService;
+using HC.WeChat.Authorization.WeChatOAuth;
+using HC.WeChat.WechatAppConfigs;
 
 namespace HC.WeChat.LuckyDraws
 {
@@ -46,12 +48,13 @@ namespace HC.WeChat.LuckyDraws
 		private  readonly IRepository<Employee, Guid> _employeeRepository;
 		private  readonly IRepository<LuckySign, Guid> _LuckySignRepository;
 		private  readonly IRepository<WeChatUser, Guid> _wechatuserRepository;
+        private readonly IWeChatOAuthAppService _weChatOAuthAppService;
+        private readonly IWechatAppConfigAppService _wechatAppConfigAppService;
 
-
-		/// <summary>
-		/// 构造函数 
-		///</summary>
-		public LuckyDrawAppService(
+        /// <summary>
+        /// 构造函数 
+        ///</summary>
+        public LuckyDrawAppService(
         IRepository<LuckyDraw, Guid> entityRepository
         ,ILuckyDrawManager entityManager
 			, IRepository<Prize, Guid> PrizeRepository
@@ -59,7 +62,9 @@ namespace HC.WeChat.LuckyDraws
 			, IRepository<Employee, Guid> employeeRepository
 			, IRepository<WeChatUser, Guid> wechatuserRepository
 			, IRepository<LuckySign, Guid> LuckySignRepository
-		)
+            , IWeChatOAuthAppService weChatOAuthAppService
+            , IWechatAppConfigAppService wechatAppConfigAppService
+        )
         {
             _entityRepository = entityRepository; 
              _entityManager=entityManager;
@@ -68,8 +73,10 @@ namespace HC.WeChat.LuckyDraws
 			_employeeRepository = employeeRepository;
 			_LuckySignRepository = LuckySignRepository;
 			_wechatuserRepository = wechatuserRepository;
-
-		}
+            _weChatOAuthAppService = weChatOAuthAppService;
+            _wechatAppConfigAppService = wechatAppConfigAppService;
+            _weChatOAuthAppService.WechatAppConfig = _wechatAppConfigAppService.GetWechatAppConfig(null).Result;
+        }
 
 
         /// <summary>
@@ -77,7 +84,7 @@ namespace HC.WeChat.LuckyDraws
         ///</summary>
         /// <param name="input"></param>
         /// <returns></returns>
-		 
+
         public async Task<PagedResultDto<LuckyDrawListDto>> GetPaged(GetLuckyDrawsInput input)
 		{
 
@@ -471,11 +478,23 @@ LuckyDrawEditDto editDto;
 							  Num_Lottery=tB.Count(v=>v.IsLottery==true),
 							  Num_Total=tB.Count()
 						  }
-						  ).ToListAsync();
-						   
-						   
+						  ).ToListAsync();						   					   
 		}
-	}
+
+        /// <summary>
+        /// 获取授权
+        /// </summary>
+        /// <param name="shopId"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public Task<string> GetAuthorizationUrl(string host)
+        {
+            string url = host + "/GAWX/LotterySignUrl";
+            return Task.FromResult(_weChatOAuthAppService.GetAuthorizeUrl(url, "123", Senparc.Weixin.MP.OAuthScope.snsapi_base));
+        }
+    }
 }
 
 

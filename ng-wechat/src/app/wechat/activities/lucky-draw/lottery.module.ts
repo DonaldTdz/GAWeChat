@@ -9,19 +9,20 @@ import { LotterySignInComponent } from './lottery-sign-in/lottery-sign-in.compon
 import { LotterySignInListComponent } from './lottery-sign-in-list/lottery-sign-in-list.component';
 import { LotteryDetailComponent } from './lottery-detail/lottery-detail.component';
 import { LotteryListComponent } from './lottery-list/lottery-list.component';
-import { LotteryDrawComponent } from './lottery-draw.component';
+// import { LotteryDrawComponent } from './lottery-draw.component';
 import { LotteryActivitiesListComponent } from './lottery-activities-list/lottery-activities-list.component';
-import { LotteryComponent } from './lottery.component';
 import { LotteryActivityDetailComponent } from './lottery-activity-detail/lottery-activity-detail.component';
 import { LotteryActivityJoinListComponent } from './lottery-activity-join-list/lottery-activity-join-list.component';
 import { LotteryActivityJoinDetailComponent } from './lottery-activity-join-detail/lottery-activity-join-detail.component';
+import { LotteryComponent } from './lottery.component';
 
 const COMPONENTS = [LotterySignInDetailComponent,
+    LotteryComponent,
     LotterySignInComponent,
     LotterySignInListComponent,
     LotteryDetailComponent,
     LotteryListComponent,
-    LotteryDrawComponent,
+    // LotteryDrawComponent,
     LotteryActivitiesListComponent,
     LotteryActivityDetailComponent,
     LotteryActivityJoinListComponent,
@@ -30,8 +31,7 @@ const COMPONENTS = [LotterySignInDetailComponent,
 ];
 
 const routes: Routes = [
-    { path: '', redirectTo: 'lottery-draw' },
-    { path: 'lottery-draw', component: LotteryDrawComponent },
+    { path: 'lottery', component: LotteryComponent },
     { path: 'lottery-list', component: LotteryListComponent },
     { path: 'lottery-activities-list', component: LotteryActivitiesListComponent },
     { path: 'lottery-sign-in-list', component: LotterySignInListComponent },

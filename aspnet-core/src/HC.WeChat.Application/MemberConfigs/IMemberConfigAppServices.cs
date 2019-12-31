@@ -74,5 +74,6 @@ namespace HC.WeChat.MemberConfigs
         Task<string> GetWXPreProductConfigAsync(int? tenantId);
         Task<int> GetLimitFrequencyAsync();
         Task<MemberConfigListDto> GetLotteryConfigAsync();
+        Task<bool> IsLotteryAdminAsync(string openId);
     }
 }

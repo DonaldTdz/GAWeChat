@@ -5,9 +5,8 @@ import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LotteryService } from '../../../services/article/lottery.service';
 
-
-
 @Component({
+  moduleId: module.id,
   selector: 'lottery',
   templateUrl: 'lottery.component.html',
   encapsulation: ViewEncapsulation.None,

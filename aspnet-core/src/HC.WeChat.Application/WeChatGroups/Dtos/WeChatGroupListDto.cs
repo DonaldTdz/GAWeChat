@@ -22,4 +22,16 @@ namespace HC.WeChat.WeChatGroups.Dtos
         public bool IsExist { get; set; }
         public bool IsValid { get; set; }
     }
+
+    /// <summary>
+    /// 创建标签ByString (抽奖活动用)
+    /// </summary>
+    public class WeChatGroupByNameDto : AuditedEntityDto
+    {
+        public int TypeCode { get; set; }
+        public string TypeName { get; set; }
+        public int TagId { get; set; }
+        public string TagName { get; set; }
+        public int? TenantId { get; set; }
+    }
 }

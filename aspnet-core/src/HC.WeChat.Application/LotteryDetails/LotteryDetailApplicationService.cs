@@ -413,10 +413,15 @@ namespace HC.WeChat.LotteryDetails
             bool isSign = await _luckySignRepository.GetAll().AnyAsync(v => v.UserId == user.UserId && v.CreationTime.Date == DateTime.Today);
             if (!isSign)
             {
+                //return new APIResultDto()
+                //{
+                //    Code = 902,
+                //    Msg = "请先签到！"
+                //};
                 return new APIResultDto()
                 {
-                    Code = 902,
-                    Msg = "请先签到！"
+                    Code = 703,
+                    Msg = "很遗憾，奖品与你擦肩而过"
                 };
             }
 

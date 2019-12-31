@@ -446,6 +446,21 @@ namespace HC.WeChat.MemberConfigs
             var entity = await _memberconfigRepository.GetAll().Where(v=>v.Type == DeployTypeEnum.抽奖配置 && v.Code == DeployCodeEnum.抽奖活动管理员).FirstOrDefaultAsync();
             return entity.MapTo<MemberConfigListDto>();
         }
+        
+
+        /// <summary>
+        /// 判断用户是否是抽奖活动管理员
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        public async Task<bool> IsLotteryAdminAsync(string openId)
+        {
+            if (string.IsNullOrEmpty(openId))
+            {
+                return false;
+            }
+            var isAdmin = await _memberconfigRepository.GetAll().Where(v => v.Code == DeployCodeEnum.抽奖活动管理员 && v.Type == DeployTypeEnum.抽奖配置 && v.Value.Contains(openId)).AnyAsync();
+            return isAdmin;
+        }
     }
 }
-

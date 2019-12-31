@@ -139,5 +139,6 @@ namespace HC.WeChat.WeChatGroups
         /// <param name="code"></param>
         /// <returns></returns>
         Task<WeChatGroupListDto> GetWeChatGroupByUserType(UserTypeEnum code);
+        Task<int> GetTagIdByNameAsync(string groupName, int groupCode);
     }
 }

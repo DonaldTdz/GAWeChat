@@ -441,6 +441,75 @@ namespace HC.WeChat.WeChatGroups
             var result = await _wechatgroupRepository.GetAll().Where(g => g.TypeCode == code).FirstOrDefaultAsync();
             return result.MapTo<WeChatGroupListDto>();
         }
+
+
+        /// <summary>
+        /// 获取微信分组（标签）id
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        [DisableAuditing]
+        public async Task<int> GetTagIdByNameAsync(string groupName,int groupCode)
+        {
+            int tagId = 0;
+            string tagName = "";
+            var tags = await UserTagApi.GetAsync(AppConfig.AppId);
+            var groupSe = await _wechatgroupRepository.GetAll().Where(G => G.TypeName == groupName).FirstOrDefaultAsync();
+            foreach (var item in tags.tags)
+            {
+                if (item.name == groupName)
+                {
+                    tagId = item.id;
+                    tagName = item.name;
+                }
+            }
+            if (string.IsNullOrEmpty(tagName))
+            {
+                var result = await UserTagApi.CreateAsync(AppConfig.AppId, groupName);
+                if (groupSe == null)
+                {
+                    WeChatGroupByNameDto group = new WeChatGroupByNameDto();
+                    if (result.errcode == 0)
+                    {
+                        group.TagId = result.tag.id;
+                        group.TagName = result.tag.name;
+                        group.TypeName = groupName;
+                        group.TypeCode = groupCode;
+                        await CreateWeChatGroupByNameAsync(group.MapTo<WeChatGroupByNameDto>());
+                    }
+                }
+                return result.tag.id;
+            }
+            else
+            {
+                if (groupSe == null)
+                {
+                    WeChatGroupByNameDto group = new WeChatGroupByNameDto();
+                    group.TagId = tagId;
+                    group.TagName = tagName;
+                    group.TypeName = groupName;
+                    group.TypeCode = groupCode;
+                    await CreateWeChatGroupByNameAsync(group.MapTo<WeChatGroupByNameDto>());
+                }
+                return tagId;
+            }
+        }
+
+        /// <summary>
+        /// 根据name创建标签
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [AbpAllowAnonymous]
+        protected virtual async Task<WeChatGroupEditDto> CreateWeChatGroupByNameAsync(WeChatGroupByNameDto input)
+        {
+            //TODO:新增前的逻辑判断，是否允许新增
+            var entity = ObjectMapper.Map<WeChatGroup>(input);
+
+            entity = await _wechatgroupRepository.InsertAsync(entity);
+            return entity.MapTo<WeChatGroupEditDto>();
+        }
     }
 }
 

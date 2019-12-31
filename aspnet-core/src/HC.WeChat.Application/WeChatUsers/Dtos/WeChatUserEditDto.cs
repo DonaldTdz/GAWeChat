@@ -152,4 +152,11 @@ namespace HC.WeChat.WeChatUsers.Dtos
 
         public string Host { get; set; }
     }
+
+    public class LotteryUserBindDto
+    {
+        public string OpenId { get; set; }
+
+        public string Code { get; set; }
+    }
 }
