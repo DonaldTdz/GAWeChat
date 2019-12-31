@@ -177,8 +177,8 @@ export class LotteryService {
     }
 
     //绑定工号
-    loterryBindWeChatUserAsync(input:any): Observable<ApiResult<any>> {
-        return this.http.post('/api/services/app/WeChatUser/LoterryBindWeChatUserAsync',input).map(data => {
+    loterryBindWeChatUserAsync(input: any): Observable<ApiResult<any>> {
+        return this.http.post('/api/services/app/WeChatUser/LoterryBindWeChatUserAsync', input).map(data => {
             let result = new ApiResult<any>();
             result = data.result;
             return result;
