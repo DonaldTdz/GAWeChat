@@ -98,7 +98,7 @@
     "@types/jszip": "^3.1.2",
     "@types/mockjs": "^1.0.0",
     "@types/node": "~6.0.60",
-    "codecov": "^3.0.0",
+    "codecov": "^3.6.5",
     "codelyzer": "~4.0.1",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
