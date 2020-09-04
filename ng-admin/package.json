@@ -112,7 +112,7 @@
     "karma-sauce-launcher": "^1.2.0",
     "lint-staged": "^5.0.0",
     "mockjs": "^1.0.1-beta3",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.13.1",
     "npm-run-all": "^4.1.1",
     "protractor": "~5.1.2",
     "sass-loader": "^7.0.1",
